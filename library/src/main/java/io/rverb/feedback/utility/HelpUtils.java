@@ -1,4 +1,4 @@
-package io.rverb.feedback;
+package io.rverb.feedback.utility;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -18,10 +17,13 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.UUID;
 
-import io.rverb.feedback.models.ContextData;
+import io.rverb.feedback.R;
+import io.rverb.feedback.model.ContextData;
 
 public class HelpUtils {
     private static final String LOG_TAG = "rverb.io";
+
+    private static final String RVERBIO_PREFS = "rverbio";
     private static final String SUPPORT_ID_KEY = "support_id";
 
     // SDK public method
@@ -36,7 +38,7 @@ public class HelpUtils {
 
     // SDK public method
     public static String getSupportId(Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
 
         String supportId = prefs.getString(SUPPORT_ID_KEY, "");
 

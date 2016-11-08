@@ -1,4 +1,4 @@
-package io.rverb.feedback.models;
+package io.rverb.feedback.model;
 
 import android.support.v4.util.ArrayMap;
 

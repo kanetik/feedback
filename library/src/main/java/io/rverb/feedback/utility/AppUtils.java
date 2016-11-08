@@ -1,10 +1,9 @@
-package io.rverb.feedback;
+package io.rverb.feedback.utility;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 
 public class AppUtils {
     public static String getPackageName(Context context) {
@@ -19,7 +18,7 @@ public class AppUtils {
 
         try {
             PackageInfo pi = packageManager.getPackageInfo(packageName, 0);
-            if (pi != null && !TextUtils.isEmpty(pi.versionName)) {
+            if (pi != null && pi.versionName != null && !pi.versionName.equals("")) {
                 version = pi.versionName;
             }
         } catch (PackageManager.NameNotFoundException e) {
