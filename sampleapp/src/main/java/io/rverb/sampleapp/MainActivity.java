@@ -1,4 +1,4 @@
-package io.rverb.feedback;
+package io.rverb.sampleapp;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import io.rverb.feedbacktest.R;
+import io.rverb.feedback.Rverbio;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,9 +21,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                HelpUtils.sendHelp(MainActivity.this, null);
+                Rverbio.getInstance();
             }
         });
     }
-
 }

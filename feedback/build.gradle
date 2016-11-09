@@ -24,13 +24,6 @@ android {
             minifyEnabled false
         }
     }
-    productFlavors {
-        prod {
-        }
-        mock {
-            versionNameSuffix '.mock'
-        }
-    }
 
     testOptions {
         unitTests.returnDefaultValues = true

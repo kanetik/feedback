@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.rverb.feedbacktest">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.rverb.sampleapp">
 
     <application
         android:allowBackup="true"
@@ -9,7 +8,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="io.rverb.feedback.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
