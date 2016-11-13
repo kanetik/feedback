@@ -6,11 +6,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 public class AppUtils {
-    public static String getPackageName(Context context) {
+    static String getPackageName(Context context) {
         return context.getPackageName();
     }
 
-    public static String getVersionName(Context context) {
+    static String getVersionName(Context context) {
         PackageManager packageManager = context.getPackageManager();
         String packageName = context.getPackageName();
 
@@ -28,7 +28,7 @@ public class AppUtils {
         return version;
     }
 
-    public static boolean isDebug(Context context) {
+    static boolean isDebug(Context context) {
         return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }
 }
