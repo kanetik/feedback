@@ -10,7 +10,7 @@ public class AppUtils {
         return context.getPackageName();
     }
 
-    static String getVersionName(Context context) {
+    public static String getVersionName(Context context) {
         PackageManager packageManager = context.getPackageManager();
         String packageName = context.getPackageName();
 

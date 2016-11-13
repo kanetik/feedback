@@ -7,15 +7,15 @@ import java.util.Map;
 public class ContextData {
     private Map<String, String> contextData;
 
-    public Map<String, String> getContextData() {
+    Map<String, String> getContextData() {
         return contextData;
     }
 
-    public ContextData(ContextDataBuilder builder) {
+    ContextData(ContextDataBuilder builder) {
         this.contextData = builder.contextData;
     }
 
-    public static class ContextDataBuilder {
+    static class ContextDataBuilder {
         private Map<String, String> contextData;
 
         public ContextDataBuilder() {

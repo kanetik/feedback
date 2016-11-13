@@ -4,8 +4,8 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import okhttp3.OkHttpClient;
 
-public class ApiUtils {
-    public static OkHttpClient getOkHttpClient() {
+class ApiUtils {
+    static OkHttpClient getOkHttpClient() {
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .build();

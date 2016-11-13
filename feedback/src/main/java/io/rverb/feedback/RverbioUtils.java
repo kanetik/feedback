@@ -1,4 +1,4 @@
-package io.rverb.feedback.utility;
+package io.rverb.feedback;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.UUID;
+
+import io.rverb.feedback.utility.AppUtils;
+import io.rverb.feedback.utility.LogUtils;
 
 public class RverbioUtils {
     public static final String DATA_TYPE_SESSION = "session";

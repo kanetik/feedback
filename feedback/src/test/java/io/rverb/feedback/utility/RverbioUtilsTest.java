@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 
+import io.rverb.feedback.RverbioUtils;
 import io.rverb.feedback.model.SessionData;
 
 import static org.junit.Assert.assertEquals;
