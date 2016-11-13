@@ -15,19 +15,31 @@ import java.util.UUID;
 import io.rverb.feedback.data.api.SessionService;
 import io.rverb.feedback.model.SessionData;
 import io.rverb.feedback.utility.LogUtils;
-import io.rverb.feedback.utility.RverbioUtils;
 
 public class Rverbio {
     static boolean _initialized = false;
     Context _appContext;
     SessionData _session;
 
-    // SDK public method
+    /**
+     * Gets the rverb.io singleton, which is the primary interaction point the developer will have
+     * with the rverb.io SDK.
+     *
+     * @return Rverbio singleton instance.
+     */
     public static Rverbio getInstance() {
         return RverbioHolder.INSTANCE;
     }
 
-    // SDK public method
+    /**
+     * Initializes the Rverbio singleton. The developer's interactions with rverb.io will be
+     * entirely via the singleton.
+     * <p>
+     * Initialization must be done before the Rverbio singleton can be used.
+     *
+     * @param context Activity or Application Context
+     * @see Rverbio#initialize(Context, String)
+     */
     public static void initialize(Context context) {
         String supportId = RverbioUtils.initializeSupportId(context);
         String sessionId = UUID.randomUUID().toString();
@@ -37,7 +49,19 @@ public class Rverbio {
         getInstance().setAppContext(context).setSessionData(sessionId, supportId);
     }
 
-    // SDK public method
+    /**
+     * Initializes the Rverbio singleton. The developer's interactions with rverb.io will be
+     * entirely via the singleton.
+     * <p>
+     * Initialization must be done before the Rverbio singleton can be used.
+     *
+     * @param context        Activity or Application Context
+     * @param userIdentifier A string which contains an identifier that is meaningful to the
+     *                       developer. This should NOT contain sensitive information like Social
+     *                       Security Number or credit card numbers.
+     * @see Rverbio#setUserIdentifier(String)
+     * @see Rverbio#initialize(Context)
+     */
     public static void initialize(Context context, String userIdentifier) {
         String supportId = RverbioUtils.initializeSupportId(context);
         String sessionId = UUID.randomUUID().toString();
@@ -47,20 +71,30 @@ public class Rverbio {
         getInstance().setAppContext(context).setSessionData(sessionId, supportId, userIdentifier);
     }
 
+    /**
+     * Sends the user's request to the developer.
+     *
+     * @param context Activity or Application Context
+     */
     // TODO: Allow dev-supplied context data
-    // SDK public method
     public void sendHelp(Context context) {
         RverbioUtils.setSupportData(context);
         // TODO: Handle custom NVPs
 
-        getScreenshot(context);
+        takeScreenshot(context);
 
         Toast.makeText(context, "Help will come. Just not yet.", Toast.LENGTH_LONG).show();
     }
 
+
+    /**
+     * Takes a screenshot of the developer's app as currently visible on the user's device. This
+     * will give the developer context around the comments or questions submitted by the user.
+     *
+     * @param context Activity or Application Context
+     */
     // TODO: Allow on-demand screenshots?
-    // SDK public method
-    public void getScreenshot(Context context) {
+    public void takeScreenshot(Context context) {
         File screenshot = RverbioUtils.createScreenshotFile(context);
         if (screenshot != null) {
             LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
@@ -75,12 +109,15 @@ public class Rverbio {
         }
     }
 
-    // SDK public method
-    public String getSessionId() {
-        return _session.sessionId;
-    }
-
-    // SDK public method
+    /**
+     * An identifier that is meaningful to the developer, such as an account ID or an email address.
+     * This will enable rverb.io to link a user across devices, and will enable the developer to
+     * search for all requests made by a single user.
+     *
+     * @param userIdentifier A string which contains the identifying information. This should NOT
+     *                       contain sensitive information like Social Security Number or credit
+     *                       card numbers.
+     */
     public void setUserIdentifier(String userIdentifier) {
         _session.userIdentifier = userIdentifier;
 
