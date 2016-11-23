@@ -9,9 +9,11 @@ import android.text.TextUtils;
 import android.view.View;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.UUID;
@@ -74,6 +76,26 @@ public class RverbioUtils {
         }
 
         return null;
+    }
+
+    public static <T> T readObjectFromDisk(Context context, String fileName, Class<T> type) {
+        ObjectInputStream input;
+        T queuedObject = null;
+
+        try {
+            input = new ObjectInputStream(new FileInputStream(new File(fileName)));
+            Object object = input.readObject();
+
+            if (object instanceof Serializable) {
+                queuedObject = (T)object;
+            }
+
+            input.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return queuedObject;
     }
 
     public static String writeObjectToDisk(Context context, String dataType, Serializable object) {
