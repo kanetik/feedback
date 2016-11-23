@@ -3,23 +3,23 @@ package io.rverb.feedback;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.UUID;
 
 import io.rverb.feedback.data.api.SessionService;
 import io.rverb.feedback.model.SessionData;
+import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 
 public class Rverbio {
-    static boolean _initialized = false;
-    Context _appContext;
-    SessionData _session;
+    private static Context _appContext;
+    private static final Rverbio _instance = new Rverbio();
+
+    private SessionData _session;
+    private String _userIdentifier;
 
     /**
      * Gets the rverb.io singleton, which is the primary interaction point the developer will have
@@ -28,7 +28,12 @@ public class Rverbio {
      * @return Rverbio singleton instance.
      */
     public static Rverbio getInstance() {
-        return RverbioHolder.INSTANCE;
+        if (_appContext == null) {
+            throw new IllegalStateException("You must call Rverbio#initialize before accessing the Rverbio instance",
+                    new Throwable("Rverbio instance not initialized"));
+        }
+
+        return _instance;
     }
 
     /**
@@ -41,12 +46,8 @@ public class Rverbio {
      * @see Rverbio#initialize(Context, String)
      */
     public static void initialize(Context context) {
-        String supportId = RverbioUtils.initializeSupportId(context);
-        String sessionId = UUID.randomUUID().toString();
-
-        _initialized = true;
-
-        getInstance().setAppContext(context).setSessionData(sessionId, supportId);
+        _appContext = context.getApplicationContext();
+        getInstance().setSessionData().sendQueuedRequests();
     }
 
     /**
@@ -63,12 +64,8 @@ public class Rverbio {
      * @see Rverbio#initialize(Context)
      */
     public static void initialize(Context context, String userIdentifier) {
-        String supportId = RverbioUtils.initializeSupportId(context);
-        String sessionId = UUID.randomUUID().toString();
-
-        _initialized = false;
-
-        getInstance().setAppContext(context).setSessionData(sessionId, supportId, userIdentifier);
+        _appContext = context.getApplicationContext();
+        getInstance().setUserIdentifier(userIdentifier).setSessionData().sendQueuedRequests();
     }
 
     /**
@@ -85,7 +82,6 @@ public class Rverbio {
 
         Toast.makeText(context, "Help will come. Just not yet.", Toast.LENGTH_LONG).show();
     }
-
 
     /**
      * Takes a screenshot of the developer's app as currently visible on the user's device. This
@@ -118,58 +114,56 @@ public class Rverbio {
      *                       contain sensitive information like Social Security Number or credit
      *                       card numbers.
      */
-    public void setUserIdentifier(String userIdentifier) {
-        _session.userIdentifier = userIdentifier;
+    public Rverbio setUserIdentifier(String userIdentifier) {
+        _userIdentifier = userIdentifier;
+        return this;
 
         // TODO Submit id
     }
 
-    Rverbio() {
-        if (!_initialized) {
-            throw new IllegalStateException("You must call Rverbio#initialize before accessing the Rverbio instance",
-                    new Throwable("Rverbio instance not initialized"));
+    private Rverbio setSessionData() {
+        String supportId = RverbioUtils.initializeSupportId(_appContext);
+        String sessionId = UUID.randomUUID().toString();
+
+        _session = new SessionData(AppUtils.getPackageName(_appContext), sessionId, supportId);
+        if (!TextUtils.isEmpty(_userIdentifier)) {
+            _session.userIdentifier = _userIdentifier;
         }
 
-        // TODO: check for un-sent message/data
-    }
-
-    private static class RverbioHolder {
-        private static final Rverbio INSTANCE = new Rverbio();
-    }
-
-    private Rverbio setAppContext(Context context) {
-        _appContext = context.getApplicationContext();
-        return this;
-    }
-
-    private Rverbio setSessionData(String sessionId, String supportId) {
-        _session = new SessionData(sessionId, supportId);
-        sendSessionData();
+        recordSessionStart();
 
         return this;
     }
 
-    private Rverbio setSessionData(String sessionId, String supportId, String userIdentifier) {
-        _session = new SessionData(sessionId, supportId, userIdentifier);
-        sendSessionData();
+    private void sendQueuedRequests() {
+        // Stap 1: find existing files of each DATA_TYPE
+        File directory = _appContext.getCacheDir();
+        File[] files = directory.listFiles();
 
-        return this;
+        // Step 2: loop through all found, attempting to resend
+        for (File file : files) {
+            String tempFilePath = file.getAbsolutePath();
+            LogUtils.d("FileName:", tempFilePath);
+            SessionData sessionData = RverbioUtils.readObjectFromDisk(_appContext, tempFilePath, SessionData.class);
+
+            if (sessionData != null) {
+                LogUtils.d("sessionData", sessionData.toString());
+                getInstance().sendSessionData(sessionData, tempFilePath);
+            }
+        }
     }
 
-    private void sendSessionData() {
-        // TODO: Save data to file in case initial push fails
+    private void recordSessionStart() {
+        // Save data to file in case initial push fails
         String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, RverbioUtils.DATA_TYPE_SESSION, _session);
+        sendSessionData(_session, tempFileName);
+    }
 
+    private void sendSessionData(SessionData session, String tempFileName) {
         Intent serviceIntent = new Intent(_appContext, SessionService.class);
-        serviceIntent.putExtra("session_data", _session);
+        serviceIntent.putExtra("session_data", session);
         serviceIntent.putExtra("temp_file_name", tempFileName);
 
         _appContext.startService(serviceIntent);
-    }
-
-    private String now() {
-        Calendar c = GregorianCalendar.getInstance();
-        DateFormat df = SimpleDateFormat.getDateTimeInstance();
-        return df.format(c.getTime());
     }
 }
