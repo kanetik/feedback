@@ -6,7 +6,6 @@ import android.content.Intent;
 import java.io.Serializable;
 
 import io.rverb.feedback.model.SessionData;
-import okhttp3.FormBody;
 
 public class SessionService extends IntentService {
     public SessionService() {
@@ -26,18 +25,7 @@ public class SessionService extends IntentService {
             throw new ClassCastException("Intent session object is not the expected type (SessionData)");
         }
 
-        SessionData session = (SessionData)sessionObject;
-
-        FormBody.Builder builder = new FormBody.Builder();
-
-        builder.add("session_id", session.sessionId);
-        builder.add("support_id", session.supportId);
-
-        String userIdentifier = session.userIdentifier;
-        if (userIdentifier != null) {
-            builder.add("user_identifier", userIdentifier);
-        }
-
-        ApiManager.makeApiCall(this, builder.build(), tempFileName);
+        SessionData session = (SessionData) sessionObject;
+        ApiManager.postSession(session, tempFileName);
     }
 }
