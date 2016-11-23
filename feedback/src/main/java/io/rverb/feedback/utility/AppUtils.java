@@ -6,7 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 public class AppUtils {
-    static String getPackageName(Context context) {
+    public static String getPackageName(Context context) {
         return context.getPackageName();
     }
 
