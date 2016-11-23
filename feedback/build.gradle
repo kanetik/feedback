@@ -32,7 +32,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.4.+'
 
     debugCompile 'com.facebook.stetho:stetho:1.4.1'
@@ -42,7 +42,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.2.11'
     //Dependencies for Espresso
-    androidTestCompile 'com.android.support:appcompat-v7:25.0.0'
+    androidTestCompile 'com.android.support:appcompat-v7:25.0.1'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
