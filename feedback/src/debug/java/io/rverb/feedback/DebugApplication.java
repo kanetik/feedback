@@ -1,10 +1,8 @@
 package io.rverb.feedback;
 
-import android.app.Application;
-
 import com.facebook.stetho.Stetho;
 
-public class DebugApplication extends Application {
+public class DebugApplication extends FeedbackApplication {
     @Override
     public void onCreate() {
         super.onCreate();
