@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 public class RverbioUtilsTest {
     private static final String SUPPORT_ID = UUID.randomUUID().toString();
     private static final String TEMP_PATH = "/temp/file/absolute/path";
-    private static final SessionData SESSION_DATA = new SessionData("test", "test");
+    private static final SessionData SESSION_DATA = new SessionData("com.awesome.app", "test", "test");
 
     @Mock
     Context _context;
