@@ -9,6 +9,7 @@ import java.util.Map;
 
 import io.rverb.feedback.RverbioUtils;
 import io.rverb.feedback.model.SessionData;
+import io.rverb.feedback.utility.LogUtils;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,11 +18,11 @@ import okhttp3.Response;
 
 class ApiManager {
     private static String API_ROOT = "https://www.rverb.io/api/";
-    private static String API_KEY = "uy/UOQSmqM9ZfnCxBfvSI6VRw7HM4en2L80SAuKqBOGz2V/9MYN3sQ==";
+    private static String API_KEY_HEADER_NAME = "apiKey";
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    static void postSession(SessionData session, String tempFileName) {
+    static void postSession(String apiKey, SessionData session, String tempFileName) {
         Map<String, String> params = new ArrayMap<>();
 
         params.put("ApplicationId", session.appId);
@@ -37,16 +38,19 @@ class ApiManager {
 
         JSONObject paramJson = new JSONObject(params);
 
-        post("session", paramJson, tempFileName);
+        post(apiKey, "session", paramJson, tempFileName);
     }
 
-    static void post(String endpoint, JSONObject paramJson, String tempFileName) {
+    static void post(String apiKey, String endpoint, JSONObject paramJson, String tempFileName) {
         OkHttpClient client = ApiUtils.getOkHttpClient();
+
+        LogUtils.d("POST " + endpoint + " - " + paramJson.toString());
 
         RequestBody body = RequestBody.create(JSON, paramJson.toString());
 
-        String url = API_ROOT + endpoint + "?code=" + API_KEY;
+        String url = API_ROOT + endpoint;
         Request request = new Request.Builder()
+                .addHeader(API_KEY_HEADER_NAME, apiKey)
                 .url(url)
                 .post(body)
                 .build();

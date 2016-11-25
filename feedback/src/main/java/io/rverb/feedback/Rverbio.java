@@ -16,6 +16,8 @@ import io.rverb.feedback.utility.LogUtils;
 
 public class Rverbio {
     private static Context _appContext;
+    private static String _apiKey;
+
     private static final Rverbio _instance = new Rverbio();
 
     private SessionData _session;
@@ -43,29 +45,13 @@ public class Rverbio {
      * Initialization must be done before the Rverbio singleton can be used.
      *
      * @param context Activity or Application Context
-     * @see Rverbio#initialize(Context, String)
      */
     public static void initialize(Context context) {
         _appContext = context.getApplicationContext();
-        getInstance().setSessionData().sendQueuedRequests();
-    }
+        _apiKey = AppUtils.getApiKey(context);
 
-    /**
-     * Initializes the Rverbio singleton. The developer's interactions with rverb.io will be
-     * entirely via the singleton.
-     * <p>
-     * Initialization must be done before the Rverbio singleton can be used.
-     *
-     * @param context        Activity or Application Context
-     * @param userIdentifier A string which contains an identifier that is meaningful to the
-     *                       developer. This should NOT contain sensitive information like Social
-     *                       Security Number or credit card numbers.
-     * @see Rverbio#setUserIdentifier(String)
-     * @see Rverbio#initialize(Context)
-     */
-    public static void initialize(Context context, String userIdentifier) {
-        _appContext = context.getApplicationContext();
-        getInstance().setUserIdentifier(userIdentifier).setSessionData().sendQueuedRequests();
+        getInstance().sendQueuedRequests();
+        getInstance().setSessionData();
     }
 
     /**
@@ -143,11 +129,10 @@ public class Rverbio {
         // Step 2: loop through all found, attempting to resend
         for (File file : files) {
             String tempFilePath = file.getAbsolutePath();
-            LogUtils.d("FileName:", tempFilePath);
+            LogUtils.d("FileName", tempFilePath);
             SessionData sessionData = RverbioUtils.readObjectFromDisk(_appContext, tempFilePath, SessionData.class);
 
             if (sessionData != null) {
-                LogUtils.d("sessionData", sessionData.toString());
                 getInstance().sendSessionData(sessionData, tempFilePath);
             }
         }
@@ -161,6 +146,7 @@ public class Rverbio {
 
     private void sendSessionData(SessionData session, String tempFileName) {
         Intent serviceIntent = new Intent(_appContext, SessionService.class);
+        serviceIntent.putExtra("api_key", _apiKey);
         serviceIntent.putExtra("session_data", session);
         serviceIntent.putExtra("temp_file_name", tempFileName);
 

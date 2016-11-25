@@ -16,6 +16,7 @@ public class SessionService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Serializable sessionObject = intent.getSerializableExtra("session_data");
         String tempFileName = intent.getStringExtra("temp_file_name");
+        String apiKey = intent.getStringExtra("api_key");
 
         if (sessionObject == null) {
             throw new NullPointerException("Intent session object is null");
@@ -26,6 +27,6 @@ public class SessionService extends IntentService {
         }
 
         SessionData session = (SessionData) sessionObject;
-        ApiManager.postSession(session, tempFileName);
+        ApiManager.postSession(apiKey, session, tempFileName);
     }
 }
