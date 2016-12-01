@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import io.rverb.feedback.RverbioUtils;
-import io.rverb.feedback.model.SessionData;
+import io.rverb.feedback.model.EndUser;
+import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.LogUtils;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -22,18 +23,23 @@ class ApiManager {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    static void postSession(String apiKey, SessionData session, String tempFileName) {
+    static void postUser(String apiKey, EndUser endUser, String tempFileName) {
         Map<String, String> params = new ArrayMap<>();
 
-        params.put("ApplicationId", session.appId);
+        params.put("SupportId", endUser.supportId);
+        params.put("UserIdentifier", endUser.userIdentifier);
+        params.put("EmailAddress", endUser.emailAddress);
+
+        JSONObject paramJson = new JSONObject(params);
+
+        post(apiKey, "enduser", paramJson, tempFileName);
+    }
+
+    static void postSession(String apiKey, Session session, String tempFileName) {
+        Map<String, String> params = new ArrayMap<>();
+
         params.put("SessionId", session.sessionId);
         params.put("SupportId", session.supportId);
-
-        String userIdentifier = session.userIdentifier;
-        if (userIdentifier != null) {
-            params.put("UserIdentifier", session.userIdentifier);
-        }
-
         params.put("SessionStartUtc", session.sessionStartUtc);
 
         JSONObject paramJson = new JSONObject(params);
@@ -41,7 +47,7 @@ class ApiManager {
         post(apiKey, "session", paramJson, tempFileName);
     }
 
-    static void post(String apiKey, String endpoint, JSONObject paramJson, String tempFileName) {
+    static void post(final String apiKey, final String endpoint, final JSONObject paramJson, final String tempFileName) {
         OkHttpClient client = ApiUtils.getOkHttpClient();
 
         LogUtils.d("POST " + endpoint + " - " + paramJson.toString());
