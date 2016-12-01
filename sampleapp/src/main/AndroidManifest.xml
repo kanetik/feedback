@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Main2Activity" />
-        <meta-data android:name="io.rverb.apiKey" android:value="1a16161c-6a16-49f5-ac2d-82bef049597f" />
+        <meta-data android:name="io.rverb.apiKey" android:value="2B737619-58E3-4D27-A608-A0DE215676C2" />
     </application>
 
 </manifest>
