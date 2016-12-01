@@ -16,8 +16,9 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.RverbioUtils;
-import io.rverb.feedback.model.SessionData;
+import io.rverb.feedback.model.Session;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,8 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 public class RverbioUtilsTest {
     private static final String SUPPORT_ID = UUID.randomUUID().toString();
-    private static final String TEMP_PATH = "/temp/file/absolute/path";
-    private static final SessionData SESSION_DATA = new SessionData("com.awesome.app", "test", "test");
+    private static final Session SESSION_DATA = new Session("test", "test");
 
     @Mock
     Context _context;
@@ -58,11 +58,12 @@ public class RverbioUtilsTest {
         Mockito.when(_context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
         Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn(SUPPORT_ID);
 
-        assertEquals(SUPPORT_ID, RverbioUtils.initializeSupportId(_context));
+        RverbioUtils.initializeSupportId(_context);
+        assertEquals(SUPPORT_ID, RverbioUtils.getSupportId(_context));
     }
 
     @Test
     public void canWriteObjectToDisk() throws Exception {
-        assertNotNull(RverbioUtils.writeObjectToDisk(_context, RverbioUtils.DATA_TYPE_SESSION, SESSION_DATA));
+        assertNotNull(RverbioUtils.writeObjectToDisk(_context, Rverbio.DATA_TYPE_SESSION, SESSION_DATA));
     }
 }
