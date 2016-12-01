@@ -4,17 +4,14 @@ import java.io.Serializable;
 
 import io.rverb.feedback.utility.DateUtils;
 
-public class SessionData implements Serializable {
+public class Session implements Serializable {
     private static final long serialVersionUID = 348L;
 
-    public String appId;
     public String sessionId;
     public String supportId;
-    public String userIdentifier;
     public String sessionStartUtc;
 
-    public SessionData(String appId, String sessionId, String supportId) {
-        this.appId = appId;
+    public Session(String sessionId, String supportId) {
         this.sessionId = sessionId;
         this.supportId = supportId;
         this.sessionStartUtc = DateUtils.nowUtc();
@@ -23,7 +20,7 @@ public class SessionData implements Serializable {
     @Override
     public String toString() {
         return "SessionId: " + sessionId + " | SupportId: " + supportId
-                + " | SessionStartUTC" + sessionStartUtc;
+                + " | SessionStartUTC: " + sessionStartUtc;
 
     }
 }
