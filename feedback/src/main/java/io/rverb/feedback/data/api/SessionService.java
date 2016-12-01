@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import java.io.Serializable;
 
-import io.rverb.feedback.model.SessionData;
+import io.rverb.feedback.model.Session;
 
 public class SessionService extends IntentService {
     public SessionService() {
@@ -22,11 +22,11 @@ public class SessionService extends IntentService {
             throw new NullPointerException("Intent session object is null");
         }
 
-        if (!(sessionObject instanceof SessionData)) {
-            throw new ClassCastException("Intent session object is not the expected type (SessionData)");
+        if (!(sessionObject instanceof Session)) {
+            throw new ClassCastException("Intent session object is not the expected type (Session)");
         }
 
-        SessionData session = (SessionData) sessionObject;
+        Session session = (Session) sessionObject;
         ApiManager.postSession(apiKey, session, tempFileName);
     }
 }
