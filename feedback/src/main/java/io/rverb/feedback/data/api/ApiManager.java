@@ -67,9 +67,11 @@ class ApiManager {
             // Delete the temp file, if it exists
             if (response.isSuccessful()) {
                 RverbioUtils.deleteFile(tempFileName);
+            } else {
+                LogUtils.d("POST " + endpoint + " Failed - " + response.message());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtils.d("POST " + endpoint + " Error - " + e.getMessage());
         }
     }
 }
