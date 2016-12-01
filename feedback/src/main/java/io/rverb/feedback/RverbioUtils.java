@@ -22,18 +22,31 @@ import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 
 public class RverbioUtils {
-    public static final String DATA_TYPE_SESSION = "session";
-
     private static final String RVERBIO_PREFS = "rverbio";
     private static final String SUPPORT_ID_KEY = "support_id";
 
-    public static String initializeSupportId(Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+    private static String _newSupportId;
 
+    public static boolean initializeSupportId(Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
         String supportId = prefs.getString(SUPPORT_ID_KEY, "");
+
         if (TextUtils.isEmpty(supportId)) {
-            supportId = UUID.randomUUID().toString();
-            prefs.edit().putString(SUPPORT_ID_KEY, supportId).apply();
+            _newSupportId = UUID.randomUUID().toString();
+            prefs.edit().putString(SUPPORT_ID_KEY, _newSupportId).apply();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public static String getSupportId(Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        String supportId = prefs.getString(SUPPORT_ID_KEY, "");
+
+        if (TextUtils.isEmpty(supportId) && initializeSupportId(context)) {
+            supportId = _newSupportId;
         }
 
         return supportId;
@@ -45,7 +58,7 @@ public class RverbioUtils {
         LogUtils.d("Device", Build.PRODUCT);
         LogUtils.d("Android Version", Build.VERSION.RELEASE);
         LogUtils.d("App Version", AppUtils.getVersionName(context));
-        LogUtils.d("Support Identifier", initializeSupportId(context));
+        LogUtils.d("Support Identifier", getSupportId(context));
 
         // TODO: Send Support Data
     }
@@ -87,7 +100,7 @@ public class RverbioUtils {
             Object object = input.readObject();
 
             if (object instanceof Serializable) {
-                queuedObject = (T)object;
+                queuedObject = (T) object;
             }
 
             input.close();
