@@ -6,8 +6,11 @@ import okhttp3.OkHttpClient;
 
 class ApiUtils {
     static OkHttpClient getOkHttpClient() {
-        return new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .build();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+        builder.addNetworkInterceptor(new StethoInterceptor());
+        builder.addNetworkInterceptor(new LoggingInterceptor());
+
+        return builder.build();
     }
 }
