@@ -2,14 +2,18 @@ package io.rverb.feedback.data.api;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.util.ArrayMap;
+
+import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import io.rverb.feedback.model.EndUser;
 
-public class UserService extends IntentService {
-    public UserService() {
-        super("UserService");
+public class AddUserService extends IntentService {
+    public AddUserService() {
+        super("AddUserService");
     }
 
     @Override
@@ -26,8 +30,18 @@ public class UserService extends IntentService {
             throw new ClassCastException("Intent user object is not the expected type (EndUser)");
         }
 
-        EndUser endUser = (EndUser) userObject;
+        postUser(apiKey, (EndUser)userObject, tempFileName);
+    }
 
-        ApiManager.postUser(apiKey, endUser, tempFileName);
+    void postUser(String apiKey, EndUser endUser, String tempFileName) {
+        Map<String, String> params = new ArrayMap<>();
+
+        params.put("SupportId", endUser.supportId);
+        params.put("UserIdentifier", "");
+        params.put("EmailAddress", "");
+
+        JSONObject paramJson = new JSONObject(params);
+
+        ApiManager.post(apiKey, "enduser", paramJson, tempFileName);
     }
 }
