@@ -11,6 +11,16 @@ public class EndUser implements Serializable {
 
     public EndUser(String supportId) {
         this.supportId = supportId;
+        this.emailAddress = "";
+        this.userIdentifier = "";
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    public void setUserIdentifier(String userIdentifier) {
+        this.userIdentifier = userIdentifier;
     }
 
     @Override

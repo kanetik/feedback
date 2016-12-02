@@ -10,7 +10,10 @@
             android:name="io.rverb.feedback.data.api.SessionService"
             android:exported="false" />
         <service
-            android:name="io.rverb.feedback.data.api.UserService"
+            android:name="io.rverb.feedback.data.api.AddUserService"
+            android:exported="false" />
+        <service
+            android:name="io.rverb.feedback.data.api.UpdateUserService"
             android:exported="false" />
     </application>
 

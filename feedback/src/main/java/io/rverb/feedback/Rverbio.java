@@ -7,14 +7,19 @@ import java.io.File;
 import java.util.UUID;
 
 import io.rverb.feedback.data.api.SessionService;
-import io.rverb.feedback.data.api.UserService;
+import io.rverb.feedback.data.api.UpdateUserService;
+import io.rverb.feedback.data.api.AddUserService;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 
+import static io.rverb.feedback.RverbioUtils.getSupportId;
+
 public class Rverbio {
-    public static final String DATA_TYPE_USER = "enduser";
+    public static final String DATA_TYPE_USER_ADD = "enduser_add";
+    public static final String DATA_TYPE_USER_UPDATE = "useremail_update";
+
     public static final String DATA_TYPE_SESSION = "session";
 
     private static Context _appContext;
@@ -69,6 +74,34 @@ public class Rverbio {
 //        Toast.makeText(context, "Help will come. Just not yet.", Toast.LENGTH_LONG).show();
 //    }
 
+    public void updateUserInfo(String emailAddress, String userIdentifier) {
+        RverbioUtils.getSupportId(_appContext);
+
+        EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
+        endUser.setEmailAddress(emailAddress);
+        endUser.setUserIdentifier(userIdentifier);
+
+        recordUpdateEndUser(endUser);
+    }
+
+    public void updateUserEmail(String emailAddress) {
+        RverbioUtils.getSupportId(_appContext);
+
+        EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
+        endUser.setEmailAddress(emailAddress);
+
+        recordUpdateEndUser(endUser);
+    }
+
+    public void updateUserIdentifier(String userIdentifier) {
+        RverbioUtils.getSupportId(_appContext);
+
+        EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
+        endUser.setUserIdentifier(userIdentifier);
+
+        recordUpdateEndUser(endUser);
+    }
+
 //    /**
 //     * Takes a screenshot of the developer's app as currently visible on the user's device. This
 //     * will give the developer context around the comments or questions submitted by the user.
@@ -93,14 +126,14 @@ public class Rverbio {
 
     private Rverbio initEndUser() {
         if (RverbioUtils.initializeSupportId(_appContext)) {
-            recordEndUser(new EndUser(RverbioUtils.getSupportId(_appContext)));
+            recordNewEndUser(new EndUser(getSupportId(_appContext)));
         }
 
         return this;
     }
 
     private Rverbio setSessionData() {
-        String supportId = RverbioUtils.getSupportId(_appContext);
+        String supportId = getSupportId(_appContext);
         String sessionId = UUID.randomUUID().toString();
 
         recordSessionStart(new Session(sessionId, supportId));
@@ -123,19 +156,30 @@ public class Rverbio {
                 if (session != null) {
                     getInstance().sendSessionData(session, tempFilePath);
                 }
-            } else if (tempFilePath.toLowerCase().startsWith("rv_" + DATA_TYPE_USER)) {
+            } else if (tempFilePath.toLowerCase().startsWith("rv_" + DATA_TYPE_USER_ADD)) {
                 EndUser endUser = RverbioUtils.readObjectFromDisk(_appContext, tempFilePath, EndUser.class);
                 if (endUser != null) {
-                    getInstance().sendEndUserData(endUser, tempFilePath);
+                    getInstance().sendEndUserAdd(endUser, tempFilePath);
+                }
+            } else if (tempFilePath.toLowerCase().startsWith("rv_" + DATA_TYPE_USER_UPDATE)) {
+                EndUser endUser = RverbioUtils.readObjectFromDisk(_appContext, tempFilePath, EndUser.class);
+                if (endUser != null) {
+                    getInstance().sendEndUserAdd(endUser, tempFilePath);
                 }
             }
         }
     }
 
-    private void recordEndUser(EndUser endUser) {
+    private void recordNewEndUser(EndUser endUser) {
         // Save data to file in case initial push fails
-        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, DATA_TYPE_USER, endUser);
-        sendEndUserData(endUser, tempFileName);
+        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, DATA_TYPE_USER_ADD, endUser);
+        sendEndUserAdd(endUser, tempFileName);
+    }
+
+    private void recordUpdateEndUser(EndUser endUser) {
+        // Save data to file in case initial push fails
+        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, DATA_TYPE_USER_UPDATE, endUser);
+        sendEndUserUpdate(endUser, tempFileName);
     }
 
     private void recordSessionStart(Session session) {
@@ -144,8 +188,18 @@ public class Rverbio {
         sendSessionData(session, tempFileName);
     }
 
-    private void sendEndUserData(EndUser endUser, String tempFileName) {
-        Intent serviceIntent = new Intent(_appContext, UserService.class);
+    private void sendEndUserAdd(EndUser endUser, String tempFileName) {
+        Intent serviceIntent = new Intent(_appContext, AddUserService.class);
+
+        serviceIntent.putExtra("api_key", _apiKey);
+        serviceIntent.putExtra("temp_file_name", tempFileName);
+        serviceIntent.putExtra("user_data", endUser);
+
+        _appContext.startService(serviceIntent);
+    }
+
+    private void sendEndUserUpdate(EndUser endUser, String tempFileName) {
+        Intent serviceIntent = new Intent(_appContext, UpdateUserService.class);
 
         serviceIntent.putExtra("api_key", _apiKey);
         serviceIntent.putExtra("temp_file_name", tempFileName);
