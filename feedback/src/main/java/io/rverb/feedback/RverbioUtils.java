@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -16,6 +19,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import io.rverb.feedback.model.Cacheable;
@@ -53,26 +58,30 @@ public class RverbioUtils {
         return supportId;
     }
 
-    public static void setSupportData(Context context) {
-        LogUtils.d("Manufacturer", Build.MANUFACTURER);
-        LogUtils.d("Model", Build.MODEL);
-        LogUtils.d("Device", Build.PRODUCT);
-        LogUtils.d("Android Version", Build.VERSION.RELEASE);
-        LogUtils.d("App Version", AppUtils.getVersionName(context));
-        LogUtils.d("Support Identifier", getSupportId(context));
-
-        // TODO: Send Support Data
+    public static void addSystemData(Context context, Map<String, String> params) {
+        params.put("appVersion", AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
+        params.put("locale", Locale.getDefault().toString());
+        params.put("deviceName", Build.PRODUCT);
+        params.put("osVersion", Build.VERSION.RELEASE);
+        params.put("networkType", RverbioUtils.getNetworkType(context));
     }
 
-    public static File createScreenshotFile(Context context) {
-        if (!(context instanceof Activity)) {
-            return null;
-        }
+    public static String getNetworkType(Context context) {
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+//        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+
+        return isWiFi ? "WiFi" : "Not WiFi";
+    }
+
+    public static File createScreenshotFile(@NonNull Activity context) {
         try {
             File imageFile = File.createTempFile("rv_screenshot", ".png", context.getCacheDir());
 
-            View v1 = ((Activity) context).getWindow().getDecorView().getRootView();
+            View v1 = context.getWindow().getDecorView().getRootView();
             v1.setDrawingCacheEnabled(true);
 
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
