@@ -2,27 +2,30 @@ package io.rverb.feedback.data.api;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Map;
 
 import io.rverb.feedback.model.EndUser;
 
-public class UpdateUserService extends IntentService {
+public class UserService extends IntentService {
     private final static String userEmailJsonFormat = "[{\"op\":\"replace\",\"path\":\"/emailAddress\",\"value\":\"%s\"}]";
     private final static String userIdentifierJsonFormat = "[{\"op\":\"replace\",\"path\":\"/userIdentifier\",\"value\":\"%s\"}]";
 
-    public UpdateUserService() {
-        super("UpdateUserService");
+    public UserService() {
+        super("UserService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Serializable userObject = intent.getSerializableExtra("user_data");
+        Serializable userObject = intent.getSerializableExtra("data");
         String tempFileName = intent.getStringExtra("temp_file_name");
         String apiKey = intent.getStringExtra("api_key");
 
@@ -41,10 +44,22 @@ public class UpdateUserService extends IntentService {
         }
 
         if (TextUtils.isEmpty(endUser.emailAddress) && TextUtils.isEmpty(endUser.userIdentifier)) {
-            throw new IllegalStateException("Intent user object must contain an emailAddress or userIdentifier");
+            postUser(apiKey, endUser, tempFileName);
+        } else {
+            patchUser(apiKey, endUser, tempFileName);
         }
+    }
 
-        patchUser(apiKey, endUser, tempFileName);
+    void postUser(String apiKey, EndUser endUser, String tempFileName) {
+        Map<String, String> params = new ArrayMap<>();
+
+        params.put("SupportId", endUser.supportId);
+        params.put("UserIdentifier", "");
+        params.put("EmailAddress", "");
+
+        JSONObject paramJson = new JSONObject(params);
+
+        ApiManager.post(apiKey, "enduser", paramJson, tempFileName);
     }
 
     void patchUser(String apiKey, EndUser endUser, String tempFileName) {
