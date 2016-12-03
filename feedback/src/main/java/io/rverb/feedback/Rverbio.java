@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.UUID;
 
-import io.rverb.feedback.data.api.SessionService;
-import io.rverb.feedback.data.api.UpdateUserService;
-import io.rverb.feedback.data.api.AddUserService;
+import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.AppUtils;
@@ -17,11 +17,6 @@ import io.rverb.feedback.utility.LogUtils;
 import static io.rverb.feedback.RverbioUtils.getSupportId;
 
 public class Rverbio {
-    public static final String DATA_TYPE_USER_ADD = "enduser_add";
-    public static final String DATA_TYPE_USER_UPDATE = "useremail_update";
-
-    public static final String DATA_TYPE_SESSION = "session";
-
     private static Context _appContext;
     private static String _apiKey;
 
@@ -81,7 +76,7 @@ public class Rverbio {
         endUser.setEmailAddress(emailAddress);
         endUser.setUserIdentifier(userIdentifier);
 
-        recordUpdateEndUser(endUser);
+        recordData(endUser);
     }
 
     public void updateUserEmail(String emailAddress) {
@@ -90,7 +85,7 @@ public class Rverbio {
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setEmailAddress(emailAddress);
 
-        recordUpdateEndUser(endUser);
+        recordData(endUser);
     }
 
     public void updateUserIdentifier(String userIdentifier) {
@@ -99,7 +94,7 @@ public class Rverbio {
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setUserIdentifier(userIdentifier);
 
-        recordUpdateEndUser(endUser);
+        recordData(endUser);
     }
 
 //    /**
@@ -126,7 +121,7 @@ public class Rverbio {
 
     private Rverbio initEndUser() {
         if (RverbioUtils.initializeSupportId(_appContext)) {
-            recordNewEndUser(new EndUser(getSupportId(_appContext)));
+            recordData(new EndUser(getSupportId(_appContext)));
         }
 
         return this;
@@ -136,7 +131,7 @@ public class Rverbio {
         String supportId = getSupportId(_appContext);
         String sessionId = UUID.randomUUID().toString();
 
-        recordSessionStart(new Session(sessionId, supportId));
+        recordData(new Session(sessionId, supportId));
 
         return this;
     }
@@ -146,74 +141,37 @@ public class Rverbio {
         File directory = _appContext.getCacheDir();
         File[] files = directory.listFiles();
 
+        // Ensure we submit queued requests in the order they were made
+        Arrays.sort(files, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+            }
+        });
+
         // Step 2: loop through all found, attempting to resend
         for (File file : files) {
             String tempFilePath = file.getAbsolutePath();
             LogUtils.d("FileName", tempFilePath);
 
-            if (tempFilePath.toLowerCase().startsWith("rv_" + DATA_TYPE_SESSION)) {
-                Session session = RverbioUtils.readObjectFromDisk(_appContext, tempFilePath, Session.class);
-                if (session != null) {
-                    getInstance().sendSessionData(session, tempFilePath);
-                }
-            } else if (tempFilePath.toLowerCase().startsWith("rv_" + DATA_TYPE_USER_ADD)) {
-                EndUser endUser = RverbioUtils.readObjectFromDisk(_appContext, tempFilePath, EndUser.class);
-                if (endUser != null) {
-                    getInstance().sendEndUserAdd(endUser, tempFilePath);
-                }
-            } else if (tempFilePath.toLowerCase().startsWith("rv_" + DATA_TYPE_USER_UPDATE)) {
-                EndUser endUser = RverbioUtils.readObjectFromDisk(_appContext, tempFilePath, EndUser.class);
-                if (endUser != null) {
-                    getInstance().sendEndUserAdd(endUser, tempFilePath);
-                }
+            Cacheable data = RverbioUtils.readObjectFromDisk(tempFilePath);
+            if (data != null) {
+                sendData(data, tempFilePath);
             }
         }
     }
 
-    private void recordNewEndUser(EndUser endUser) {
+    private void recordData(Cacheable data) {
         // Save data to file in case initial push fails
-        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, DATA_TYPE_USER_ADD, endUser);
-        sendEndUserAdd(endUser, tempFileName);
+        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, data);
+        sendData(data, tempFileName);
     }
 
-    private void recordUpdateEndUser(EndUser endUser) {
-        // Save data to file in case initial push fails
-        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, DATA_TYPE_USER_UPDATE, endUser);
-        sendEndUserUpdate(endUser, tempFileName);
-    }
-
-    private void recordSessionStart(Session session) {
-        // Save data to file in case initial push fails
-        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, DATA_TYPE_SESSION, session);
-        sendSessionData(session, tempFileName);
-    }
-
-    private void sendEndUserAdd(EndUser endUser, String tempFileName) {
-        Intent serviceIntent = new Intent(_appContext, AddUserService.class);
+    private void sendData(Cacheable data, String tempFileName) {
+        Intent serviceIntent = new Intent(_appContext, data.getServiceClass());
 
         serviceIntent.putExtra("api_key", _apiKey);
         serviceIntent.putExtra("temp_file_name", tempFileName);
-        serviceIntent.putExtra("user_data", endUser);
-
-        _appContext.startService(serviceIntent);
-    }
-
-    private void sendEndUserUpdate(EndUser endUser, String tempFileName) {
-        Intent serviceIntent = new Intent(_appContext, UpdateUserService.class);
-
-        serviceIntent.putExtra("api_key", _apiKey);
-        serviceIntent.putExtra("temp_file_name", tempFileName);
-        serviceIntent.putExtra("user_data", endUser);
-
-        _appContext.startService(serviceIntent);
-    }
-
-    private void sendSessionData(Session session, String tempFileName) {
-        Intent serviceIntent = new Intent(_appContext, SessionService.class);
-
-        serviceIntent.putExtra("api_key", _apiKey);
-        serviceIntent.putExtra("temp_file_name", tempFileName);
-        serviceIntent.putExtra("session_data", session);
+        serviceIntent.putExtra("data", data);
 
         _appContext.startService(serviceIntent);
     }
