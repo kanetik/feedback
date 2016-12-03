@@ -18,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.UUID;
 
+import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 
@@ -91,16 +92,16 @@ public class RverbioUtils {
         return null;
     }
 
-    public static <T> T readObjectFromDisk(Context context, String fileName, Class<T> type) {
+    public static Cacheable readObjectFromDisk(String fileName) {
         ObjectInputStream input;
-        T queuedObject = null;
+        Cacheable queuedObject = null;
 
         try {
             input = new ObjectInputStream(new FileInputStream(new File(fileName)));
             Object object = input.readObject();
 
             if (object instanceof Serializable) {
-                queuedObject = (T) object;
+                queuedObject = (Cacheable) object;
             }
 
             input.close();
@@ -111,10 +112,10 @@ public class RverbioUtils {
         return queuedObject;
     }
 
-    public static String writeObjectToDisk(Context context, String dataType, Serializable object) {
+    public static String writeObjectToDisk(Context context, Cacheable object) {
         try {
             //create a temp file
-            String fileName = "rv_" + dataType;
+            String fileName = "rv_" + object.getTempFileNameTag();
 
             File temp = File.createTempFile(fileName, ".tmp", context.getCacheDir());
             FileOutputStream fos = getFileOutputStream(temp);
