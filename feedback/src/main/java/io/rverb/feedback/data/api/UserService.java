@@ -30,7 +30,7 @@ public class UserService extends IntentService {
         String apiKey = intent.getStringExtra("api_key");
 
         if (userObject == null) {
-            throw new NullPointerException("Intent user object is null");
+            throw new NullPointerException("Intent EndUser object is null");
         }
 
         if (!(userObject instanceof EndUser)) {
@@ -40,7 +40,7 @@ public class UserService extends IntentService {
         EndUser endUser = (EndUser) userObject;
 
         if (TextUtils.isEmpty(endUser.supportId)) {
-            throw new IllegalStateException("Intent user object must contain SupportId");
+            throw new IllegalStateException("Intent EndUser object must contain SupportId");
         }
 
         if (TextUtils.isEmpty(endUser.emailAddress) && TextUtils.isEmpty(endUser.userIdentifier)) {
@@ -59,7 +59,7 @@ public class UserService extends IntentService {
 
         JSONObject paramJson = new JSONObject(params);
 
-        ApiManager.post(apiKey, "enduser", paramJson, tempFileName);
+        ApiManager.post(apiKey, endUser.getTempFileNameTag(), paramJson, tempFileName);
     }
 
     void patchUser(String apiKey, EndUser endUser, String tempFileName) {
@@ -70,7 +70,7 @@ public class UserService extends IntentService {
 
             try {
                 JSONArray json = new JSONArray(jsonString);
-                ApiManager.patch(apiKey, "enduser", endUser.supportId, json, tempFileName);
+                ApiManager.patch(apiKey, endUser.getTempFileNameTag(), endUser.supportId, json, tempFileName);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -81,7 +81,7 @@ public class UserService extends IntentService {
 
             try {
                 JSONArray json = new JSONArray(jsonString);
-                ApiManager.patch(apiKey, "enduser", endUser.supportId, json, tempFileName);
+                ApiManager.patch(apiKey, endUser.getTempFileNameTag(), endUser.supportId, json, tempFileName);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -43,6 +43,6 @@ public class SessionService extends IntentService {
 
         JSONObject paramJson = new JSONObject(params);
 
-        ApiManager.post(apiKey, "session", paramJson, tempFileName);
+        ApiManager.post(apiKey, session.getTempFileNameTag(), paramJson, tempFileName);
     }
 }
