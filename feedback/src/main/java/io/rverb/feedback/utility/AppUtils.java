@@ -29,6 +29,24 @@ public class AppUtils {
         return version;
     }
 
+    public static Integer getVersionCode(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        String packageName = context.getPackageName();
+
+        Integer version = null;
+
+        try {
+            PackageInfo pi = packageManager.getPackageInfo(packageName, 0);
+            if (pi != null && pi.versionCode > 0) {
+                version = pi.versionCode;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return version;
+    }
+
     public static String getApiKey(Context context) {
         ApplicationInfo ai = null;
 
