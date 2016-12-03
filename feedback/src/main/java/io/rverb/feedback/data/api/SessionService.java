@@ -18,7 +18,7 @@ public class SessionService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Serializable sessionObject = intent.getSerializableExtra("session_data");
+        Serializable sessionObject = intent.getSerializableExtra("data");
         String tempFileName = intent.getStringExtra("temp_file_name");
         String apiKey = intent.getStringExtra("api_key");
 
