@@ -1,10 +1,9 @@
 package io.rverb.feedback.model;
 
-import java.io.Serializable;
-
+import io.rverb.feedback.data.api.SessionService;
 import io.rverb.feedback.utility.DateUtils;
 
-public class Session implements Serializable {
+public class Session implements Cacheable {
     private static final long serialVersionUID = 348L;
 
     public String sessionId;
@@ -22,5 +21,15 @@ public class Session implements Serializable {
         return "SessionId: " + sessionId + " | SupportId: " + supportId
                 + " | SessionStartUTC: " + sessionStartUtc;
 
+    }
+
+    @Override
+    public String getTempFileNameTag() {
+        return "session";
+    }
+
+    @Override
+    public Class<?> getServiceClass() {
+        return SessionService.class;
     }
 }
