@@ -3,7 +3,6 @@ package io.rverb.feedback.data.api;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.util.ArrayMap;
-import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +12,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
+import io.rverb.feedback.RverbioUtils;
 import io.rverb.feedback.model.EndUser;
 
 public class UserService extends IntentService {
@@ -39,11 +39,11 @@ public class UserService extends IntentService {
 
         EndUser endUser = (EndUser) userObject;
 
-        if (TextUtils.isEmpty(endUser.supportId)) {
+        if (RverbioUtils.isNullOrWhiteSpace(endUser.supportId)) {
             throw new IllegalStateException("Intent EndUser object must contain SupportId");
         }
 
-        if (TextUtils.isEmpty(endUser.emailAddress) && TextUtils.isEmpty(endUser.userIdentifier)) {
+        if (RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress) && RverbioUtils.isNullOrWhiteSpace(endUser.userIdentifier)) {
             postUser(apiKey, endUser, tempFileName);
         } else {
             patchUser(apiKey, endUser, tempFileName);
@@ -65,7 +65,7 @@ public class UserService extends IntentService {
     void patchUser(String apiKey, EndUser endUser, String tempFileName) {
         String jsonString = "";
 
-        if (!TextUtils.isEmpty(endUser.emailAddress)) {
+        if (!RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress)) {
             jsonString = String.format(Locale.US, userEmailJsonFormat, endUser.emailAddress);
 
             try {
@@ -76,7 +76,7 @@ public class UserService extends IntentService {
             }
         }
 
-        if (!TextUtils.isEmpty(endUser.userIdentifier)) {
+        if (!RverbioUtils.isNullOrWhiteSpace(endUser.userIdentifier)) {
             jsonString = String.format(Locale.US, userIdentifierJsonFormat, endUser.userIdentifier);
 
             try {

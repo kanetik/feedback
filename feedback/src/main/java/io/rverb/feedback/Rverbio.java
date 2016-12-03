@@ -48,7 +48,7 @@ public class Rverbio {
     /**
      * Initializes the Rverbio singleton. The developer's interactions with rverb.io will be
      * entirely via the singleton.
-     * <p>
+     *
      * Initialization must be done before the Rverbio singleton can be used.
      *
      * @param context Activity or Application Context
@@ -65,8 +65,8 @@ public class Rverbio {
     /**
      * Sends the user's request to the developer.
      *
-     * @param screenshot
-     * @param feedback
+     * @param screenshot The screenshot of the current state of the app visible on the user's screen.
+     * @param feedback   The text submitted by the end-user.
      */
     public void sendFeedback(File screenshot, String feedback) {
         Feedback feedbackData = new Feedback(RverbioUtils.getSupportId(_appContext), feedback);
@@ -74,6 +74,19 @@ public class Rverbio {
         recordData(feedbackData);
     }
 
+    /**
+     * Updates the user's email address and userIdentifier. Both fields will be overwritten by the
+     * data provided, including empty strings. If you only want to update one field, use the
+     * appropriate update method.
+     *
+     * @param emailAddress The end-user's contact email address.
+     * @param userIdentifier A string that the developer knows the user by; for instance, a
+     *                       useraccount number. This should never include private information like
+     *                       credit card numbers or phone numbers.
+     *
+     * @see Rverbio#updateUserEmail(String)
+     * @see Rverbio#updateUserIdentifier(String)
+     */
     public void updateUserInfo(String emailAddress, String userIdentifier) {
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setEmailAddress(emailAddress);
@@ -82,6 +95,14 @@ public class Rverbio {
         recordData(endUser);
     }
 
+    /**
+     * Updates the user's email address.
+     *
+     * @param emailAddress The end-user's contact email address.
+     *
+     * @see Rverbio#updateUserInfo(String, String)
+     * @see Rverbio#updateUserIdentifier(String)
+     */
     public void updateUserEmail(String emailAddress) {
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setEmailAddress(emailAddress);
@@ -89,6 +110,16 @@ public class Rverbio {
         recordData(endUser);
     }
 
+    /**
+     * Updates the user's userIdentifier.
+     *
+     * @param userIdentifier A string that the developer knows the user by; for instance, a
+     *                       useraccount number. This should never include private information like
+     *                       credit card numbers or phone numbers.
+     *
+     * @see Rverbio#updateUserInfo(String, String)
+     * @see Rverbio#updateUserEmail(String)
+     */
     public void updateUserIdentifier(String userIdentifier) {
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setUserIdentifier(userIdentifier);
@@ -96,6 +127,12 @@ public class Rverbio {
         recordData(endUser);
     }
 
+    /**
+     * Show the feedback dialog
+     *
+     * @param activity The activity on which you wish to show the feedback dialog. This activity
+     *                 must be a subclass of AppCompatActivity.
+     */
     public void showDialog(@NonNull AppCompatActivity activity) {
         FragmentManager manager = activity.getSupportFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_edit_name");
@@ -108,12 +145,12 @@ public class Rverbio {
         fragment.show(manager, "fragment_edit_name");
     }
 
-    //    /**
-//     * Takes a screenshot of the developer's app as currently visible on the user's device. This
-//     * will give the developer context around the comments or questions submitted by the user.
-//     *
-//     * @param context Activity or Application Context
-//     */
+    /**
+     * Takes a screenshot of the app as currently visible on the user's device. This
+     * will give the developer context around the comments or questions submitted by the user.
+     *
+     * @param activity The activity from which you wish to take a screenshot.
+     */
     // TODO: Allow on-demand screenshots?
     public File getScreenshot(@NonNull Activity activity) {
         File screenshot = RverbioUtils.createScreenshotFile(activity);
@@ -125,8 +162,7 @@ public class Rverbio {
                 return screenshot;
             }
 
-            // Clean up after ourselves
-//            screenshot.deleteOnExit(); // TODO: Only if the image got sent
+            // TODO: Clean up after ourselves, after the image gets sent successfully
         }
 
         return null;

@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class AppUtilsTest {
@@ -49,6 +50,26 @@ public class AppUtilsTest {
         String versionName = AppUtils.getVersionName(_context);
 
         assertEquals("1", versionName);
+
+        Mockito.verify(_context).getPackageManager();
+        Mockito.verify(_context).getPackageName();
+        Mockito.verify(manager).getPackageInfo(PACKAGE, 0);
+    }
+
+    @Test
+    public void canGetVersionCode() throws Exception {
+        final PackageManager manager = Mockito.mock(PackageManager.class);
+
+        final PackageInfo info = Mockito.mock(PackageInfo.class);
+        info.versionCode = 1;
+
+        Mockito.when(_context.getPackageManager()).thenReturn(manager);
+        Mockito.when(manager.getPackageInfo(PACKAGE, 0)).thenReturn(info);
+
+        Integer versionCode = AppUtils.getVersionCode(_context);
+
+        assertNotNull(versionCode);
+        assertEquals(Integer.valueOf(1), versionCode);
 
         Mockito.verify(_context).getPackageManager();
         Mockito.verify(_context).getPackageName();

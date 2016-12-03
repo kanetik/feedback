@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.view.View;
 
 import java.io.File;
@@ -37,7 +36,7 @@ public class RverbioUtils {
         final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
         String supportId = prefs.getString(SUPPORT_ID_KEY, "");
 
-        if (TextUtils.isEmpty(supportId)) {
+        if (isNullOrWhiteSpace(supportId)) {
             _newSupportId = UUID.randomUUID().toString();
             prefs.edit().putString(SUPPORT_ID_KEY, _newSupportId).apply();
 
@@ -47,12 +46,32 @@ public class RverbioUtils {
         return false;
     }
 
+    public static boolean isNullOrWhiteSpace(String string) {
+        if (string == null) {
+            return true;
+        }
+
+        int stringLength = string.length();
+        if (stringLength == 0) {
+            return true;
+        }
+
+        for (int i = 0; i < stringLength; i++) {
+            if (!Character.isWhitespace(string.charAt(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static String getSupportId(Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
         String supportId = prefs.getString(SUPPORT_ID_KEY, "");
 
-        if (TextUtils.isEmpty(supportId) && initializeSupportId(context)) {
-            supportId = _newSupportId;
+        if (isNullOrWhiteSpace(supportId)) {
+            throw new IllegalStateException("You must call Rverbio#initialize before accessing the SupportId",
+                    new Throwable("Rverbio instance not initialized"));
         }
 
         return supportId;
@@ -61,27 +80,25 @@ public class RverbioUtils {
     public static void addSystemData(Context context, Map<String, String> params) {
         params.put("appVersion", AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
         params.put("locale", Locale.getDefault().toString());
+        params.put("deviceManufacturer", Build.MANUFACTURER);
+        params.put("deviceModel", Build.MODEL);
         params.put("deviceName", Build.PRODUCT);
         params.put("osVersion", Build.VERSION.RELEASE);
         params.put("networkType", RverbioUtils.getNetworkType(context));
     }
 
     public static String getNetworkType(Context context) {
-        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
-//        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-
-        return isWiFi ? "WiFi" : "Not WiFi";
+        return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
     }
 
-    public static File createScreenshotFile(@NonNull Activity context) {
+    public static File createScreenshotFile(@NonNull Activity activity) {
         try {
-            File imageFile = File.createTempFile("rv_screenshot", ".png", context.getCacheDir());
+            File imageFile = File.createTempFile("rv_screenshot", ".png", activity.getCacheDir());
 
-            View v1 = context.getWindow().getDecorView().getRootView();
+            View v1 = activity.getWindow().getDecorView().getRootView();
             v1.setDrawingCacheEnabled(true);
 
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
@@ -169,7 +186,7 @@ public class RverbioUtils {
     }
 
     public static void deleteFile(String fileName) {
-        if (!TextUtils.isEmpty(fileName)) {
+        if (!isNullOrWhiteSpace(fileName)) {
             File file = new File(fileName);
             file.delete();
         }
