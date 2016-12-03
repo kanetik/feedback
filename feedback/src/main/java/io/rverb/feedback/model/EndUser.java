@@ -27,7 +27,6 @@ public class EndUser implements Cacheable {
     public String toString() {
         return "supportId: " + supportId + " | emailAddress: " + emailAddress
                 + " | userIdentifier: " + userIdentifier;
-
     }
 
     @Override

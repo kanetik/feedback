@@ -20,7 +20,6 @@ public class Session implements Cacheable {
     public String toString() {
         return "SessionId: " + sessionId + " | SupportId: " + supportId
                 + " | SessionStartUTC: " + sessionStartUtc;
-
     }
 
     @Override
