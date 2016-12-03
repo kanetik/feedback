@@ -12,6 +12,9 @@
         <service
             android:name="io.rverb.feedback.data.api.UserService"
             android:exported="false" />
+        <service
+            android:name="io.rverb.feedback.data.api.FeedbackService"
+            android:exported="false" />
     </application>
 
 </manifest>
