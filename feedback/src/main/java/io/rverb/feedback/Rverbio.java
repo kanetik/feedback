@@ -1,7 +1,13 @@
 package io.rverb.feedback;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
 import java.util.Arrays;
@@ -10,7 +16,9 @@ import java.util.UUID;
 
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.EndUser;
+import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
+import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 
@@ -54,24 +62,19 @@ public class Rverbio {
         getInstance().initEndUser().setSessionData();
     }
 
-//    /**
-//     * Sends the user's request to the developer.
-//     *
-//     * @param context Activity or Application Context
-//     */
-    // TODO: Allow dev-supplied context data
-//    public void sendHelp(Context context) {
-//        RverbioUtils.setSupportData(context);
-//        // TODO: Handle custom NVPs
-//
-//        takeScreenshot(context);
-//
-//        Toast.makeText(context, "Help will come. Just not yet.", Toast.LENGTH_LONG).show();
-//    }
+    /**
+     * Sends the user's request to the developer.
+     *
+     * @param screenshot
+     * @param feedback
+     */
+    public void sendFeedback(File screenshot, String feedback) {
+        Feedback feedbackData = new Feedback(RverbioUtils.getSupportId(_appContext), feedback);
+
+        recordData(feedbackData);
+    }
 
     public void updateUserInfo(String emailAddress, String userIdentifier) {
-        RverbioUtils.getSupportId(_appContext);
-
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setEmailAddress(emailAddress);
         endUser.setUserIdentifier(userIdentifier);
@@ -80,8 +83,6 @@ public class Rverbio {
     }
 
     public void updateUserEmail(String emailAddress) {
-        RverbioUtils.getSupportId(_appContext);
-
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setEmailAddress(emailAddress);
 
@@ -89,35 +90,47 @@ public class Rverbio {
     }
 
     public void updateUserIdentifier(String userIdentifier) {
-        RverbioUtils.getSupportId(_appContext);
-
         EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
         endUser.setUserIdentifier(userIdentifier);
 
         recordData(endUser);
     }
 
-//    /**
+    public void showDialog(@NonNull AppCompatActivity activity) {
+        FragmentManager manager = activity.getSupportFragmentManager();
+        Fragment frag = manager.findFragmentByTag("fragment_edit_name");
+
+        if (frag != null) {
+            manager.beginTransaction().remove(frag).commit();
+        }
+
+        final RverbioFeedbackDialogFragment fragment = RverbioFeedbackDialogFragment.create(R.layout.fragment_dialog);
+        fragment.show(manager, "fragment_edit_name");
+    }
+
+    //    /**
 //     * Takes a screenshot of the developer's app as currently visible on the user's device. This
 //     * will give the developer context around the comments or questions submitted by the user.
 //     *
 //     * @param context Activity or Application Context
 //     */
     // TODO: Allow on-demand screenshots?
-//    public void takeScreenshot(Context context) {
-//        File screenshot = RverbioUtils.createScreenshotFile(context);
-//        if (screenshot != null) {
-//            LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
-//
-//            Uri path = Uri.fromFile(screenshot);
-//            if (path != null) {
-//                // TODO: Send screenshot
-//            }
-//
-//            // Clean up after ourselves
+    public File getScreenshot(@NonNull Activity activity) {
+        File screenshot = RverbioUtils.createScreenshotFile(activity);
+        if (screenshot != null) {
+            LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
+
+            Uri path = Uri.fromFile(screenshot);
+            if (path != null) {
+                return screenshot;
+            }
+
+            // Clean up after ourselves
 //            screenshot.deleteOnExit(); // TODO: Only if the image got sent
-//        }
-//    }
+        }
+
+        return null;
+    }
 
     private Rverbio initEndUser() {
         if (RverbioUtils.initializeSupportId(_appContext)) {
