@@ -23,7 +23,7 @@ public class Session implements Cacheable {
     }
 
     @Override
-    public String getTempFileNameTag() {
+    public String getDataTypeDescriptor() {
         return "session";
     }
 

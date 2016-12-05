@@ -19,14 +19,12 @@ import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
-import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 
 import static io.rverb.feedback.RverbioUtils.getSupportId;
 
 public class Rverbio {
     private static Context _appContext;
-    private static String _apiKey;
 
     private static final Rverbio _instance = new Rverbio();
 
@@ -55,7 +53,6 @@ public class Rverbio {
      */
     public static void initialize(Context context) {
         _appContext = context.getApplicationContext();
-        _apiKey = AppUtils.getApiKey(context);
 
         // Send any previously queued requests
         getInstance().sendQueuedRequests();
@@ -218,7 +215,6 @@ public class Rverbio {
     private void sendData(Cacheable data, String tempFileName) {
         Intent serviceIntent = new Intent(_appContext, data.getServiceClass());
 
-        serviceIntent.putExtra("api_key", _apiKey);
         serviceIntent.putExtra("temp_file_name", tempFileName);
         serviceIntent.putExtra("data", data);
 

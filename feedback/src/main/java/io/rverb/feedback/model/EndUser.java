@@ -30,7 +30,7 @@ public class EndUser implements Cacheable {
     }
 
     @Override
-    public String getTempFileNameTag() {
+    public String getDataTypeDescriptor() {
         return "enduser";
     }
 

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -18,12 +17,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 import io.rverb.feedback.model.Cacheable;
-import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 
 public class RverbioUtils {
@@ -75,16 +71,6 @@ public class RverbioUtils {
         }
 
         return supportId;
-    }
-
-    public static void addSystemData(Context context, Map<String, String> params) {
-        params.put("appVersion", AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
-        params.put("locale", Locale.getDefault().toString());
-        params.put("deviceManufacturer", Build.MANUFACTURER);
-        params.put("deviceModel", Build.MODEL);
-        params.put("deviceName", Build.PRODUCT);
-        params.put("osVersion", Build.VERSION.RELEASE);
-        params.put("networkType", RverbioUtils.getNetworkType(context));
     }
 
     public static String getNetworkType(Context context) {
@@ -141,7 +127,7 @@ public class RverbioUtils {
     public static String writeObjectToDisk(Context context, Cacheable object) {
         try {
             //create a temp file
-            String fileName = "rv_" + object.getTempFileNameTag();
+            String fileName = "rv_" + object.getDataTypeDescriptor();
 
             File temp = File.createTempFile(fileName, ".tmp", context.getCacheDir());
             FileOutputStream fos = getFileOutputStream(temp);

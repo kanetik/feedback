@@ -12,6 +12,8 @@ public class Feedback implements Cacheable {
     public String appVersion;
     public String locale;
     public String deviceName;
+    public String make;
+    public String model;
     public String osVersion;
     public String networkType;
     public String timestamp;
@@ -35,7 +37,7 @@ public class Feedback implements Cacheable {
     }
 
     @Override
-    public String getTempFileNameTag() {
+    public String getDataTypeDescriptor() {
         return "feedback";
     }
 

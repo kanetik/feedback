@@ -43,8 +43,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
         ImageView thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
         if (screenshot != null) {
             thumbnail.setImageDrawable(Drawable.createFromPath(screenshot.getAbsolutePath()));
-        }
-        else {
+        } else {
             thumbnail.setVisibility(View.GONE);
         }
 
