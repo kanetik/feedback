@@ -1,5 +1,8 @@
 package io.rverb.feedback.model;
 
+import android.content.Context;
+import android.content.Intent;
+
 import io.rverb.feedback.data.api.SessionService;
 import io.rverb.feedback.utility.DateUtils;
 
@@ -28,7 +31,12 @@ public class Session implements Cacheable {
     }
 
     @Override
-    public Class<?> getServiceClass() {
-        return SessionService.class;
+    public Intent getServiceIntent(Context context, String cacheFileName) {
+        Intent serviceIntent = new Intent(context, SessionService.class);
+
+        serviceIntent.putExtra("temp_file_name", cacheFileName);
+        serviceIntent.putExtra("data", this);
+
+        return serviceIntent;
     }
 }

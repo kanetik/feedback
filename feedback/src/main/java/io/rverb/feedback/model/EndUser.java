@@ -1,5 +1,8 @@
 package io.rverb.feedback.model;
 
+import android.content.Context;
+import android.content.Intent;
+
 import io.rverb.feedback.data.api.UserService;
 
 public class EndUser implements Cacheable {
@@ -35,7 +38,12 @@ public class EndUser implements Cacheable {
     }
 
     @Override
-    public Class<?> getServiceClass() {
-        return UserService.class;
+    public Intent getServiceIntent(Context context, String cacheFileName) {
+        Intent serviceIntent = new Intent(context, UserService.class);
+
+        serviceIntent.putExtra("temp_file_name", cacheFileName);
+        serviceIntent.putExtra("data", this);
+
+        return serviceIntent;
     }
 }
