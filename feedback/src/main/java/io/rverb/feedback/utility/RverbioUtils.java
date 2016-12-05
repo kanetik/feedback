@@ -1,26 +1,23 @@
-package io.rverb.feedback;
+package io.rverb.feedback.utility;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.UUID;
 
-import io.rverb.feedback.model.Cacheable;
-import io.rverb.feedback.utility.LogUtils;
+import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
 public class RverbioUtils {
     private static final String RVERBIO_PREFS = "rverbio";
@@ -104,77 +101,16 @@ public class RverbioUtils {
         return null;
     }
 
-    public static Cacheable readObjectFromDisk(String fileName) {
-        ObjectInputStream input;
-        Cacheable queuedObject = null;
+    public static String getApiKey(Context context) {
+        ApplicationInfo ai = null;
 
         try {
-            input = new ObjectInputStream(new FileInputStream(new File(fileName)));
-            Object object = input.readObject();
-
-            if (object instanceof Serializable) {
-                queuedObject = (Cacheable) object;
-            }
-
-            input.close();
-        } catch (Exception e) {
+            ai = context.getPackageManager().getApplicationInfo(getPackageName(context), PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
-        return queuedObject;
-    }
-
-    public static String writeObjectToDisk(Context context, Cacheable object) {
-        try {
-            //create a temp file
-            String fileName = "rv_" + object.getDataTypeDescriptor();
-
-            File temp = File.createTempFile(fileName, ".tmp", context.getCacheDir());
-            FileOutputStream fos = getFileOutputStream(temp);
-
-            if (fos != null) {
-                ObjectOutputStream os = getObjectOutputStream(fos);
-
-                if (os != null) {
-                    os.writeObject(object);
-                    os.close();
-                    fos.close();
-
-                    return temp.getAbsolutePath();
-                }
-            }
-
-            return null;
-        } catch (IOException e) {
-            // If this doesn't write, I think it's alright for now,
-            // this is just a file to be checked on app start,
-            // in case the initial API call failed.
-
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    protected static FileOutputStream getFileOutputStream(File temp) {
-        try {
-            return new FileOutputStream(temp.getAbsolutePath());
-        } catch (FileNotFoundException e) {
-            return null;
-        }
-    }
-
-    protected static ObjectOutputStream getObjectOutputStream(FileOutputStream fos) {
-        try {
-            return new ObjectOutputStream(fos);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    public static void deleteFile(String fileName) {
-        if (!isNullOrWhiteSpace(fileName)) {
-            File file = new File(fileName);
-            file.delete();
-        }
+        Bundle bundle = ai.metaData;
+        return bundle.getString("io.rverb.apiKey");
     }
 }

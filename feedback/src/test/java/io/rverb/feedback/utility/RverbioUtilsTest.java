@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 
-import io.rverb.feedback.RverbioUtils;
 import io.rverb.feedback.model.Session;
 
 import static org.junit.Assert.assertEquals;
@@ -102,7 +101,7 @@ public class RverbioUtilsTest {
 
     @Test
     public void canWriteObjectToDisk() throws Exception {
-        assertNotNull(RverbioUtils.writeObjectToDisk(_context, SESSION_DATA));
+        assertNotNull(DataUtils.writeObjectToDisk(_context, SESSION_DATA));
     }
 
     @Test

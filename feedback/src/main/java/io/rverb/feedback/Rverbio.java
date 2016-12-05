@@ -2,7 +2,6 @@ package io.rverb.feedback;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -19,9 +18,11 @@ import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
+import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
+import io.rverb.feedback.utility.RverbioUtils;
 
-import static io.rverb.feedback.RverbioUtils.getSupportId;
+import static io.rverb.feedback.utility.RverbioUtils.getSupportId;
 
 public class Rverbio {
     private static Context _appContext;
@@ -62,11 +63,13 @@ public class Rverbio {
     /**
      * Sends the user's request to the developer.
      *
-     * @param screenshot The screenshot of the current state of the app visible on the user's screen.
+     * @param screenshotFileName The filename of the screenshot of the current state of the app
+     *                           visible on the user's screen.
      * @param feedback   The text submitted by the end-user.
      */
-    public void sendFeedback(File screenshot, String feedback) {
-        Feedback feedbackData = new Feedback(RverbioUtils.getSupportId(_appContext), feedback);
+    public void sendFeedback(String screenshotFileName, String feedback) {
+        Feedback feedbackData = new Feedback(RverbioUtils.getSupportId(_appContext), feedback,
+                screenshotFileName);
 
         recordData(feedbackData);
     }
@@ -199,7 +202,7 @@ public class Rverbio {
             String tempFilePath = file.getAbsolutePath();
             LogUtils.d("FileName", tempFilePath);
 
-            Cacheable data = RverbioUtils.readObjectFromDisk(tempFilePath);
+            Cacheable data = DataUtils.readObjectFromDisk(tempFilePath);
             if (data != null) {
                 sendData(data, tempFilePath);
             }
@@ -208,16 +211,11 @@ public class Rverbio {
 
     private void recordData(Cacheable data) {
         // Save data to file in case initial push fails
-        String tempFileName = RverbioUtils.writeObjectToDisk(_appContext, data);
+        String tempFileName = DataUtils.writeObjectToDisk(_appContext, data);
         sendData(data, tempFileName);
     }
 
     private void sendData(Cacheable data, String tempFileName) {
-        Intent serviceIntent = new Intent(_appContext, data.getServiceClass());
-
-        serviceIntent.putExtra("temp_file_name", tempFileName);
-        serviceIntent.putExtra("data", data);
-
-        _appContext.startService(serviceIntent);
+        _appContext.startService(data.getServiceIntent(_appContext, tempFileName));
     }
 }

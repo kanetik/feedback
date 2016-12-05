@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.rverb.feedback.RverbioUtils;
+import io.rverb.feedback.utility.RverbioUtils;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Patch;
 

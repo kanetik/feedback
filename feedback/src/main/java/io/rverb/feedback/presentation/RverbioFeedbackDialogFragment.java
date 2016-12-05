@@ -61,7 +61,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Rverbio.getInstance().sendFeedback(screenshot, feedback.getText().toString());
+                Rverbio.getInstance().sendFeedback(screenshot.getAbsolutePath(), feedback.getText().toString());
                 getDialog().dismiss();
             }
         });
