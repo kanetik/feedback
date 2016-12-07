@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.1"
     publishNonDefault true
     defaultConfig {
         minSdkVersion 15
@@ -32,12 +32,12 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.android.support:appcompat-v7:25.+'
+    compile 'com.squareup.okhttp3:okhttp:3.5.+'
+    compile 'com.google.code.gson:gson:2.8.+'
 
-    debugCompile 'com.facebook.stetho:stetho:1.4.1'
-    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.4.1'
+    debugCompile 'com.facebook.stetho:stetho:latest.release'
+    debugCompile 'com.facebook.stetho:stetho-okhttp3:latest.release'
 
     //Dependencies for JUNit and unit tests.
     testCompile 'junit:junit:4.12'
