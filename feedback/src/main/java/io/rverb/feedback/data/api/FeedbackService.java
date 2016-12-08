@@ -42,7 +42,7 @@ public class FeedbackService extends IntentService {
         // TODO: Allow dev to add to a collection that will persist throughout the session and submit with the feedback
 
         Cacheable response = ApiManager.postWithResponse(this, tempFileName, feedback);
-        if (response != null && response instanceof Feedback) {
+        if (response != null && response instanceof Feedback && !RverbioUtils.isNullOrWhiteSpace(screenshotFileName)) {
             Feedback feedbackResponse = (Feedback)response;
             if (!RverbioUtils.isNullOrWhiteSpace(feedbackResponse.uploadUrl)) {
                 final File screenshot = new File(screenshotFileName);

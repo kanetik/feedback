@@ -10,7 +10,7 @@
         android:padding="?attr/dialogPreferredPadding">
 
         <ImageView
-            android:id="@+id/thumbnail"
+            android:id="@+id/rverb_thumbnail"
             android:layout_width="wrap_content"
             android:layout_height="100dp"
             android:layout_alignParentLeft="true"
@@ -19,27 +19,33 @@
             android:scaleType="centerCrop" />
 
         <TextView
-            android:id="@+id/intro"
+            android:id="@+id/rverb_intro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/thumbnail"
-            android:layout_toRightOf="@id/thumbnail"
+            android:layout_toEndOf="@+id/rverb_thumbnail"
+            android:layout_toRightOf="@+id/rverb_thumbnail"
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
 
+        <Spinner
+            android:id="@+id/rverb_feedback_type"
+            android:layout_below="@+id/rverb_intro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <TextView
-            android:id="@+id/problem_label"
+            android:id="@+id/rverb_problem_label"
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/intro"
-            android:labelFor="@+id/problem"
+            android:layout_below="@+id/rverb_feedback_type"
+            android:labelFor="@+id/rverb_problem"
             android:text="What's your problem?" />
 
         <EditText
-            android:id="@+id/problem"
+            android:id="@+id/rverb_problem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/problem_label" />
+            android:layout_below="@+id/rverb_problem_label" />
     </RelativeLayout>
 
     <LinearLayout
@@ -47,18 +53,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/problem"
+        android:layout_below="@+id/rverb_problem"
         android:gravity="end|bottom">
 
         <Button
-            android:id="@+id/button_1"
+            android:id="@+id/rverb_button_1"
             style="?attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/no" />
 
         <Button
-            android:id="@+id/button_2"
+            android:id="@+id/rverb_button_2"
             style="?attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -46,6 +46,19 @@ public class AppUtils {
         return version;
     }
 
+    public static String getAppLabel(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        ApplicationInfo applicationInfo = null;
+
+        try {
+            applicationInfo = packageManager.getApplicationInfo(context.getApplicationInfo().packageName, 0);
+        } catch (final PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "");
+    }
+
     static boolean isDebug(Context context) {
         return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }

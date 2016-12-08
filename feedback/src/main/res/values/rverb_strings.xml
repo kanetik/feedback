@@ -1,0 +1,4 @@
+<resources>
+    <string name="rverb_library_name">Rverb.io Feedback SDK</string>
+    <string name="rverb_feedback_title_format">%s Feedback</string>
+</resources>

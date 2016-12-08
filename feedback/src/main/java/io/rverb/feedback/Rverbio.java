@@ -63,13 +63,18 @@ public class Rverbio {
     /**
      * Sends the user's request to the developer.
      *
-     * @param screenshotFileName The filename of the screenshot of the current state of the app
-     *                           visible on the user's screen.
-     * @param feedback   The text submitted by the end-user.
+     * @param feedbackType   The type of feedback submitted by the user.
+     * @param feedbackText   The text submitted by the end-user.
+     * @param screenshot The screenshot of the app visible on the user's screen.
      */
-    public void sendFeedback(String screenshotFileName, String feedback) {
-        Feedback feedbackData = new Feedback(RverbioUtils.getSupportId(_appContext), feedback,
-                screenshotFileName);
+    public void sendFeedback(String feedbackType, String feedbackText, File screenshot) {
+        String screenshotFileName = "";
+        if (screenshot != null) {
+            screenshotFileName = screenshot.getAbsolutePath();
+        }
+
+        Feedback feedbackData = new Feedback(RverbioUtils.getSupportId(_appContext), feedbackType,
+                feedbackText, screenshotFileName);
 
         recordData(feedbackData);
     }
@@ -141,7 +146,7 @@ public class Rverbio {
             manager.beginTransaction().remove(frag).commit();
         }
 
-        final RverbioFeedbackDialogFragment fragment = RverbioFeedbackDialogFragment.create(R.layout.fragment_dialog);
+        final RverbioFeedbackDialogFragment fragment = RverbioFeedbackDialogFragment.create(R.layout.rverb_fragment_dialog);
         fragment.show(manager, "fragment_edit_name");
     }
 
@@ -151,7 +156,6 @@ public class Rverbio {
      *
      * @param activity The activity from which you wish to take a screenshot.
      */
-    // TODO: Allow on-demand screenshots?
     public File getScreenshot(@NonNull Activity activity) {
         File screenshot = RverbioUtils.createScreenshotFile(activity);
         if (screenshot != null) {
@@ -162,7 +166,8 @@ public class Rverbio {
                 return screenshot;
             }
 
-            // TODO: Clean up after ourselves, after the image gets sent successfully
+            // TODO: The image uploadUrl expires after 30 minutes. If the image hasn't been uploaded
+            // by then, delete the local copy. Make the timeout configurable.
         }
 
         return null;

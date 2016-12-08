@@ -15,30 +15,21 @@ public class Feedback implements Cacheable {
 
     public String sessionId;
     public String appVersion;
+    public String timestamp;
+    public String feedbackType;
+    public String comment;
     public String locale;
     public String deviceName;
     public String make;
     public String model;
     public String osVersion;
     public String networkType;
-    public String timestamp;
-    public String comment;
     public Map<String, String> contextData;
     public String uploadUrl;
 
-    public Feedback(String sessionId) {
+    public Feedback(String sessionId, String feedbackType, String comment, String screenshotFileName) {
         this.sessionId = sessionId;
-        this.timestamp = DateUtils.nowUtc();
-    }
-
-    public Feedback(String sessionId, String comment) {
-        this.sessionId = sessionId;
-        this.comment = comment;
-        this.timestamp = DateUtils.nowUtc();
-    }
-
-    public Feedback(String sessionId, String comment, String screenshotFileName) {
-        this.sessionId = sessionId;
+        this.feedbackType = feedbackType;
         this.comment = comment;
         this.screenshotFileName = screenshotFileName;
         this.timestamp = DateUtils.nowUtc();

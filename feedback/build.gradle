@@ -24,7 +24,7 @@ android {
             minifyEnabled false
         }
     }
-
+    resourcePrefix 'rverb_'
     testOptions {
         unitTests.returnDefaultValues = true
     }

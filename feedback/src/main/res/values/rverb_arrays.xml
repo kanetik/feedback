@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="rverb_feedback_types">
+        <item>General Comment</item>
+        <item>Help Needed</item>
+        <item>Bug Report</item>
+        <item>Feature Request</item>
+    </string-array>
+</resources>
