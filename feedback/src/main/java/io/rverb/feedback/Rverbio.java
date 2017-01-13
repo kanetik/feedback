@@ -26,6 +26,7 @@ import static io.rverb.feedback.utility.RverbioUtils.getSupportId;
 
 public class Rverbio {
     private static Context _appContext;
+    private static RverbioOptions _options;
 
     private static final Rverbio _instance = new Rverbio();
 
@@ -54,10 +55,32 @@ public class Rverbio {
      */
     public static void initialize(Context context) {
         _appContext = context.getApplicationContext();
+        _options = new RverbioOptions();
 
         // Send any previously queued requests
         getInstance().sendQueuedRequests();
         getInstance().initEndUser().setSessionData();
+    }
+
+    /**
+     * Initializes the Rverbio singleton, with options. The developer's interactions with
+     * rverb.io will be entirely via the singleton.
+     *
+     * Initialization must be done before the Rverbio singleton can be used.
+     *
+     * @param context Activity or Application Context
+     */
+    public static void initialize(Context context, RverbioOptions options) {
+        _appContext = context.getApplicationContext();
+        _options = options;
+
+        // Send any previously queued requests
+        getInstance().sendQueuedRequests();
+        getInstance().initEndUser().setSessionData();
+    }
+
+    public RverbioOptions getOptions() {
+        return _options;
     }
 
     /**
