@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import static android.R.attr.bitmap;
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
 public class RverbioUtils {
@@ -83,15 +84,21 @@ public class RverbioUtils {
 
             View v1 = activity.getWindow().getDecorView().getRootView();
             v1.setDrawingCacheEnabled(true);
+            v1.buildDrawingCache(true);
+
+            if (v1.getDrawingCache() == null) {
+                return null;
+            }
 
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
 
             FileOutputStream fout = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 75, fout);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 67, fout);
 
             fout.flush();
             fout.close();
+
+            v1.destroyDrawingCache();
 
             return imageFile;
         } catch (IOException e) {
