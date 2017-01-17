@@ -32,12 +32,69 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/activity_main">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Headline"
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="There be text aboard!" />
+            android:layout_alignParentTop="true"
+            app:srcCompat="@drawable/image_1"
+            android:layout_marginLeft="182dp"
+            android:layout_marginStart="182dp"
+            android:layout_marginBottom="324dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/image_2"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginRight="179dp"
+            android:layout_marginEnd="179dp"
+            android:layout_marginBottom="322dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="146dp"
+            app:srcCompat="@drawable/image_3"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="177dp"
+            android:layout_marginEnd="177dp"
+            android:layout_marginBottom="151dp"
+            android:layout_alignParentTop="true" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/image_4"
+            android:layout_alignBottom="@+id/imageView3"
+            android:layout_alignLeft="@+id/imageView"
+            android:layout_alignStart="@+id/imageView"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="146dp" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/imageView4"
+            app:srcCompat="@drawable/image_5" />
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
