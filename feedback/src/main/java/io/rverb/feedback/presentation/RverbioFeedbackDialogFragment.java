@@ -4,6 +4,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.Locale;
+import java.util.Map;
 
 import io.rverb.feedback.R;
 import io.rverb.feedback.Rverbio;
@@ -67,7 +72,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             screenshotContainer.setVisibility(View.GONE);
         }
 
-        final ImageView deleteThumbnailButton = (ImageView) view.findViewById(R.id.rverb_thumnail_delete);
+        final ImageView deleteThumbnailButton = (ImageView) view.findViewById(R.id.rverb_thumbnail_delete);
         if (deleteThumbnailButton != null) {
             deleteThumbnailButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -112,16 +117,55 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
-        final TextView showAll = (TextView) view.findViewById(R.id.detail_read_all);
-        showAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ScrollView layout = (ScrollView) view.findViewById(R.id.legal_privacy_scrollview);
-                layout.setVisibility(View.VISIBLE);
+        TextView dataPairs = (TextView) view.findViewById(R.id.system_data);
+        StringBuilder dataString = new StringBuilder();
+
+        for (Map.Entry<String, String> data : RverbioUtils.getExtraData(getContext()).entrySet()) {
+            if (dataString.length() > 0) {
+                dataString.append("\n");
             }
-        });
+
+            dataString.append(data.getKey().replace("_", " ")).append(": ").append(data.getValue());
+        }
+
+        dataPairs.setText(dataString);
+
+        final TextView showAll = (TextView) view.findViewById(R.id.additional_data_description);
+
+        final ClickableSpan span = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+                ScrollView layout = (ScrollView) view.findViewById(R.id.system_data_scrollview);
+
+                if (layout.getVisibility() == View.GONE) {
+                    layout.setVisibility(View.VISIBLE);
+                    setLinkText(showAll, this, "Hide Data");
+                } else {
+                    layout.setVisibility(View.GONE);
+                    setLinkText(showAll, this, "Show Data");
+                }
+            }
+        };
+
+        setLinkText(showAll, span, "Show Data");
+
+        showAll.setMovementMethod(LinkMovementMethod.getInstance());
 
         return view;
+    }
+
+    private void setLinkText(TextView showAll, ClickableSpan span, String linkText) {
+        String extraDataClickable = "additional data";
+        String extraDataDescription = String.format(Locale.getDefault(),
+                "In order to provide excellent customer service, some %s will be sent with this feedback.",
+                extraDataClickable);
+        SpannableString ss = new SpannableString(extraDataDescription);
+
+        int startSpan = extraDataDescription.indexOf(extraDataClickable);
+        int endSpan = startSpan + extraDataClickable.length();
+        ss.setSpan(span, startSpan, endSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        showAll.setText(ss);
     }
 
     public int getTheme() {

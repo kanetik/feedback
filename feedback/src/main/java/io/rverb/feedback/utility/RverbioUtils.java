@@ -8,19 +8,33 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 import android.view.View;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
+
+import io.rverb.feedback.model.Feedback;
 
 import static android.R.attr.bitmap;
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
 public class RverbioUtils {
+    public static final String EXTRA_DATA_APP_VERSION = "App_Version";
+    public static final String EXTRA_DATA_LOCALE = "Locale";
+    public static final String EXTRA_DATA_MAKE = "Device_Make";
+    public static final String EXTRA_DATA_MODEL = "Device_Model";
+    public static final String EXTRA_DATA_DEVICE_NAME = "Device_Name";
+    public static final String EXTRA_DATA_OS_VERSION = "OS_Version";
+    public static final String EXTRA_DATA_NETWORK_TYPE = "Network_Type";
+
     private static final String RVERBIO_PREFS = "rverbio";
     private static final String SUPPORT_ID_KEY = "support_id";
 
@@ -119,5 +133,19 @@ public class RverbioUtils {
 
         Bundle bundle = ai.metaData;
         return bundle.getString("io.rverb.apiKey");
+    }
+
+    public static Map<String, String> getExtraData(Context context) {
+        Map<String, String> data = new ArrayMap<>();
+
+        data.put(EXTRA_DATA_APP_VERSION, AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
+        data.put(EXTRA_DATA_LOCALE, Locale.getDefault().toString());
+        data.put(EXTRA_DATA_MAKE, Build.MANUFACTURER);
+        data.put(EXTRA_DATA_MODEL, Build.MODEL);
+        data.put(EXTRA_DATA_DEVICE_NAME, Build.PRODUCT);
+        data.put(EXTRA_DATA_OS_VERSION, Build.VERSION.RELEASE);
+        data.put(EXTRA_DATA_NETWORK_TYPE, RverbioUtils.getNetworkType(context));
+
+        return data;
     }
 }

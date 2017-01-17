@@ -7,7 +7,9 @@ import android.os.Build;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Map;
 
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.utility.RverbioUtils;
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.Feedback;
@@ -54,12 +56,14 @@ public class FeedbackService extends IntentService {
     }
 
     void addSystemData(Feedback feedback) {
-        feedback.appVersion = AppUtils.getVersionName(this) + " (" + AppUtils.getVersionCode(this) + ")";
-        feedback.locale = Locale.getDefault().toString();
-        feedback.make = Build.MANUFACTURER;
-        feedback.model = Build.MODEL;
-        feedback.deviceName = Build.PRODUCT;
-        feedback.osVersion = Build.VERSION.RELEASE;
-        feedback.networkType = RverbioUtils.getNetworkType(this);
+        Map<String, String> data = RverbioUtils.getExtraData(this);
+
+        feedback.appVersion = data.get(RverbioUtils.EXTRA_DATA_APP_VERSION);
+        feedback.locale = data.get(RverbioUtils.EXTRA_DATA_LOCALE);
+        feedback.make = data.get(RverbioUtils.EXTRA_DATA_MAKE);
+        feedback.model = data.get(RverbioUtils.EXTRA_DATA_MODEL);
+        feedback.deviceName = data.get(RverbioUtils.EXTRA_DATA_DEVICE_NAME);
+        feedback.osVersion = data.get(RverbioUtils.EXTRA_DATA_OS_VERSION);
+        feedback.networkType = data.get(RverbioUtils.EXTRA_DATA_NETWORK_TYPE);
     }
 }
