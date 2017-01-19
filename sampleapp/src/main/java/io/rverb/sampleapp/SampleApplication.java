@@ -9,5 +9,6 @@ public class SampleApplication extends DebugApplication {
         super.onCreate();
 
         Rverbio.initialize(this);
+        Rverbio.getInstance().addContextDataItem("Test 2", "This happened at Application#onCreate");
     }
 }
