@@ -1,11 +1,23 @@
 package io.rverb.feedback.utility;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+
+import io.rverb.feedback.R;
+import io.rverb.feedback.data.api.FeedbackService;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AppUtils {
+    public static final int FEEDBACK_SUBMITTED = 0;
+    public static final int ANONYMOUS_FEEDBACK_SUBMITTED = 1;
+
     public static String getPackageName(Context context) {
         return context.getPackageName();
     }
@@ -61,5 +73,35 @@ public class AppUtils {
 
     static boolean isDebug(Context context) {
         return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
+    }
+
+    public static void openWebPage(Context context, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
+        }
+    }
+
+    public static void notifyUser(Context context, int notificationType) {
+        int notificationId = 1;
+
+        String title = "";
+        String content = "";
+
+        if (notificationType == FEEDBACK_SUBMITTED) {
+            title = "Feedback Sent";
+            content = "Thanks! Your feedback has been sent - you should hear back soon.";
+        } else if (notificationType == ANONYMOUS_FEEDBACK_SUBMITTED) {
+            title = "Feedback Sent";
+            content = "Thanks for your feedback!";
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_rverbio_logo_no_words)
+                .setContentTitle(title)
+                .setContentText(content);
+
+        NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        notifyMgr.notify(notificationId, builder.build());
     }
 }

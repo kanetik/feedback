@@ -91,6 +91,14 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             });
         }
 
+        final TextView poweredBy = (TextView) view.findViewById(R.id.rverb_powered_by);
+        poweredBy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppUtils.openWebPage(getContext(), "https://rverb.io");
+            }
+        });
+
         final EditText feedback = (EditText) view.findViewById(R.id.rverb_problem);
 
         final Button button1 = (Button) view.findViewById(R.id.rverb_cancel);

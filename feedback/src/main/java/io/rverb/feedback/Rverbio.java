@@ -6,11 +6,14 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import io.rverb.feedback.model.Cacheable;
@@ -27,6 +30,7 @@ import static io.rverb.feedback.utility.RverbioUtils.getSupportId;
 public class Rverbio {
     private static Context _appContext;
     private static RverbioOptions _options;
+    private static Map<String, String> _contextData;
 
     private static final Rverbio _instance = new Rverbio();
 
@@ -56,6 +60,7 @@ public class Rverbio {
     public static void initialize(Context context) {
         _appContext = context.getApplicationContext();
         _options = new RverbioOptions();
+        _contextData = new HashMap<>();
 
         // Send any previously queued requests
         getInstance().sendQueuedRequests();
@@ -73,6 +78,7 @@ public class Rverbio {
     public static void initialize(Context context, RverbioOptions options) {
         _appContext = context.getApplicationContext();
         _options = options;
+        _contextData = new HashMap<>();
 
         // Send any previously queued requests
         getInstance().sendQueuedRequests();
@@ -81,6 +87,22 @@ public class Rverbio {
 
     public RverbioOptions getOptions() {
         return _options;
+    }
+
+    public void addContextDataItem(String key, String value) {
+        _contextData.put(key, value);
+    }
+
+    public void addContextDataItems(Map<String, String> items) {
+        _contextData.putAll(items);
+    }
+
+    public void clearContextData() {
+        _contextData.clear();
+    }
+
+    public Map<String, String> getContextData() {
+        return _contextData;
     }
 
     /**

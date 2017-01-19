@@ -40,8 +40,7 @@ public class FeedbackService extends IntentService {
 
     void postFeedback(Feedback feedback, String tempFileName, String screenshotFileName) {
         addSystemData(feedback);
-
-        // TODO: Allow dev to add to a collection that will persist throughout the session and submit with the feedback
+        addContextData(feedback);
 
         Cacheable response = ApiManager.postWithResponse(this, tempFileName, feedback);
         if (response != null && response instanceof Feedback && !RverbioUtils.isNullOrWhiteSpace(screenshotFileName)) {
@@ -51,8 +50,14 @@ public class FeedbackService extends IntentService {
                 if (screenshot.exists()) {
                     ApiManager.putFile(screenshot, feedbackResponse.uploadUrl);
                 }
+
+                AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
             }
         }
+    }
+
+    private void addContextData(Feedback feedback) {
+        feedback.contextData = Rverbio.getInstance().getContextData();
     }
 
     void addSystemData(Feedback feedback) {
