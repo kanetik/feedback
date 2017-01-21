@@ -3,9 +3,13 @@ package io.rverb.feedback.presentation;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
@@ -15,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -99,27 +104,54 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
-        final EditText feedback = (EditText) view.findViewById(R.id.rverb_problem);
+        final TextInputLayout rverbFeedbackLayout = (TextInputLayout) view.findViewById(R.id.rverb_problem_layout);
+        final EditText rverbFeedback = (EditText) view.findViewById(R.id.rverb_problem);
 
-        final Button button1 = (Button) view.findViewById(R.id.rverb_cancel);
-        button1.setOnClickListener(new View.OnClickListener() {
+        rverbFeedback.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                _screenshot = null;
-                getDialog().dismiss();
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateTextEntry(rverbFeedbackLayout);
             }
         });
 
-        final Button button2 = (Button) view.findViewById(R.id.rverb_submit);
-        button2.setOnClickListener(new View.OnClickListener() {
+        rverbFeedback.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    validateTextEntry(rverbFeedbackLayout);
+                }
+            }
+        });
+
+        final Button submitButton = (Button) view.findViewById(R.id.rverb_submit);
+        submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (_suppressScreenshot) {
+                if (validateTextEntry(rverbFeedbackLayout)) {
+                    if (_suppressScreenshot) {
+                        _screenshot = null;
+                    }
+
+                    Rverbio.getInstance().sendFeedback("", rverbFeedback.getText().toString(), _screenshot);
+
                     _screenshot = null;
+                    getDialog().dismiss();
                 }
+            }
+        });
 
-                Rverbio.getInstance().sendFeedback("", feedback.getText().toString(), _screenshot);
-
+        final Button cancelButton = (Button) view.findViewById(R.id.rverb_cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 _screenshot = null;
                 getDialog().dismiss();
             }
@@ -160,6 +192,20 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
         showAll.setMovementMethod(LinkMovementMethod.getInstance());
 
         return view;
+    }
+
+    private boolean validateTextEntry(TextInputLayout fieldContainer) {
+        EditText field = fieldContainer.getEditText();
+
+        if (field == null) return true;
+
+        if (!TextUtils.isEmpty(field.getText())) {
+            fieldContainer.setError(null);
+            return true;
+        } else {
+            fieldContainer.setError(getString(R.string.rverb_feedback_empty_validation_error));
+            return false;
+        }
     }
 
     private void setLinkText(TextView showAll, ClickableSpan span, String linkText) {
