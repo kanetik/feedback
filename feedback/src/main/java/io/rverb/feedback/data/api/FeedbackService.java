@@ -43,19 +43,20 @@ public class FeedbackService extends IntentService {
         addContextData(feedback);
 
         Cacheable response = ApiManager.postWithResponse(this, tempFileName, feedback);
-        if (response != null && response instanceof Feedback && !RverbioUtils.isNullOrWhiteSpace(screenshotFileName)) {
-            Feedback feedbackResponse = (Feedback)response;
-            if (!RverbioUtils.isNullOrWhiteSpace(feedbackResponse.uploadUrl)) {
+        if (response != null && response instanceof Feedback) {
+            Feedback feedbackResponse = (Feedback) response;
+
+            if (!RverbioUtils.isNullOrWhiteSpace(screenshotFileName) && !RverbioUtils.isNullOrWhiteSpace(feedbackResponse.uploadUrl)) {
                 final File screenshot = new File(screenshotFileName);
                 if (screenshot.exists()) {
                     ApiManager.putFile(screenshot, feedbackResponse.uploadUrl);
                 }
+            }
 
-                if (RverbioUtils.emailAddressKnown()) {
-                    AppUtils.notifyUser(this, AppUtils.FEEDBACK_SUBMITTED);
-                } else {
-                    AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
-                }
+            if (RverbioUtils.emailAddressKnown()) {
+                AppUtils.notifyUser(this, AppUtils.FEEDBACK_SUBMITTED);
+            } else {
+                AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
             }
         }
     }
