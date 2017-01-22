@@ -12,7 +12,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import io.rverb.feedback.Rverbio;
+import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Feedback;
 
 import static android.R.attr.bitmap;
@@ -52,6 +56,19 @@ public class RverbioUtils {
         }
 
         return false;
+    }
+
+    public static boolean emailAddressKnown() {
+        try {
+            EndUser user = Rverbio.getInstance().getEndUser();
+            if (user == null) {
+                return false;
+            }
+
+            return !TextUtils.isEmpty(user.emailAddress);
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     public static boolean isNullOrWhiteSpace(String string) {

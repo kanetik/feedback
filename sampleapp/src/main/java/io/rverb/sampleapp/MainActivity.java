@@ -9,7 +9,6 @@ import android.view.View;
 import io.rverb.feedback.Rverbio;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

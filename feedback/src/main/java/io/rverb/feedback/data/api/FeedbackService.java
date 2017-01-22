@@ -51,7 +51,11 @@ public class FeedbackService extends IntentService {
                     ApiManager.putFile(screenshot, feedbackResponse.uploadUrl);
                 }
 
-                AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
+                if (RverbioUtils.emailAddressKnown()) {
+                    AppUtils.notifyUser(this, AppUtils.FEEDBACK_SUBMITTED);
+                } else {
+                    AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
+                }
             }
         }
     }
