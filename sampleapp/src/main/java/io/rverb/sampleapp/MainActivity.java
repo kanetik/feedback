@@ -17,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Rverbio.getInstance().updateUserInfo("jkane001+3@gmail.com", "Jeremy 3 Kane");
         Rverbio.getInstance().addContextDataItem("Item 1", "This happened at MainActivity#onCreate");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

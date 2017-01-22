@@ -110,12 +110,23 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
+        String userEmail = Rverbio.getInstance().getEndUser().emailAddress;
+        if (!TextUtils.isEmpty(userEmail)) {
+            _rverbEmail.setText(userEmail);
+            _rverbEmailLayout.setVisibility(View.GONE);
+        }
+
         _rverbSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (validateForm()) {
                     if (_suppressScreenshot) {
                         _screenshot = null;
+                    }
+
+                    if (!TextUtils.isEmpty(_rverbEmail.getText())
+                            && TextUtils.isEmpty(Rverbio.getInstance().getEndUser().emailAddress)) {
+                        Rverbio.getInstance().updateUserEmail(_rverbEmail.getText().toString());
                     }
 
                     Rverbio.getInstance().sendFeedback("", _rverbFeedback.getText().toString(), _screenshot);

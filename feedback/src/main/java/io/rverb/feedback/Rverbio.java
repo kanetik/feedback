@@ -29,8 +29,10 @@ import static io.rverb.feedback.utility.RverbioUtils.getSupportId;
 
 public class Rverbio {
     private static Context _appContext;
-    private static RverbioOptions _options;
     private static Map<String, String> _contextData;
+
+    private static RverbioOptions _options;
+    private static EndUser _endUser;
 
     private static final Rverbio _instance = new Rverbio();
 
@@ -138,11 +140,10 @@ public class Rverbio {
      * @see Rverbio#updateUserIdentifier(String)
      */
     public void updateUserInfo(String emailAddress, String userIdentifier) {
-        EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
-        endUser.setEmailAddress(emailAddress);
-        endUser.setUserIdentifier(userIdentifier);
+        _endUser.setEmailAddress(emailAddress);
+        _endUser.setUserIdentifier(userIdentifier);
 
-        recordData(endUser);
+        recordData(_endUser);
     }
 
     /**
@@ -154,10 +155,8 @@ public class Rverbio {
      * @see Rverbio#updateUserIdentifier(String)
      */
     public void updateUserEmail(String emailAddress) {
-        EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
-        endUser.setEmailAddress(emailAddress);
-
-        recordData(endUser);
+        _endUser.setEmailAddress(emailAddress);
+        recordData(_endUser);
     }
 
     /**
@@ -171,10 +170,8 @@ public class Rverbio {
      * @see Rverbio#updateUserEmail(String)
      */
     public void updateUserIdentifier(String userIdentifier) {
-        EndUser endUser = new EndUser(RverbioUtils.getSupportId(_appContext));
-        endUser.setUserIdentifier(userIdentifier);
-
-        recordData(endUser);
+        _endUser.setUserIdentifier(userIdentifier);
+        recordData(_endUser);
     }
 
     /**
@@ -219,11 +216,18 @@ public class Rverbio {
     }
 
     private Rverbio initEndUser() {
-        if (RverbioUtils.initializeSupportId(_appContext)) {
-            recordData(new EndUser(getSupportId(_appContext)));
+        boolean newUser = RverbioUtils.initializeSupportId(_appContext);
+        _endUser = new EndUser(getSupportId(_appContext));
+
+        if (newUser) {
+            recordData(_endUser);
         }
 
         return this;
+    }
+
+    public EndUser getEndUser() {
+        return _endUser;
     }
 
     private Rverbio setSessionData() {
