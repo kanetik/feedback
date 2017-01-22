@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -38,13 +37,23 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
     private static File _screenshot;
     private boolean _suppressScreenshot = false;
 
-    public static RverbioFeedbackDialogFragment create(int contentView) {
-        Bundle b = new Bundle();
-        b.putInt(PARAM_CONTENT_VIEW, contentView);
+    private TextView _rverbPoweredBy;
+    private EditText _rverbFeedback;
+    private TextInputLayout _rverbFeedbackLayout;
+    private EditText _rverbEmail;
+    private TextInputLayout _rverbEmailLayout;
+    private Button _rverbSubmit;
+    private Button _rverbCancel;
+    private TextView _rverbSystemData;
+    private ScrollView _rverbSystemDataScrollview;
+    private ImageView _rverbThumbnail;
+    private TextView _rverbAdditionalDataDescription;
+    private ImageView _rverbThumbnailDelete;
+    private FrameLayout _rverbScreenshotContainer;
 
+    public static RverbioFeedbackDialogFragment create() {
         RverbioFeedbackDialogFragment fragment = new RverbioFeedbackDialogFragment();
         fragment.setCancelable(false);
-        fragment.setArguments(b);
 
         return fragment;
     }
@@ -52,10 +61,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Bundle args = getArguments();
-
-        int contentView = args.getInt(PARAM_CONTENT_VIEW);
-        final View view = inflater.inflate(contentView, container, false);
+        final View view = inflater.inflate(R.layout.rverb_fragment_dialog, container, false);
 
         String appLabel = AppUtils.getAppLabel(getContext());
         if (RverbioUtils.isNullOrWhiteSpace(appLabel)) {
@@ -64,50 +70,17 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
 
         getDialog().setTitle(String.format(getString(R.string.rverb_feedback_title_format), appLabel));
 
-        if (_screenshot == null && !_suppressScreenshot && Rverbio.getInstance().getOptions().isAttachScreenshotEnabled()) {
-            _screenshot = Rverbio.getInstance().getScreenshot(getActivity());
-        }
+        setupUiElements(view);
+        setupScreenshotUI();
 
-        final FrameLayout screenshotContainer = (FrameLayout) view.findViewById(R.id.rverb_screenshot_container);
-        final ImageView thumbnail = (ImageView) view.findViewById(R.id.rverb_thumbnail);
-
-        if (_screenshot != null) {
-            thumbnail.setImageDrawable(Drawable.createFromPath(_screenshot.getAbsolutePath()));
-        } else if (screenshotContainer != null) {
-            screenshotContainer.setVisibility(View.GONE);
-        }
-
-        final ImageView deleteThumbnailButton = (ImageView) view.findViewById(R.id.rverb_thumbnail_delete);
-        if (deleteThumbnailButton != null) {
-            deleteThumbnailButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    _suppressScreenshot = true;
-
-                    if (screenshotContainer != null) {
-                        screenshotContainer.setVisibility(View.GONE);
-                    }
-
-                    if (_screenshot != null) {
-                        _screenshot.delete();
-                        _screenshot = null;
-                    }
-                }
-            });
-        }
-
-        final TextView poweredBy = (TextView) view.findViewById(R.id.rverb_powered_by);
-        poweredBy.setOnClickListener(new View.OnClickListener() {
+        _rverbPoweredBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AppUtils.openWebPage(getContext(), "https://rverb.io");
             }
         });
 
-        final TextInputLayout rverbFeedbackLayout = (TextInputLayout) view.findViewById(R.id.rverb_problem_layout);
-        final EditText rverbFeedback = (EditText) view.findViewById(R.id.rverb_problem);
-
-        rverbFeedback.addTextChangedListener(new TextWatcher() {
+        _rverbFeedback.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -118,29 +91,34 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                validateTextEntry(rverbFeedbackLayout);
+                resetValidationMessage(_rverbFeedbackLayout);
             }
         });
 
-        rverbFeedback.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        _rverbEmail.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    validateTextEntry(rverbFeedbackLayout);
-                }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                resetValidationMessage(_rverbEmailLayout);
             }
         });
 
-        final Button submitButton = (Button) view.findViewById(R.id.rverb_submit);
-        submitButton.setOnClickListener(new View.OnClickListener() {
+        _rverbSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (validateTextEntry(rverbFeedbackLayout)) {
+                if (validateForm()) {
                     if (_suppressScreenshot) {
                         _screenshot = null;
                     }
 
-                    Rverbio.getInstance().sendFeedback("", rverbFeedback.getText().toString(), _screenshot);
+                    Rverbio.getInstance().sendFeedback("", _rverbFeedback.getText().toString(), _screenshot);
 
                     _screenshot = null;
                     getDialog().dismiss();
@@ -148,8 +126,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
-        final Button cancelButton = (Button) view.findViewById(R.id.rverb_cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        _rverbCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 _screenshot = null;
@@ -157,7 +134,6 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
-        TextView dataPairs = (TextView) view.findViewById(R.id.system_data);
         StringBuilder dataString = new StringBuilder();
 
         for (Map.Entry<String, String> data : RverbioUtils.getExtraData(getContext()).entrySet()) {
@@ -168,33 +144,80 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             dataString.append(data.getKey().replace("_", " ")).append(": ").append(data.getValue());
         }
 
-        dataPairs.setText(dataString);
-
-        final TextView showAll = (TextView) view.findViewById(R.id.additional_data_description);
+        _rverbSystemData.setText(dataString);
 
         final ClickableSpan span = new ClickableSpan() {
             @Override
             public void onClick(View textView) {
-                ScrollView layout = (ScrollView) view.findViewById(R.id.system_data_scrollview);
-
-                if (layout.getVisibility() == View.GONE) {
-                    layout.setVisibility(View.VISIBLE);
-                    setLinkText(showAll, this, "Hide Data");
+                if (_rverbSystemDataScrollview.getVisibility() == View.GONE) {
+                    _rverbSystemDataScrollview.setVisibility(View.VISIBLE);
+                    setLinkText(_rverbAdditionalDataDescription, this, "Hide Data");
                 } else {
-                    layout.setVisibility(View.GONE);
-                    setLinkText(showAll, this, "Show Data");
+                    _rverbSystemDataScrollview.setVisibility(View.GONE);
+                    setLinkText(_rverbAdditionalDataDescription, this, "Show Data");
                 }
             }
         };
 
-        setLinkText(showAll, span, "Show Data");
+        setLinkText(_rverbAdditionalDataDescription, span, "Show Data");
 
-        showAll.setMovementMethod(LinkMovementMethod.getInstance());
+        _rverbAdditionalDataDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
         return view;
     }
 
-    private boolean validateTextEntry(TextInputLayout fieldContainer) {
+    private void setupUiElements(View view) {
+        _rverbPoweredBy = (TextView) view.findViewById(R.id.rverb_powered_by);
+        _rverbFeedback = (EditText) view.findViewById(R.id.rverb_feedback);
+        _rverbFeedbackLayout = (TextInputLayout) view.findViewById(R.id.rverb_feedback_layout);
+        _rverbEmail = (EditText) view.findViewById(R.id.rverb_email);
+        _rverbEmailLayout = (TextInputLayout) view.findViewById(R.id.rverb_email_layout);
+        _rverbSubmit = (Button) view.findViewById(R.id.rverb_submit);
+        _rverbCancel = (Button) view.findViewById(R.id.rverb_cancel);
+        _rverbSystemData = (TextView) view.findViewById(R.id.rverb_system_data);
+        _rverbSystemDataScrollview = (ScrollView) view.findViewById(R.id.rverb_system_data_scrollview);
+        _rverbThumbnail = (ImageView) view.findViewById(R.id.rverb_thumbnail);
+        _rverbAdditionalDataDescription = (TextView) view.findViewById(R.id.rverb_additional_data_description);
+        _rverbThumbnailDelete = (ImageView) view.findViewById(R.id.rverb_thumbnail_delete);
+        _rverbScreenshotContainer = (FrameLayout) view.findViewById(R.id.rverb_screenshot_container);
+    }
+
+    private void setupScreenshotUI() {
+        if (_screenshot == null && !_suppressScreenshot && Rverbio.getInstance().getOptions().isAttachScreenshotEnabled()) {
+            _screenshot = Rverbio.getInstance().getScreenshot(getActivity());
+        }
+
+        if (_screenshot != null) {
+            _rverbThumbnail.setImageDrawable(Drawable.createFromPath(_screenshot.getAbsolutePath()));
+        } else if (_rverbScreenshotContainer != null) {
+            _rverbScreenshotContainer.setVisibility(View.GONE);
+        }
+
+        if (_rverbThumbnailDelete != null) {
+            _rverbThumbnailDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    _suppressScreenshot = true;
+
+                    _rverbScreenshotContainer.setVisibility(View.GONE);
+
+                    if (_screenshot != null) {
+                        _screenshot.delete();
+                        _screenshot = null;
+                    }
+                }
+            });
+        }
+    }
+
+    private boolean validateForm() {
+        boolean feedbackValid = validateTextEntry(_rverbFeedbackLayout, getString(R.string.rverb_feedback_empty_validation_error));
+        boolean emailValid = validateTextEntry(_rverbEmailLayout, getString(R.string.rverb_email_empty_validation_error));
+
+        return feedbackValid && emailValid;
+    }
+
+    private boolean validateTextEntry(TextInputLayout fieldContainer, String errorMessage) {
         EditText field = fieldContainer.getEditText();
 
         if (field == null) return true;
@@ -203,15 +226,23 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             fieldContainer.setError(null);
             return true;
         } else {
-            fieldContainer.setError(getString(R.string.rverb_feedback_empty_validation_error));
+            fieldContainer.setError(errorMessage);
             return false;
         }
     }
 
+    private void resetValidationMessage(TextInputLayout fieldContainer) {
+        EditText field = fieldContainer.getEditText();
+
+        if (field == null) return;
+
+        fieldContainer.setError(null);
+    }
+
     private void setLinkText(TextView showAll, ClickableSpan span, String linkText) {
-        String extraDataClickable = "additional data";
+        String extraDataClickable = getString(R.string.rverb_extra_data_description_clickable);
         String extraDataDescription = String.format(Locale.getDefault(),
-                "In order to provide excellent customer service, some %s will be sent with this feedback.",
+                getString(R.string.rverb_extra_data_description),
                 extraDataClickable);
         SpannableString ss = new SpannableString(extraDataDescription);
 

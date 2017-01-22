@@ -191,7 +191,7 @@ public class Rverbio {
             manager.beginTransaction().remove(frag).commit();
         }
 
-        final RverbioFeedbackDialogFragment fragment = RverbioFeedbackDialogFragment.create(R.layout.rverb_fragment_dialog);
+        final RverbioFeedbackDialogFragment fragment = RverbioFeedbackDialogFragment.create();
         fragment.show(manager, "fragment_edit_name");
     }
 

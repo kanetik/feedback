@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="rverb_feedback_empty_validation_error">Please let us know how we can help</string>
+    <string name="rverb_email_empty_validation_error">We need your email so we can respond</string>
+    <string name="rverb_extra_data_description_clickable">additional data</string>
+    <string name="rverb_extra_data_description">In order to provide excellent customer service, a screenshot &amp; some %s will be sent with this feedback.</string>
+    <string name="rverb_powered_by">Powered by Rverb.io</string>
+    <string name="rverb_feedback_hint">How can we help you?</string>
+    <string name="rverb_email_address_hint">Email Address</string>
+    <string name="rverb_remove_screenshot">Remove screenshot</string>
+    <string name="rverb_screenshot">Screenshot</string>
 </resources>
