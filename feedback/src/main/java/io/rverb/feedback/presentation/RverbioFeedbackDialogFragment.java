@@ -1,5 +1,6 @@
 package io.rverb.feedback.presentation;
 
+import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +29,7 @@ import java.util.Map;
 
 import io.rverb.feedback.R;
 import io.rverb.feedback.Rverbio;
+import io.rverb.feedback.model.Event;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
@@ -56,6 +58,12 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
         fragment.setCancelable(false);
 
         return fragment;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Rverbio.getInstance().sendEvent(Event.EVENT_TYPE_FEEDBACK_START);
+        return super.onCreateDialog(savedInstanceState);
     }
 
     @Nullable
@@ -139,6 +147,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
         _rverbCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Rverbio.getInstance().sendEvent(Event.EVENT_TYPE_FEEDBACK_CANCEL);
                 _screenshot = null;
                 getDialog().dismiss();
             }

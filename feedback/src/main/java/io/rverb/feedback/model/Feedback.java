@@ -14,17 +14,17 @@ public class Feedback implements Cacheable {
     private String screenshotFileName;
 
     public String sessionId;
-    public String appVersion;
     public String timestamp;
     public String feedbackType;
+    public Map<String, String> contextData;
     public String comment;
+    public String appVersion;
     public String locale;
     public String deviceName;
     public String make;
     public String model;
     public String osVersion;
     public String networkType;
-    public Map<String, String> contextData;
     public String uploadUrl;
 
     public Feedback(String sessionId, String feedbackType, String comment, String screenshotFileName) {

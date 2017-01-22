@@ -27,11 +27,11 @@ public class FeedbackService extends IntentService {
         String screenshotFileName = intent.getStringExtra("screenshot_file_name");
 
         if (feedbackObject == null) {
-            throw new NullPointerException("Intent feedback object is null");
+            throw new NullPointerException("Intent's data object is null");
         }
 
         if (!(feedbackObject instanceof Feedback)) {
-            throw new ClassCastException("Intent feedback object is not the expected type (Feedback)");
+            throw new ClassCastException("Intent's data object is not the expected type (Feedback)");
         }
 
         Feedback feedback = (Feedback) feedbackObject;

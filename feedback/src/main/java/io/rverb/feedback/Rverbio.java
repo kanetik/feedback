@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.EndUser;
+import io.rverb.feedback.model.Event;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
@@ -213,6 +214,16 @@ public class Rverbio {
         }
 
         return null;
+    }
+
+    /**
+     * Logs events related to feedback, such as feedback request started, session started, etc.
+     *
+     * @param event The event to track.
+     */
+    public void sendEvent(String event) {
+        Event eventData = new Event(RverbioUtils.getSupportId(_appContext), event);
+        recordData(eventData);
     }
 
     private Rverbio initEndUser() {

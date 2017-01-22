@@ -11,7 +11,6 @@ import okio.Okio;
 import okio.Source;
 
 public class FileRequestBody extends RequestBody {
-
     private static final int SEGMENT_SIZE = 2048; // okio.Segment.SIZE
 
     private final File file;

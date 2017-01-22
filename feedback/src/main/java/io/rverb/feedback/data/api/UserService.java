@@ -22,11 +22,11 @@ public class UserService extends IntentService {
         String tempFileName = intent.getStringExtra("temp_file_name");
 
         if (userObject == null) {
-            throw new NullPointerException("Intent EndUser object is null");
+            throw new NullPointerException("Intent's data object is null");
         }
 
         if (!(userObject instanceof EndUser)) {
-            throw new ClassCastException("Intent user object is not the expected type (EndUser)");
+            throw new ClassCastException("Intent's data object is not the expected type (EndUser)");
         }
 
         EndUser endUser = (EndUser) userObject;

@@ -18,11 +18,11 @@ public class SessionService extends IntentService {
         String tempFileName = intent.getStringExtra("temp_file_name");
 
         if (sessionObject == null) {
-            throw new NullPointerException("Intent session object is null");
+            throw new NullPointerException("Intent's data object is null");
         }
 
         if (!(sessionObject instanceof Session)) {
-            throw new ClassCastException("Intent session object is not the expected type (Session)");
+            throw new ClassCastException("Intent's data object is not the expected type (Session)");
         }
 
         Session session = (Session) sessionObject;
