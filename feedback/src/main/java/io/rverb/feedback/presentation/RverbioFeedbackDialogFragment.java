@@ -118,8 +118,8 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
-        if (RverbioUtils.emailAddressKnown()) {
-            _rverbEmail.setText(Rverbio.getInstance().getEndUser().emailAddress);
+        if (RverbioUtils.emailAddressKnown(getContext())) {
+            _rverbEmail.setText(RverbioUtils.retrieveEndUserEmailAddress(getContext()));
             _rverbEmailLayout.setVisibility(View.GONE);
         }
 
@@ -132,7 +132,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
                     }
 
                     if (!TextUtils.isEmpty(_rverbEmail.getText())
-                            && TextUtils.isEmpty(Rverbio.getInstance().getEndUser().emailAddress)) {
+                            && TextUtils.isEmpty(RverbioUtils.retrieveEndUserEmailAddress(getContext()))) {
                         Rverbio.getInstance().updateUserEmail(_rverbEmail.getText().toString());
                     }
 
@@ -203,7 +203,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
 
     private void setupScreenshotUI() {
         if (_screenshot == null && !_suppressScreenshot && Rverbio.getInstance().getOptions().isAttachScreenshotEnabled()) {
-            _screenshot = Rverbio.getInstance().getScreenshot(getActivity());
+            _screenshot = Rverbio.getInstance().takeScreenshot(getActivity());
         }
 
         if (_screenshot != null) {

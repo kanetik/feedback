@@ -8,9 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.FileRequestBody;
 import io.rverb.feedback.model.Patch;
+import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
@@ -27,6 +29,7 @@ class ApiManager {
 
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
 
+    //, Class<? extends Cacheable> responseType
     static void post(final Context context, final String tempFileName, final Cacheable data) {
         OkHttpClient client = ApiUtils.getOkHttpClient();
 

@@ -41,6 +41,8 @@ public class RverbioUtils {
 
     private static final String RVERBIO_PREFS = "rverbio";
     private static final String SUPPORT_ID_KEY = "support_id";
+    private static final String EMAIL_ADDRESS_KEY = "email_address";
+    private static final String APPLICATION_ID_KEY = "application_id";
 
     private static String _newSupportId;
 
@@ -58,14 +60,29 @@ public class RverbioUtils {
         return false;
     }
 
-    public static boolean emailAddressKnown() {
-        try {
-            EndUser user = Rverbio.getInstance().getEndUser();
-            if (user == null) {
-                return false;
-            }
+    public static void saveEndUserEmailAddress(Context context, String emailAddress) {
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putString(EMAIL_ADDRESS_KEY, emailAddress).apply();
+    }
 
-            return !TextUtils.isEmpty(user.emailAddress);
+    public static String retrieveEndUserEmailAddress(Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        return prefs.getString(EMAIL_ADDRESS_KEY, "");
+    }
+
+    public static void saveApplicationId(Context context, String applicationId) {
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putString(APPLICATION_ID_KEY, applicationId).apply();
+    }
+
+    public static String retrieveApplicationId(Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        return prefs.getString(APPLICATION_ID_KEY, "");
+    }
+
+    public static boolean emailAddressKnown(Context context) {
+        try {
+            return !TextUtils.isEmpty(retrieveEndUserEmailAddress(context));
         } catch (Exception ex) {
             return false;
         }

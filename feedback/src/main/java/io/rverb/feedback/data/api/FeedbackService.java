@@ -53,7 +53,7 @@ public class FeedbackService extends IntentService {
                 }
             }
 
-            if (RverbioUtils.emailAddressKnown()) {
+            if (RverbioUtils.emailAddressKnown(this)) {
                 AppUtils.notifyUser(this, AppUtils.FEEDBACK_SUBMITTED);
             } else {
                 AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);

@@ -31,8 +31,8 @@ import static io.rverb.feedback.utility.RverbioUtils.getSupportId;
 public class Rverbio {
     private static Context _appContext;
     private static Map<String, String> _contextData;
-
     private static RverbioOptions _options;
+
     private static EndUser _endUser;
 
     private static final Rverbio _instance = new Rverbio();
@@ -121,8 +121,8 @@ public class Rverbio {
             screenshotFileName = screenshot.getAbsolutePath();
         }
 
-        Feedback feedbackData = new Feedback(RverbioUtils.getSupportId(_appContext), feedbackType,
-                feedbackText, screenshotFileName);
+        Feedback feedbackData = new Feedback(RverbioUtils.retrieveApplicationId(_appContext),
+                RverbioUtils.getSupportId(_appContext), feedbackType, feedbackText, screenshotFileName);
 
         recordData(feedbackData);
     }
@@ -140,8 +140,8 @@ public class Rverbio {
      * @see Rverbio#updateUserEmail(String)
      * @see Rverbio#updateUserIdentifier(String)
      */
-    public void updateUserInfo(String emailAddress, String userIdentifier) {
-        _endUser.setEmailAddress(emailAddress);
+    public void updateUserInfo(Context context, String emailAddress, String userIdentifier) {
+        _endUser.setEmailAddress(context, emailAddress);
         _endUser.setUserIdentifier(userIdentifier);
 
         recordData(_endUser);
@@ -152,11 +152,11 @@ public class Rverbio {
      *
      * @param emailAddress The end-user's contact email address.
      *
-     * @see Rverbio#updateUserInfo(String, String)
+     * @see Rverbio#updateUserInfo(Context, String, String)
      * @see Rverbio#updateUserIdentifier(String)
      */
     public void updateUserEmail(String emailAddress) {
-        _endUser.setEmailAddress(emailAddress);
+        _endUser.setEmailAddress(_appContext, emailAddress);
         recordData(_endUser);
     }
 
@@ -167,7 +167,7 @@ public class Rverbio {
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
      *
-     * @see Rverbio#updateUserInfo(String, String)
+     * @see Rverbio#updateUserInfo(Context, String, String)
      * @see Rverbio#updateUserEmail(String)
      */
     public void updateUserIdentifier(String userIdentifier) {
@@ -199,7 +199,7 @@ public class Rverbio {
      *
      * @param activity The activity from which you wish to take a screenshot.
      */
-    public File getScreenshot(@NonNull Activity activity) {
+    public File takeScreenshot(@NonNull Activity activity) {
         File screenshot = RverbioUtils.createScreenshotFile(activity);
         if (screenshot != null) {
             LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
@@ -228,17 +228,13 @@ public class Rverbio {
 
     private Rverbio initEndUser() {
         boolean newUser = RverbioUtils.initializeSupportId(_appContext);
-        _endUser = new EndUser(getSupportId(_appContext));
+        _endUser = new EndUser(_appContext, getSupportId(_appContext));
 
         if (newUser) {
             recordData(_endUser);
         }
 
         return this;
-    }
-
-    public EndUser getEndUser() {
-        return _endUser;
     }
 
     private Rverbio setSessionData() {

@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import java.io.Serializable;
 
 import io.rverb.feedback.model.Event;
-import io.rverb.feedback.model.Session;
 
 public class EventService extends IntentService {
     public EventService() {
