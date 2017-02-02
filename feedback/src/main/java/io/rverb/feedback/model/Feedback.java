@@ -13,6 +13,7 @@ public class Feedback implements Cacheable {
 
     private String screenshotFileName;
 
+    public String applicationId;
     public String sessionId;
     public String timestamp;
     public String feedbackType;
@@ -27,7 +28,8 @@ public class Feedback implements Cacheable {
     public String networkType;
     public String uploadUrl;
 
-    public Feedback(String sessionId, String feedbackType, String comment, String screenshotFileName) {
+    public Feedback(String applicationId, String sessionId, String feedbackType, String comment, String screenshotFileName) {
+        this.applicationId = applicationId;
         this.sessionId = sessionId;
         this.feedbackType = feedbackType;
         this.comment = comment;

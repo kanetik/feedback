@@ -5,7 +5,9 @@ import android.content.Intent;
 
 import java.io.Serializable;
 
+import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.Session;
+import io.rverb.feedback.utility.RverbioUtils;
 
 public class SessionService extends IntentService {
     public SessionService() {
@@ -26,6 +28,11 @@ public class SessionService extends IntentService {
         }
 
         Session session = (Session) sessionObject;
-        ApiManager.post(this, tempFileName, session);
+
+        Cacheable response = ApiManager.postWithResponse(this, tempFileName, session);
+        if (response != null && response instanceof Session) {
+            Session responseSession = (Session) response;
+            RverbioUtils.saveApplicationId(this, responseSession.applicationId);
+        }
     }
 }
