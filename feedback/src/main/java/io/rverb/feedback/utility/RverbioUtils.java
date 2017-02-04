@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,17 +22,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import io.rverb.feedback.Rverbio;
-import io.rverb.feedback.model.EndUser;
-import io.rverb.feedback.model.Feedback;
-
-import static android.R.attr.bitmap;
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
 public class RverbioUtils {
     public static final String EXTRA_DATA_APP_VERSION = "App_Version";
     public static final String EXTRA_DATA_LOCALE = "Locale";
-    public static final String EXTRA_DATA_MAKE = "Device_Make";
+    public static final String EXTRA_DATA_MANUFACTURER = "Device_Manufacturer";
     public static final String EXTRA_DATA_MODEL = "Device_Model";
     public static final String EXTRA_DATA_DEVICE_NAME = "Device_Name";
     public static final String EXTRA_DATA_OS_VERSION = "OS_Version";
@@ -141,7 +135,7 @@ public class RverbioUtils {
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
 
             FileOutputStream fout = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 67, fout);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, fout);
 
             fout.flush();
             fout.close();
@@ -174,7 +168,7 @@ public class RverbioUtils {
 
         data.put(EXTRA_DATA_APP_VERSION, AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
         data.put(EXTRA_DATA_LOCALE, Locale.getDefault().toString());
-        data.put(EXTRA_DATA_MAKE, Build.MANUFACTURER);
+        data.put(EXTRA_DATA_MANUFACTURER, Build.MANUFACTURER);
         data.put(EXTRA_DATA_MODEL, Build.MODEL);
         data.put(EXTRA_DATA_DEVICE_NAME, Build.PRODUCT);
         data.put(EXTRA_DATA_OS_VERSION, Build.VERSION.RELEASE);

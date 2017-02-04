@@ -2,11 +2,9 @@ package io.rverb.feedback.data.api;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Build;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Locale;
 import java.util.Map;
 
 import io.rverb.feedback.Rverbio;
@@ -70,8 +68,8 @@ public class FeedbackService extends IntentService {
 
         feedback.appVersion = data.get(RverbioUtils.EXTRA_DATA_APP_VERSION);
         feedback.locale = data.get(RverbioUtils.EXTRA_DATA_LOCALE);
-        feedback.make = data.get(RverbioUtils.EXTRA_DATA_MAKE);
-        feedback.model = data.get(RverbioUtils.EXTRA_DATA_MODEL);
+        feedback.deviceManufacturer = data.get(RverbioUtils.EXTRA_DATA_MANUFACTURER);
+        feedback.deviceModel = data.get(RverbioUtils.EXTRA_DATA_MODEL);
         feedback.deviceName = data.get(RverbioUtils.EXTRA_DATA_DEVICE_NAME);
         feedback.osVersion = data.get(RverbioUtils.EXTRA_DATA_OS_VERSION);
         feedback.networkType = data.get(RverbioUtils.EXTRA_DATA_NETWORK_TYPE);

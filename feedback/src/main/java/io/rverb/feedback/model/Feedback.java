@@ -22,8 +22,8 @@ public class Feedback implements Cacheable {
     public String appVersion;
     public String locale;
     public String deviceName;
-    public String make;
-    public String model;
+    public String deviceManufacturer;
+    public String deviceModel;
     public String osVersion;
     public String networkType;
     public String uploadUrl;
