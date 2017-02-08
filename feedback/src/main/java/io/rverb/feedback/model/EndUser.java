@@ -9,12 +9,12 @@ import io.rverb.feedback.utility.RverbioUtils;
 public class EndUser implements Cacheable {
     private static final long serialVersionUID = 354L;
 
-    public String supportId;
+    public String endUserId;
     public String emailAddress;
     public String userIdentifier;
 
-    public EndUser(Context context, String supportId) {
-        this.supportId = supportId;
+    public EndUser(Context context, String endUserId) {
+        this.endUserId = endUserId;
         this.emailAddress = "";
         this.userIdentifier = "";
 
@@ -33,7 +33,7 @@ public class EndUser implements Cacheable {
 
     @Override
     public String toString() {
-        return "supportId: " + supportId + " | emailAddress: " + emailAddress
+        return "endUserId: " + endUserId + " | emailAddress: " + emailAddress
                 + " | userIdentifier: " + userIdentifier;
     }
 

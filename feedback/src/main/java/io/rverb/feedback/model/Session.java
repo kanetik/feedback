@@ -11,18 +11,18 @@ public class Session implements Cacheable {
 
     public String applicationId;
     public String sessionId;
-    public String supportId;
+    public String endUserId;
     public String sessionStartUtc;
 
-    public Session(String sessionId, String supportId) {
+    public Session(String sessionId, String endUserId) {
         this.sessionId = sessionId;
-        this.supportId = supportId;
+        this.endUserId = endUserId;
         this.sessionStartUtc = DateUtils.nowUtc();
     }
 
     @Override
     public String toString() {
-        return "SessionId: " + sessionId + " | SupportId: " + supportId
+        return "SessionId: " + sessionId + " | EndUserId: " + endUserId
                 + " | SessionStartUTC: " + sessionStartUtc;
     }
 

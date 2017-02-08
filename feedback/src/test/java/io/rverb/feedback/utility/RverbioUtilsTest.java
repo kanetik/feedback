@@ -87,7 +87,7 @@ public class RverbioUtilsTest {
         Mockito.when(_context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
         Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn(SUPPORT_ID);
 
-        assertEquals(RverbioUtils.getSupportId(_context), SUPPORT_ID);
+        assertEquals(RverbioUtils.getEndUserId(_context), SUPPORT_ID);
     }
 
     @Test(expected=IllegalStateException.class)
@@ -96,7 +96,7 @@ public class RverbioUtilsTest {
         Mockito.when(_context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
         Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn("");
 
-        RverbioUtils.getSupportId(_context);
+        RverbioUtils.getEndUserId(_context);
     }
 
     @Test

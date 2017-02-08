@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
@@ -26,7 +25,7 @@ import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
-import static io.rverb.feedback.utility.RverbioUtils.getSupportId;
+import static io.rverb.feedback.utility.RverbioUtils.getEndUserId;
 
 public class Rverbio {
     private static Context _appContext;
@@ -122,7 +121,7 @@ public class Rverbio {
         }
 
         Feedback feedbackData = new Feedback(RverbioUtils.retrieveApplicationId(_appContext),
-                RverbioUtils.getSupportId(_appContext), feedbackType, feedbackText, screenshotFileName);
+                RverbioUtils.getEndUserId(_appContext), feedbackType, feedbackText, screenshotFileName);
 
         recordData(feedbackData);
     }
@@ -222,13 +221,13 @@ public class Rverbio {
      * @param event The event to track.
      */
     public void sendEvent(String event) {
-        Event eventData = new Event(RverbioUtils.getSupportId(_appContext), event);
+        Event eventData = new Event(RverbioUtils.getEndUserId(_appContext), event);
         recordData(eventData);
     }
 
     private Rverbio initEndUser() {
         boolean newUser = RverbioUtils.initializeSupportId(_appContext);
-        _endUser = new EndUser(_appContext, getSupportId(_appContext));
+        _endUser = new EndUser(_appContext, getEndUserId(_appContext));
 
         if (newUser) {
             recordData(_endUser);
@@ -238,7 +237,7 @@ public class Rverbio {
     }
 
     private Rverbio setSessionData() {
-        String supportId = getSupportId(_appContext);
+        String supportId = getEndUserId(_appContext);
         String sessionId = UUID.randomUUID().toString();
 
         recordData(new Session(sessionId, supportId));

@@ -34,7 +34,7 @@ public class RverbioUtils {
     public static final String EXTRA_DATA_NETWORK_TYPE = "Network_Type";
 
     private static final String RVERBIO_PREFS = "rverbio";
-    private static final String SUPPORT_ID_KEY = "support_id";
+    private static final String END_USER_ID_KEY = "end_user_id";
     private static final String EMAIL_ADDRESS_KEY = "email_address";
     private static final String APPLICATION_ID_KEY = "application_id";
 
@@ -42,11 +42,11 @@ public class RverbioUtils {
 
     public static boolean initializeSupportId(Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        String supportId = prefs.getString(SUPPORT_ID_KEY, "");
+        String supportId = prefs.getString(END_USER_ID_KEY, "");
 
         if (isNullOrWhiteSpace(supportId)) {
             _newSupportId = UUID.randomUUID().toString();
-            prefs.edit().putString(SUPPORT_ID_KEY, _newSupportId).apply();
+            prefs.edit().putString(END_USER_ID_KEY, _newSupportId).apply();
 
             return true;
         }
@@ -101,16 +101,16 @@ public class RverbioUtils {
         return true;
     }
 
-    public static String getSupportId(Context context) {
+    public static String getEndUserId(Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        String supportId = prefs.getString(SUPPORT_ID_KEY, "");
+        String endUserId = prefs.getString(END_USER_ID_KEY, "");
 
-        if (isNullOrWhiteSpace(supportId)) {
-            throw new IllegalStateException("You must call Rverbio#initialize before accessing the SupportId",
+        if (isNullOrWhiteSpace(endUserId)) {
+            throw new IllegalStateException("You must call Rverbio#initialize before accessing the EndUserId",
                     new Throwable("Rverbio instance not initialized"));
         }
 
-        return supportId;
+        return endUserId;
     }
 
     public static String getNetworkType(Context context) {

@@ -31,8 +31,8 @@ public class UserService extends IntentService {
 
         EndUser endUser = (EndUser) userObject;
 
-        if (RverbioUtils.isNullOrWhiteSpace(endUser.supportId)) {
-            throw new IllegalStateException("Intent EndUser object must contain SupportId");
+        if (RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            throw new IllegalStateException("Intent EndUser object must contain EndUserId");
         }
 
         if (RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress) && RverbioUtils.isNullOrWhiteSpace(endUser.userIdentifier)) {
@@ -55,6 +55,6 @@ public class UserService extends IntentService {
             patches.add(patch);
         }
 
-        ApiManager.patch(this, tempFileName, endUser.getDataTypeDescriptor(), patches, endUser.supportId);
+        ApiManager.patch(this, tempFileName, endUser.getDataTypeDescriptor(), patches, endUser.endUserId);
     }
 }
