@@ -10,13 +10,16 @@ import java.util.TimeZone;
 public class DateUtils {
     public static String now() {
         Calendar c = GregorianCalendar.getInstance();
+
         DateFormat df = SimpleDateFormat.getDateTimeInstance();
         return df.format(c.getTime());
     }
 
     public static String nowUtc() {
-        DateFormat df = DateFormat.getTimeInstance();
+        DateFormat df = DateFormat.getDateTimeInstance();
         df.setTimeZone(TimeZone.getTimeZone("gmt"));
-        return df.format(new Date());
+
+        Calendar c = GregorianCalendar.getInstance();
+        return df.format(c.getTime());
     }
 }
