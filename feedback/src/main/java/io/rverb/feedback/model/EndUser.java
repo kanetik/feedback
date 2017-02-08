@@ -3,6 +3,8 @@ package io.rverb.feedback.model;
 import android.content.Context;
 import android.content.Intent;
 
+import java.util.UUID;
+
 import io.rverb.feedback.data.api.UserService;
 import io.rverb.feedback.utility.RverbioUtils;
 
@@ -13,22 +15,24 @@ public class EndUser implements Cacheable {
     public String emailAddress;
     public String userIdentifier;
 
-    public EndUser(Context context, String endUserId) {
-        this.endUserId = endUserId;
-        this.emailAddress = "";
-        this.userIdentifier = "";
-
-        RverbioUtils.saveEndUserEmailAddress(context, emailAddress);
+    public EndUser() {
+        this.endUserId = UUID.randomUUID().toString();
     }
 
-    public void setEmailAddress(Context context, String emailAddress) {
+    public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
 
-        RverbioUtils.saveEndUserEmailAddress(context, emailAddress);
+    public String getEmailAddress() {
+        return this.emailAddress;
     }
 
     public void setUserIdentifier(String userIdentifier) {
         this.userIdentifier = userIdentifier;
+    }
+
+    public String getUserIdentifier() {
+        return this.userIdentifier;
     }
 
     @Override
