@@ -2,12 +2,14 @@ package io.rverb.feedback.data.api;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 
 import io.rverb.feedback.Rverbio;
+import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.utility.RverbioUtils;
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.Feedback;
@@ -51,7 +53,8 @@ public class FeedbackService extends IntentService {
                 }
             }
 
-            if (RverbioUtils.emailAddressKnown(this)) {
+            EndUser endUser = RverbioUtils.getEndUser(this);
+            if (endUser != null && !TextUtils.isEmpty(endUser.emailAddress)) {
                 AppUtils.notifyUser(this, AppUtils.FEEDBACK_SUBMITTED);
             } else {
                 AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);

@@ -9,30 +9,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Event;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
-import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
-
-import static io.rverb.feedback.utility.RverbioUtils.getEndUserId;
 
 public class Rverbio {
     private static Context _appContext;
     private static Map<String, String> _contextData;
     private static RverbioOptions _options;
-
-    private static EndUser _endUser;
 
     private static final Rverbio _instance = new Rverbio();
 
@@ -60,13 +51,7 @@ public class Rverbio {
      * @param context Activity or Application Context
      */
     public static void initialize(Context context) {
-        _appContext = context.getApplicationContext();
-        _options = new RverbioOptions();
-        _contextData = new HashMap<>();
-
-        // Send any previously queued requests
-        getInstance().sendQueuedRequests();
-        getInstance().initEndUser().setSessionData();
+        initialize(context, new RverbioOptions());
     }
 
     /**
@@ -83,8 +68,8 @@ public class Rverbio {
         _contextData = new HashMap<>();
 
         // Send any previously queued requests
-        getInstance().sendQueuedRequests();
-        getInstance().initEndUser().setSessionData();
+        RverbioUtils.sendQueuedRequests(_appContext);
+        getInstance().setSessionData();
     }
 
     public RverbioOptions getOptions() {
@@ -120,10 +105,13 @@ public class Rverbio {
             screenshotFileName = screenshot.getAbsolutePath();
         }
 
-        Feedback feedbackData = new Feedback(RverbioUtils.retrieveApplicationId(_appContext),
-                RverbioUtils.getEndUserId(_appContext), feedbackType, feedbackText, screenshotFileName);
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
 
-        recordData(feedbackData);
+        Feedback feedbackData = new Feedback(RverbioUtils.getApplicationId(_appContext),
+                RverbioUtils.getSessionId(), endUser.endUserId, feedbackType,
+                feedbackText, screenshotFileName);
+
+        RverbioUtils.recordData(_appContext, feedbackData);
     }
 
     /**
@@ -136,14 +124,15 @@ public class Rverbio {
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
      *
-     * @see Rverbio#updateUserEmail(String)
-     * @see Rverbio#updateUserIdentifier(String)
+     * @see Rverbio#updateUserEmail(Context, String)
+     * @see Rverbio#updateUserIdentifier(Context, String)
      */
-    public void updateUserInfo(Context context, String emailAddress, String userIdentifier) {
-        _endUser.setEmailAddress(context, emailAddress);
-        _endUser.setUserIdentifier(userIdentifier);
+    public void updateUserInfo(@NonNull Context context, @NonNull String emailAddress, @NonNull String userIdentifier) {
+        EndUser endUser = RverbioUtils.getEndUser(context);
+        endUser.setEmailAddress(emailAddress);
+        endUser.setUserIdentifier(userIdentifier);
 
-        recordData(_endUser);
+        RverbioUtils.saveEndUser(_appContext, endUser);
     }
 
     /**
@@ -152,11 +141,13 @@ public class Rverbio {
      * @param emailAddress The end-user's contact email address.
      *
      * @see Rverbio#updateUserInfo(Context, String, String)
-     * @see Rverbio#updateUserIdentifier(String)
+     * @see Rverbio#updateUserIdentifier(Context, String)
      */
-    public void updateUserEmail(String emailAddress) {
-        _endUser.setEmailAddress(_appContext, emailAddress);
-        recordData(_endUser);
+    public void updateUserEmail(@NonNull Context context, @NonNull String emailAddress) {
+        EndUser endUser = RverbioUtils.getEndUser(context);
+        endUser.setEmailAddress(emailAddress);
+
+        RverbioUtils.saveEndUser(_appContext, endUser);
     }
 
     /**
@@ -167,11 +158,13 @@ public class Rverbio {
      *                       credit card numbers or phone numbers.
      *
      * @see Rverbio#updateUserInfo(Context, String, String)
-     * @see Rverbio#updateUserEmail(String)
+     * @see Rverbio#updateUserEmail(Context, String)
      */
-    public void updateUserIdentifier(String userIdentifier) {
-        _endUser.setUserIdentifier(userIdentifier);
-        recordData(_endUser);
+    public void updateUserIdentifier(@NonNull Context context, @NonNull String userIdentifier) {
+        EndUser endUser = RverbioUtils.getEndUser(context);
+        endUser.setUserIdentifier(userIdentifier);
+
+        RverbioUtils.saveEndUser(_appContext, endUser);
     }
 
     /**
@@ -221,61 +214,17 @@ public class Rverbio {
      * @param event The event to track.
      */
     public void sendEvent(String event) {
-        Event eventData = new Event(RverbioUtils.getEndUserId(_appContext), event);
-        recordData(eventData);
-    }
-
-    private Rverbio initEndUser() {
-        boolean newUser = RverbioUtils.initializeSupportId(_appContext);
-        _endUser = new EndUser(_appContext, getEndUserId(_appContext));
-
-        if (newUser) {
-            recordData(_endUser);
-        }
-
-        return this;
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        Event eventData = new Event(endUser.endUserId, event);
+        RverbioUtils.recordData(_appContext, eventData);
     }
 
     private Rverbio setSessionData() {
-        String supportId = getEndUserId(_appContext);
-        String sessionId = UUID.randomUUID().toString();
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        String sessionId = RverbioUtils.getSessionId();
 
-        recordData(new Session(sessionId, supportId));
+        RverbioUtils.recordData(_appContext, new Session(sessionId, endUser.endUserId));
 
         return this;
-    }
-
-    private void sendQueuedRequests() {
-        // Stap 1: find existing files of each DATA_TYPE
-        File directory = _appContext.getCacheDir();
-        File[] files = directory.listFiles();
-
-        // Ensure we submit queued requests in the order they were made
-        Arrays.sort(files, new Comparator<File>() {
-            public int compare(File f1, File f2) {
-                return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
-            }
-        });
-
-        // Step 2: loop through all found, attempting to resend
-        for (File file : files) {
-            String tempFilePath = file.getAbsolutePath();
-            LogUtils.d("FileName", tempFilePath);
-
-            Cacheable data = DataUtils.readObjectFromDisk(tempFilePath);
-            if (data != null) {
-                sendData(data, tempFilePath);
-            }
-        }
-    }
-
-    private void recordData(Cacheable data) {
-        // Save data to file in case initial push fails
-        String tempFileName = DataUtils.writeObjectToDisk(_appContext, data);
-        sendData(data, tempFileName);
-    }
-
-    private void sendData(Cacheable data, String tempFileName) {
-        _appContext.startService(data.getServiceIntent(_appContext, tempFileName));
     }
 }

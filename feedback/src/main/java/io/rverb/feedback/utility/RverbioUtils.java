@@ -15,12 +15,19 @@ import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
+import io.rverb.feedback.model.Cacheable;
+import io.rverb.feedback.model.EndUser;
 
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
@@ -34,52 +41,18 @@ public class RverbioUtils {
     public static final String EXTRA_DATA_NETWORK_TYPE = "Network_Type";
 
     private static final String RVERBIO_PREFS = "rverbio";
-    private static final String END_USER_ID_KEY = "end_user_id";
-    private static final String EMAIL_ADDRESS_KEY = "email_address";
+    private static final String END_USER_KEY = "end_user_id";
+
     private static final String APPLICATION_ID_KEY = "application_id";
 
-    private static String _newSupportId;
-
-    public static boolean initializeSupportId(Context context) {
+    public static String getApplicationId(Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        String supportId = prefs.getString(END_USER_ID_KEY, "");
-
-        if (isNullOrWhiteSpace(supportId)) {
-            _newSupportId = UUID.randomUUID().toString();
-            prefs.edit().putString(END_USER_ID_KEY, _newSupportId).apply();
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public static void saveEndUserEmailAddress(Context context, String emailAddress) {
-        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(EMAIL_ADDRESS_KEY, emailAddress).apply();
-    }
-
-    public static String retrieveEndUserEmailAddress(Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        return prefs.getString(EMAIL_ADDRESS_KEY, "");
+        return prefs.getString(APPLICATION_ID_KEY, "");
     }
 
     public static void saveApplicationId(Context context, String applicationId) {
         final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString(APPLICATION_ID_KEY, applicationId).apply();
-    }
-
-    public static String retrieveApplicationId(Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        return prefs.getString(APPLICATION_ID_KEY, "");
-    }
-
-    public static boolean emailAddressKnown(Context context) {
-        try {
-            return !TextUtils.isEmpty(retrieveEndUserEmailAddress(context));
-        } catch (Exception ex) {
-            return false;
-        }
     }
 
     public static boolean isNullOrWhiteSpace(String string) {
@@ -101,16 +74,37 @@ public class RverbioUtils {
         return true;
     }
 
-    public static String getEndUserId(Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        String endUserId = prefs.getString(END_USER_ID_KEY, "");
+    public static EndUser getEndUser(Context context) {
+        Gson gson = new Gson();
+        SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
 
-        if (isNullOrWhiteSpace(endUserId)) {
-            throw new IllegalStateException("You must call Rverbio#initialize before accessing the EndUserId",
-                    new Throwable("Rverbio instance not initialized"));
+        EndUser endUser = gson.fromJson(prefs.getString(END_USER_KEY, ""), EndUser.class);
+        if (endUser == null || isNullOrWhiteSpace(endUser.endUserId)) {
+            endUser = new EndUser();
+            prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
+
+            recordData(context, endUser);
         }
 
-        return endUserId;
+        return endUser;
+    }
+
+    public static void saveEndUser(@NonNull Context context, @NonNull EndUser endUser) {
+        Gson gson = new Gson();
+        SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
+
+        recordData(context, endUser);
+    }
+
+    private static String _sessionId;
+
+    public static String getSessionId() {
+        if (isNullOrWhiteSpace(_sessionId)) {
+            _sessionId = UUID.randomUUID().toString();
+        }
+
+        return _sessionId;
     }
 
     public static String getNetworkType(Context context) {
@@ -175,5 +169,39 @@ public class RverbioUtils {
         data.put(EXTRA_DATA_NETWORK_TYPE, RverbioUtils.getNetworkType(context));
 
         return data;
+    }
+
+    public static void sendQueuedRequests(Context context) {
+        // Stap 1: find existing files of each DATA_TYPE
+        File directory = context.getCacheDir();
+        File[] files = directory.listFiles();
+
+        // Ensure we submit queued requests in the order they were made
+        Arrays.sort(files, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+            }
+        });
+
+        // Step 2: loop through all found, attempting to resend
+        for (File file : files) {
+            String tempFilePath = file.getAbsolutePath();
+            LogUtils.d("FileName", tempFilePath);
+
+            Cacheable data = DataUtils.readObjectFromDisk(tempFilePath);
+            if (data != null) {
+                sendData(context, data, tempFilePath);
+            }
+        }
+    }
+
+    public static void recordData(Context context, Cacheable data) {
+        // Save data to file in case initial push fails
+        String tempFileName = DataUtils.writeObjectToDisk(context, data);
+        sendData(context, data, tempFileName);
+    }
+
+    public static void sendData(Context context, Cacheable data, String tempFileName) {
+        context.startService(data.getServiceIntent(context, tempFileName));
     }
 }

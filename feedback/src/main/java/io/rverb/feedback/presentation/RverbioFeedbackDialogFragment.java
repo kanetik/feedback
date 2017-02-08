@@ -29,6 +29,7 @@ import java.util.Map;
 
 import io.rverb.feedback.R;
 import io.rverb.feedback.Rverbio;
+import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Event;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.RverbioUtils;
@@ -118,8 +119,10 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
-        if (RverbioUtils.emailAddressKnown(getContext())) {
-            _rverbEmail.setText(RverbioUtils.retrieveEndUserEmailAddress(getContext()));
+        final EndUser endUser = RverbioUtils.getEndUser(getContext());
+
+        if (endUser != null && !TextUtils.isEmpty(endUser.emailAddress)) {
+            _rverbEmail.setText(endUser.emailAddress);
             _rverbEmailLayout.setVisibility(View.GONE);
         }
 
@@ -131,9 +134,8 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
                         _screenshot = null;
                     }
 
-                    if (!TextUtils.isEmpty(_rverbEmail.getText())
-                            && TextUtils.isEmpty(RverbioUtils.retrieveEndUserEmailAddress(getContext()))) {
-                        Rverbio.getInstance().updateUserEmail(_rverbEmail.getText().toString());
+                    if (!TextUtils.isEmpty(_rverbEmail.getText()) && TextUtils.isEmpty(endUser.emailAddress)) {
+                        Rverbio.getInstance().updateUserEmail(getContext(), _rverbEmail.getText().toString());
                     }
 
                     Rverbio.getInstance().sendFeedback("", _rverbFeedback.getText().toString(), _screenshot);
