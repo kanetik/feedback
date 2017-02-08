@@ -19,22 +19,6 @@ public class EndUser implements Cacheable {
         this.endUserId = UUID.randomUUID().toString();
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    public String getEmailAddress() {
-        return this.emailAddress;
-    }
-
-    public void setUserIdentifier(String userIdentifier) {
-        this.userIdentifier = userIdentifier;
-    }
-
-    public String getUserIdentifier() {
-        return this.userIdentifier;
-    }
-
     @Override
     public String toString() {
         return "endUserId: " + endUserId + " | emailAddress: " + emailAddress

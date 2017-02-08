@@ -129,8 +129,8 @@ public class Rverbio {
      */
     public void updateUserInfo(@NonNull Context context, @NonNull String emailAddress, @NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(context);
-        endUser.setEmailAddress(emailAddress);
-        endUser.setUserIdentifier(userIdentifier);
+        endUser.emailAddress = emailAddress;
+        endUser.userIdentifier = userIdentifier;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
@@ -145,7 +145,7 @@ public class Rverbio {
      */
     public void updateUserEmail(@NonNull Context context, @NonNull String emailAddress) {
         EndUser endUser = RverbioUtils.getEndUser(context);
-        endUser.setEmailAddress(emailAddress);
+        endUser.emailAddress = emailAddress;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
@@ -162,7 +162,7 @@ public class Rverbio {
      */
     public void updateUserIdentifier(@NonNull Context context, @NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(context);
-        endUser.setUserIdentifier(userIdentifier);
+        endUser.userIdentifier = userIdentifier;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
