@@ -24,7 +24,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 class ApiManager {
-    private static String API_ROOT = "https://www.rverb.io/api/";
+    private static String API_ROOT = "https://rverbio-dev-east.azurewebsites.net/api/"; //"https://www.rverb.io/api/";
     private static String API_KEY_HEADER_NAME = "apiKey";
 
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
