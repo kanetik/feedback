@@ -11,10 +11,11 @@ import io.rverb.feedback.utility.DateUtils;
 public class Feedback implements Cacheable {
     private static final long serialVersionUID = 325L;
 
-    private String screenshotFileName;
+    private transient String screenshotFileName;
 
     public String applicationId;
     public String sessionId;
+    public String endUserId;
     public String timestamp;
     public String feedbackType;
     public Map<String, String> contextData;
@@ -28,9 +29,10 @@ public class Feedback implements Cacheable {
     public String networkType;
     public String uploadUrl;
 
-    public Feedback(String applicationId, String sessionId, String feedbackType, String comment, String screenshotFileName) {
+    public Feedback(String applicationId, String sessionId, String endUserId, String feedbackType, String comment, String screenshotFileName) {
         this.applicationId = applicationId;
         this.sessionId = sessionId;
+        this.endUserId = endUserId;
         this.feedbackType = feedbackType;
         this.comment = comment;
         this.screenshotFileName = screenshotFileName;
