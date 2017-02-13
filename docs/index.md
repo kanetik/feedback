@@ -8,6 +8,11 @@ Look how easy it is to use:
     Rverbio.initialize(this);
     Rverbio.getInstance().showDialog(this);
 
+**Features**
+
+Enable/Disable screenshot by default
+Add custom data to all feedback
+
 **Installation**
 
 In your module's gradle.config, add the following line to your dependencies:
@@ -22,11 +27,18 @@ An example of how the dependencies section might look is below:
         compile 'com.android.support:design:25.1.1'
         compile 'io.rverb:feedback:1.0.0'
     }
+    
+**Quick Start**
 
-**Features**
+In your custom Application's onCreate method, put this line:
 
-Enable/Disable screenshot by default
-Add custom data to all feedback
+    Rverbio.initialize(this);
+    
+That's it, you are now ready to capture feedback! When you want to make the feedback dialog appear from an activity, simply invoke the dialog like so:
+
+    Rverbio.getInstance().showDialog(this);
+    
+And we'll take care of the rest!
 
 **Support**
 
