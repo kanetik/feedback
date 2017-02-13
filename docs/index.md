@@ -42,9 +42,9 @@ And we'll take care of the rest!
 
 **Support**
 
-If you are having issues with the SDK, please let us know. We have a mailing list located at: support@rverb.io
+If you are having issues with the SDK, please let us know. We have a mailing list located at: <support@rverb.io>
 
-We also have an Issue Tracker at github.com/rverbio/android-library/issues
+We also have an Issue Tracker at <github.com/rverbio/android-library/issues>
 
 **License**
 
