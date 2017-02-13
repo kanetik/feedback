@@ -10,7 +10,7 @@ Look how easy it is to use:
 
 **Features**
 
-Enable/Disable screenshot by default
+Enable/Disable screenshot by default  
 Add custom data to all feedback
 
 **Installation**
