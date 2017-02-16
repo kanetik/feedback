@@ -40,7 +40,7 @@ And we'll take care of the rest!
 
 * Will have stuff about custom Key/Value pairs.
 
-** End User Data**
+**End User Data**
 
 * Almost forgot, then did forget, then forced myself to remember, that I also have to document updating the End User contact and identifier info.
 
