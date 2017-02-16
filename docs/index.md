@@ -1,14 +1,15 @@
 Rverbio Android SDK
 -------------------
 
-The Rverbio Android SDK enables you to get feedback from your customers with minimal effort on your part. You can be up and running with just 2 lines of code.
+The Rverbio Android SDK enables you to get feedback from your customers with as few as 2 lines of code.
 
 **Features**
 
 Rverbio offers some important customization features, with more to come. If you have requests for other features, never hesitate to contact us at <support@rverb.io>.
 
 * Enable/Disable screenshot by default  
-* Add custom data to all feedback
+* Add custom data to feedback on the back-end
+* Supply user identifiers such as an account ID so you can link a user across channels
 
 **Installation**
 
@@ -30,7 +31,13 @@ And we'll take care of the rest!
 
 **Advanced Setup**
 
-* Will have stuff about initializing w/ Auto-screenshot disabled.
+You can initialize Rverbio with a RverbioOptions object, setting up defaults as you like. In version 1.0 of the SDK, the only default you can set is whether a screenshot is taken when the user initiates a feedback request:
+
+    RverbioOptions options = new RverbioOptions();
+    options.setAttachScreenshotEnabled(false);
+    
+    Rverbio.initialize(this, options);
+
 * Will also have stuff about calling Rverbio.initialize(this) from an activity, if you don't have a custom Application.
     
 **Custom Data**
