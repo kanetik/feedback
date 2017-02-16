@@ -1,10 +1,7 @@
 Rverbio Android SDK
 -------------------
 
-The Rverbio Android SDK enables you to get feedback from your customers with minimal effort on your part. You can be up and running with just 2 lines of code:
-
-    Rverbio.initialize(this);
-    Rverbio.getInstance().showDialog(this);
+The Rverbio Android SDK enables you to get feedback from your customers with minimal effort on your part. You can be up and running with just 2 lines of code.
 
 **Features**
 
