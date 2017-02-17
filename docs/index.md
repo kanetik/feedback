@@ -58,7 +58,29 @@ You can also add a Map, like so:
     Rverbio.getInstance().addContextDataItems(data);
 
 **End User Data**
-* Gotta fill out the docs with info about setting the user's email and/or identifier.
+Rverbio automatically links all feedback requests from a single user from an app. By default, each device & app will treat a single person as a new user. However, if you have an identifier by which you know the user, such as a UserId, you can add that to the user, and then we will be able to like all feedback requests from a single user, across devices and apps.
+
+To do this, simply call
+
+	Rverbio.getInstance().updateUserIdentifier("{Identifier}");
+
+For instance, if users in your database have a unique identifier that is a GUID, and user John Smith has a UserId of "d964c733-6ed9-4027-90f8-c60bdc2a2e65", you would make this call:
+
+	Rverbio.getInstance().updateUserIdentifier("d964c733-6ed9-4027-90f8-c60bdc2a2e65");
+
+You can also update the user's email address. This will automatically be filled in on the user's first feedback, if not already supplied, as email address is a required field for the user. 
+
+> Note: Email address will not be used to link users, so if your system
+> uses email address as a unique identifier, you will want to call
+> updateUserIdentifier with the user's email address.
+
+To update the email address, call:
+
+	Rverbio.getInstance().updateUserEmail("user@emaildomain.com");
+
+Finally, you can update both bits of data at once:
+
+	Rverbio.getInstance().updateUserInfo("user@emaildomain.com", "d964c733-6ed9-4027-90f8-c60bdc2a2e65");
 
 **Support**
 If you are having issues with the SDK, please let us know.  
