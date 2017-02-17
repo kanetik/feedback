@@ -124,11 +124,11 @@ public class Rverbio {
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
      *
-     * @see Rverbio#updateUserEmail(Context, String)
-     * @see Rverbio#updateUserIdentifier(Context, String)
+     * @see Rverbio#updateUserEmail( String)
+     * @see Rverbio#updateUserIdentifier(String)
      */
-    public void updateUserInfo(@NonNull Context context, @NonNull String emailAddress, @NonNull String userIdentifier) {
-        EndUser endUser = RverbioUtils.getEndUser(context);
+    public void updateUserInfo(@NonNull String emailAddress, @NonNull String userIdentifier) {
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
         endUser.emailAddress = emailAddress;
         endUser.userIdentifier = userIdentifier;
 
@@ -140,11 +140,11 @@ public class Rverbio {
      *
      * @param emailAddress The end-user's contact email address.
      *
-     * @see Rverbio#updateUserInfo(Context, String, String)
-     * @see Rverbio#updateUserIdentifier(Context, String)
+     * @see Rverbio#updateUserInfo(String, String)
+     * @see Rverbio#updateUserIdentifier(String)
      */
-    public void updateUserEmail(@NonNull Context context, @NonNull String emailAddress) {
-        EndUser endUser = RverbioUtils.getEndUser(context);
+    public void updateUserEmail(@NonNull String emailAddress) {
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
         endUser.emailAddress = emailAddress;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
@@ -157,11 +157,11 @@ public class Rverbio {
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
      *
-     * @see Rverbio#updateUserInfo(Context, String, String)
-     * @see Rverbio#updateUserEmail(Context, String)
+     * @see Rverbio#updateUserInfo(String, String)
+     * @see Rverbio#updateUserEmail(String)
      */
-    public void updateUserIdentifier(@NonNull Context context, @NonNull String userIdentifier) {
-        EndUser endUser = RverbioUtils.getEndUser(context);
+    public void updateUserIdentifier(@NonNull String userIdentifier) {
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
         endUser.userIdentifier = userIdentifier;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
