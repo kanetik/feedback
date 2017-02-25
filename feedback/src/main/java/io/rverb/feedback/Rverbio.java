@@ -1,8 +1,6 @@
 package io.rverb.feedback;
 
-import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,19 +8,17 @@ import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Event;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
-import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
 public class Rverbio {
     private static Context _appContext;
-    private static Map<String, String> _contextData;
+    private static HashMap<String, String> _contextData;
     private static RverbioOptions _options;
 
     private static final Rverbio _instance = new Rverbio();
@@ -61,6 +57,7 @@ public class Rverbio {
      * Initialization must be done before the Rverbio singleton can be used.
      *
      * @param context Activity or Application Context
+     * @param options RverbioOptions object to set defaults
      */
     public static void initialize(Context context, RverbioOptions options) {
         _appContext = context.getApplicationContext();
@@ -72,23 +69,23 @@ public class Rverbio {
         getInstance().setSessionData();
     }
 
+    /**
+     * Gets the options object for this Rverbio instance. You can make changes to the default
+     * settings through this object. At this time, the only thing that can be set is "take screenshot".
+     *
+     * @return RverbioOptions for the current instance
+     */
     public RverbioOptions getOptions() {
         return _options;
     }
 
-    public void addContextDataItem(String key, String value) {
-        _contextData.put(key, value);
-    }
-
-    public void addContextDataItems(Map<String, String> items) {
-        _contextData.putAll(items);
-    }
-
-    public void clearContextData() {
-        _contextData.clear();
-    }
-
-    public Map<String, String> getContextData() {
+    /**
+     * Gets the collection of Key/Value Pairs that will be sent with a feedback request
+     * You can add and remove items as you would to any map.
+     *
+     * @return HashMap of context data items
+     */
+    public HashMap<String, String> getContextData() {
         return _contextData;
     }
 
@@ -185,39 +182,39 @@ public class Rverbio {
         fragment.show(manager, "fragment_edit_name");
     }
 
-    /**
-     * Takes a screenshot of the app as currently visible on the user's device. This
-     * will give the developer context around the comments or questions submitted by the user.
-     *
-     * @param activity The activity from which you wish to take a screenshot.
-     */
-    public File takeScreenshot(@NonNull Activity activity) {
-        File screenshot = RverbioUtils.createScreenshotFile(activity);
-        if (screenshot != null) {
-            LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
+//    /**
+//     * Takes a screenshot of the app as currently visible on the user's device. This
+//     * will give the developer context around the comments or questions submitted by the user.
+//     *
+//     * @param activity The activity from which you wish to take a screenshot.
+//     */
+//    public File takeScreenshot(@NonNull Activity activity) {
+//        File screenshot = RverbioUtils.createScreenshotFile(activity);
+//        if (screenshot != null) {
+//            LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
+//
+//            Uri path = Uri.fromFile(screenshot);
+//            if (path != null) {
+//                return screenshot;
+//            }
+//
+//            // TODO: The image uploadUrl expires after 30 minutes. If the image hasn't been uploaded
+//            // by then, delete the local copy. Make the timeout configurable.
+//        }
+//
+//        return null;
+//    }
 
-            Uri path = Uri.fromFile(screenshot);
-            if (path != null) {
-                return screenshot;
-            }
-
-            // TODO: The image uploadUrl expires after 30 minutes. If the image hasn't been uploaded
-            // by then, delete the local copy. Make the timeout configurable.
-        }
-
-        return null;
-    }
-
-    /**
-     * Logs events related to feedback, such as feedback request started, session started, etc.
-     *
-     * @param event The event to track.
-     */
-    public void sendEvent(String event) {
-        EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        Event eventData = new Event(endUser.endUserId, event);
-        RverbioUtils.recordData(_appContext, eventData);
-    }
+//    /**
+//     * Logs events related to feedback, such as feedback request started, session started, etc.
+//     *
+//     * @param event The event to track.
+//     */
+//    public void sendEvent(String event) {
+//        EndUser endUser = RverbioUtils.getEndUser(_appContext);
+//        Event eventData = new Event(endUser.endUserId, event);
+//        RverbioUtils.recordData(_appContext, eventData);
+//    }
 
     private Rverbio setSessionData() {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);

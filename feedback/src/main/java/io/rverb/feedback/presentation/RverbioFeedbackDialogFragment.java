@@ -1,8 +1,11 @@
 package io.rverb.feedback.presentation;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -32,6 +35,7 @@ import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Event;
 import io.rverb.feedback.utility.AppUtils;
+import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
 public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
@@ -63,7 +67,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Rverbio.getInstance().sendEvent(Event.EVENT_TYPE_FEEDBACK_START);
+        sendEvent(Event.EVENT_TYPE_FEEDBACK_START);
         return super.onCreateDialog(savedInstanceState);
     }
 
@@ -149,7 +153,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
         _rverbCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Rverbio.getInstance().sendEvent(Event.EVENT_TYPE_FEEDBACK_CANCEL);
+                sendEvent(Event.EVENT_TYPE_FEEDBACK_CANCEL);
                 _screenshot = null;
                 getDialog().dismiss();
             }
@@ -205,7 +209,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
 
     private void setupScreenshotUI() {
         if (_screenshot == null && !_suppressScreenshot && Rverbio.getInstance().getOptions().isAttachScreenshotEnabled()) {
-            _screenshot = Rverbio.getInstance().takeScreenshot(getActivity());
+            _screenshot = takeScreenshot();
         }
 
         if (_screenshot != null) {
@@ -229,6 +233,23 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
                 }
             });
         }
+    }
+
+    File takeScreenshot() {
+        File screenshot = RverbioUtils.createScreenshotFile(getActivity());
+        if (screenshot != null) {
+            LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
+
+            Uri path = Uri.fromFile(screenshot);
+            if (path != null) {
+                return screenshot;
+            }
+
+            // TODO: The image uploadUrl expires after 30 minutes. If the image hasn't been uploaded
+            // by then, delete the local copy. Make the timeout configurable.
+        }
+
+        return null;
     }
 
     private boolean validateForm() {
@@ -276,5 +297,11 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
 
     public int getTheme() {
         return R.style.rverb_fixed_dialog;
+    }
+
+    public void sendEvent(String event) {
+        EndUser endUser = RverbioUtils.getEndUser(getContext());
+        Event eventData = new Event(endUser.endUserId, event);
+        RverbioUtils.recordData(getContext(), eventData);
     }
 }

@@ -52,51 +52,12 @@ public class RverbioUtilsTest {
     }
 
     @Test
-    public void canInitializeEndUserId() throws Exception {
-        final SharedPreferences sharedPreferences = Mockito.mock(SharedPreferences.class);
-        final SharedPreferences.Editor sharedPreferencesEditor = Mockito.mock(SharedPreferences.Editor.class);
-
-        Mockito.when(_context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
-        Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn("");
-
-        Mockito.when(sharedPreferences.edit()).thenReturn(sharedPreferencesEditor);
-        Mockito.when(sharedPreferencesEditor.putString(anyString(), anyString())).thenReturn(sharedPreferencesEditor);
-
-        boolean success = RverbioUtils.initializeEndUser(_context);
-        assertTrue(success);
-    }
-
-    @Test
-    public void doesNotReinitializeEndUserIdThatAlreadyExists() throws Exception {
-        final SharedPreferences sharedPreferences = Mockito.mock(SharedPreferences.class);
-        final SharedPreferences.Editor sharedPreferencesEditor = Mockito.mock(SharedPreferences.Editor.class);
-
-        Mockito.when(_context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
-        Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn(END_USER_ID);
-
-        Mockito.when(sharedPreferences.edit()).thenReturn(sharedPreferencesEditor);
-        Mockito.when(sharedPreferencesEditor.putString(anyString(), anyString())).thenReturn(sharedPreferencesEditor);
-
-        boolean success = RverbioUtils.initializeEndUser(_context);
-        assertFalse(success);
-    }
-
-    @Test
-    public void canGetEndUserIdAfterInit() throws Exception {
+    public void canGetEndUserId() throws Exception {
         final SharedPreferences sharedPreferences = Mockito.mock(SharedPreferences.class);
         Mockito.when(_context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
         Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn(END_USER_ID);
 
-        assertEquals(RverbioUtils.getEndUserId(_context), END_USER_ID);
-    }
-
-    @Test(expected=IllegalStateException.class)
-    public void throwsErrorGettingEndUserIdBeforeInit() throws Exception {
-        final SharedPreferences sharedPreferences = Mockito.mock(SharedPreferences.class);
-        Mockito.when(_context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
-        Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn("");
-
-        RverbioUtils.getEndUserId(_context);
+        assertEquals(RverbioUtils.getEndUser(_context).endUserId, END_USER_ID);
     }
 
     @Test

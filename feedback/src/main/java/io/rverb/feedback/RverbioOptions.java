@@ -1,9 +1,10 @@
 package io.rverb.feedback;
 
 public class RverbioOptions {
-    private boolean attachScreenshot = true;
+    private boolean attachScreenshot;
 
     public RverbioOptions() {
+        attachScreenshot = true;
     }
 
     public boolean isAttachScreenshotEnabled() {
