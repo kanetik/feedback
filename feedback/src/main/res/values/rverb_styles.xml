@@ -2,6 +2,6 @@
 <resources>
 
     <style name="rverb_fixed_dialog" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="windowNoTitle">false</item>
+        <item name="android:windowNoTitle">false</item>
     </style>
 </resources>
