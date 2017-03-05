@@ -12,12 +12,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
-import android.text.TextUtils;
 import android.view.View;
 
 import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -111,7 +111,11 @@ public class RverbioUtils {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
-        return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+            return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
+        } else {
+            return "No Network";
+        }
     }
 
     public static File createScreenshotFile(@NonNull Activity activity) {
@@ -174,7 +178,13 @@ public class RverbioUtils {
     public static void sendQueuedRequests(Context context) {
         // Stap 1: find existing files of each DATA_TYPE
         File directory = context.getCacheDir();
-        File[] files = directory.listFiles();
+
+        File[] files = directory.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().endsWith("rvb");
+            }
+        });
 
         // Ensure we submit queued requests in the order they were made
         Arrays.sort(files, new Comparator<File>() {

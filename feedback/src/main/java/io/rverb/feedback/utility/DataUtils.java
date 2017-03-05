@@ -48,7 +48,7 @@ public class DataUtils {
             //create a temp file
             String fileName = "rv_" + object.getDataTypeDescriptor();
 
-            File temp = File.createTempFile(fileName, ".tmp", context.getCacheDir());
+            File temp = File.createTempFile(fileName, ".rvb", context.getCacheDir());
             FileOutputStream fos = getFileOutputStream(temp);
 
             if (fos != null) {
