@@ -6,10 +6,9 @@ import android.content.Intent;
 import java.util.UUID;
 
 import io.rverb.feedback.data.api.UserService;
-import io.rverb.feedback.utility.RverbioUtils;
 
 public class EndUser implements Cacheable {
-    private static final long serialVersionUID = 354L;
+    static final long serialVersionUID = 354L;
 
     public String endUserId;
     public String emailAddress;

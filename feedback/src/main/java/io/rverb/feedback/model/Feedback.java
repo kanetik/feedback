@@ -9,7 +9,7 @@ import io.rverb.feedback.data.api.FeedbackService;
 import io.rverb.feedback.utility.DateUtils;
 
 public class Feedback implements Cacheable {
-    private static final long serialVersionUID = 325L;
+    static final long serialVersionUID = 325L;
 
     private transient String screenshotFileName;
 

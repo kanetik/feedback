@@ -7,7 +7,7 @@ import io.rverb.feedback.data.api.SessionService;
 import io.rverb.feedback.utility.DateUtils;
 
 public class Session implements Cacheable {
-    private static final long serialVersionUID = 348L;
+    static final long serialVersionUID = 348L;
 
     public String applicationId;
     public String sessionId;

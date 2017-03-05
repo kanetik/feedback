@@ -9,7 +9,7 @@ import io.rverb.feedback.data.api.EventService;
 import io.rverb.feedback.utility.DateUtils;
 
 public class Event implements Cacheable {
-    private static final long serialVersionUID = 302L;
+    static final long serialVersionUID = 302L;
 
     public static final String EVENT_TYPE_FEEDBACK_START = "feedbackStart";
     public static final String EVENT_TYPE_FEEDBACK_CANCEL = "feedbackCancel";

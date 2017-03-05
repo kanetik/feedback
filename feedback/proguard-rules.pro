@@ -27,13 +27,6 @@
 
 -keepattributes *Annotation*
 
-# Preserve all public classes, and their public and protected fields and
-# methods.
-
--keep public class * {
-    public protected *;
-}
-
 # Preserve all .class method names.
 
 -keepclassmembernames class * {
@@ -68,6 +61,16 @@
     private void readObject(java.io.ObjectInputStream);
     java.lang.Object writeReplace();
     java.lang.Object readResolve();
+}
+
+-keepclassmembers class * implements io.rverb.feedback.model.Cacheable {
+    static final long serialVersionUID;
+    static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+    public protected *;
 }
 
 # Your library may contain more items that need to be preserved;
