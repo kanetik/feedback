@@ -13,8 +13,8 @@ android {
         targetSdkVersion 25
         versionCode 2
         group = "io.rverb"
-        version = "0.1.1"
-        versionName "0.1.1"
+        version = "0.1.2"
+        versionName "0.1.2"
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -24,10 +24,12 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "api_base_url", "https://www.rverb.io/api/"
         }
         debug {
             debuggable true
             minifyEnabled false
+            resValue "string", "api_base_url", "https://rverbio-dev-east.azurewebsites.net/api/"
         }
     }
     resourcePrefix 'rverb_'
@@ -79,7 +81,7 @@ bintray {
         githubRepo = 'rverbio/android-sdk' //Optional Github repository
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
         version {
-            name = '0.1.1' //Bintray logical version name
+            name = '0.1.2' //Bintray logical version name
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
                 passphrase = 'thecatspitsatn00n' //Optional. The passphrase for GPG signing'

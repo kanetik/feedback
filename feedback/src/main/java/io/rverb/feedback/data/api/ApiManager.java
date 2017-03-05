@@ -8,11 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import io.rverb.feedback.Rverbio;
+import io.rverb.feedback.R;
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.FileRequestBody;
 import io.rverb.feedback.model.Patch;
-import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
@@ -24,7 +23,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 class ApiManager {
-    private static String API_ROOT = "https://rverbio-dev-east.azurewebsites.net/api/"; //"https://www.rverb.io/api/";
     private static String API_KEY_HEADER_NAME = "apiKey";
 
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
@@ -39,7 +37,7 @@ class ApiManager {
         LogUtils.d("POST " + data.getDataTypeDescriptor() + " - " + json);
         RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
 
-        String url = API_ROOT + data.getDataTypeDescriptor();
+        String url = context.getString(R.string.api_base_url) + data.getDataTypeDescriptor();
         Request request = new Request.Builder()
                 .addHeader(API_KEY_HEADER_NAME, RverbioUtils.getApiKey(context))
                 .url(url)
@@ -58,14 +56,14 @@ class ApiManager {
                     LogUtils.d("POST " + data.getDataTypeDescriptor() + " Failed: " + response.message());
                 }
             } catch (Exception e) {
-                LogUtils.d("POST " + data.getDataTypeDescriptor() + " Error 1: " + e.getMessage());
+                LogUtils.d("POST " + data.getDataTypeDescriptor() + " Exception: " + e.getMessage());
             } finally {
                 if (responseBody != null) {
                     responseBody.close();
                 }
             }
         } catch (IOException e) {
-            LogUtils.d("POST " + data.getDataTypeDescriptor() + " Error 2: " + e.getMessage());
+            LogUtils.d("POST " + data.getDataTypeDescriptor() + " IOException: " + e.getMessage());
         }
     }
 
@@ -78,7 +76,7 @@ class ApiManager {
         LogUtils.d("POST " + data.getDataTypeDescriptor() + " - " + json);
         RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
 
-        String url = API_ROOT + data.getDataTypeDescriptor();
+        String url = context.getString(R.string.api_base_url) + data.getDataTypeDescriptor();
         Request request = new Request.Builder()
                 .addHeader(API_KEY_HEADER_NAME, RverbioUtils.getApiKey(context))
                 .url(url)
@@ -101,14 +99,14 @@ class ApiManager {
                     LogUtils.d("POST " + data.getDataTypeDescriptor() + " Failed: " + response.message());
                 }
             } catch (Exception e) {
-                LogUtils.d("POST " + data.getDataTypeDescriptor() + " Error 1: " + e.getMessage());
+                LogUtils.d("POST " + data.getDataTypeDescriptor() + " Exception: " + e.getMessage());
             } finally {
                 if (responseBody != null) {
                     responseBody.close();
                 }
             }
         } catch (IOException e) {
-            LogUtils.d("POST " + data.getDataTypeDescriptor() + " Error 2: " + e.getMessage());
+            LogUtils.d("POST " + data.getDataTypeDescriptor() + " IOException: " + e.getMessage());
         }
 
         return null;
@@ -123,7 +121,7 @@ class ApiManager {
         LogUtils.d("PATCH " + endpoint + " - " + json);
         RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
 
-        String url = API_ROOT + endpoint + "?id=" + id;
+        String url = context.getString(R.string.api_base_url) + endpoint + "?id=" + id;
         Request request = new Request.Builder()
                 .addHeader(API_KEY_HEADER_NAME, RverbioUtils.getApiKey(context))
                 .url(url)
@@ -142,14 +140,14 @@ class ApiManager {
                     LogUtils.d("PATCH " + endpoint + " Failed - " + response.message());
                 }
             } catch (Exception e) {
-                LogUtils.d("PATCH " + endpoint + " Error 1: " + e.getMessage());
+                LogUtils.d("PATCH " + endpoint + " Exception: " + e.getMessage());
             } finally {
                 if (responseBody != null) {
                     responseBody.close();
                 }
             }
         } catch (IOException e) {
-            LogUtils.d("PATCH " + endpoint + " Error 2: " + e.getMessage());
+            LogUtils.d("PATCH " + endpoint + " IOException: " + e.getMessage());
         }
     }
 
@@ -184,7 +182,7 @@ class ApiManager {
                 }
             }
         } catch (IOException e) {
-            LogUtils.d("PUT FILE Error 2: " + e.getMessage());
+            LogUtils.d("PUT FILE IOException: " + e.getMessage());
         }
     }
 }
