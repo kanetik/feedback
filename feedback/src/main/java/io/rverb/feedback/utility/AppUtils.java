@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
 import io.rverb.feedback.R;
-import io.rverb.feedback.data.api.FeedbackService;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 

@@ -7,9 +7,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.rverb.feedback.utility.RverbioUtils;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Patch;
+import io.rverb.feedback.utility.RverbioUtils;
 
 public class UserService extends IntentService {
     public UserService() {
