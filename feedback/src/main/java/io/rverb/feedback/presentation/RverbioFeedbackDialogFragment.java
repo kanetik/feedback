@@ -1,14 +1,12 @@
 package io.rverb.feedback.presentation;
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatDialogFragment;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -38,9 +36,7 @@ import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
-public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
-    private static final String PARAM_CONTENT_VIEW = "content_view";
-
+public class RverbioFeedbackDialogFragment extends DialogFragment {
     private static File _screenshot;
     private boolean _suppressScreenshot = false;
 
@@ -76,7 +72,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.rverb_fragment_dialog, container, false);
 
-        String appLabel = AppUtils.getAppLabel(getContext());
+        String appLabel = AppUtils.getAppLabel(view.getContext());
         if (RverbioUtils.isNullOrWhiteSpace(appLabel)) {
             appLabel = "App";
         }
@@ -89,7 +85,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
         _rverbPoweredBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppUtils.openWebPage(getContext(), "https://rverb.io");
+                AppUtils.openWebPage(view.getContext(), "https://rverb.io");
             }
         });
 
@@ -123,7 +119,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
             }
         });
 
-        final EndUser endUser = RverbioUtils.getEndUser(getContext());
+        final EndUser endUser = RverbioUtils.getEndUser(view.getContext());
 
         if (endUser != null && !TextUtils.isEmpty(endUser.emailAddress)) {
             _rverbEmail.setText(endUser.emailAddress);
@@ -161,7 +157,7 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
 
         StringBuilder dataString = new StringBuilder();
 
-        for (Map.Entry<String, String> data : RverbioUtils.getExtraData(getContext()).entrySet()) {
+        for (Map.Entry<String, String> data : RverbioUtils.getExtraData(view.getContext()).entrySet()) {
             if (dataString.length() > 0) {
                 dataString.append("\n");
             }
@@ -300,8 +296,8 @@ public class RverbioFeedbackDialogFragment extends AppCompatDialogFragment {
     }
 
     public void sendEvent(String event) {
-        EndUser endUser = RverbioUtils.getEndUser(getContext());
+        EndUser endUser = RverbioUtils.getEndUser(getActivity());
         Event eventData = new Event(endUser.endUserId, event);
-        RverbioUtils.recordData(getContext(), eventData);
+        RverbioUtils.recordData(getActivity(), eventData);
     }
 }
