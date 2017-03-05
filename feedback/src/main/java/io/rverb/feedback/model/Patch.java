@@ -1,5 +1,8 @@
 package io.rverb.feedback.model;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class Patch {
     public String op;
     public String path;
