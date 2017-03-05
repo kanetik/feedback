@@ -1,21 +1,26 @@
 package io.rverb.feedback;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import io.rverb.feedback.model.EndUser;
-import io.rverb.feedback.model.Event;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
+import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
+@Keep
 public class Rverbio {
     private static Context _appContext;
     private static HashMap<String, String> _contextData;
@@ -108,6 +113,9 @@ public class Rverbio {
                 RverbioUtils.getSessionId(), endUser.endUserId, feedbackType,
                 feedbackText, screenshotFileName);
 
+        addSystemData(feedbackData);
+        addContextData(feedbackData);
+
         RverbioUtils.recordData(_appContext, feedbackData);
     }
 
@@ -168,10 +176,10 @@ public class Rverbio {
      * Show the feedback dialog
      *
      * @param activity The activity on which you wish to show the feedback dialog. This activity
-     *                 must be a subclass of AppCompatActivity.
+     *                 must be a subclass of Activity.
      */
-    public void showDialog(@NonNull AppCompatActivity activity) {
-        FragmentManager manager = activity.getSupportFragmentManager();
+    public void showDialog(@NonNull Activity activity) {
+        FragmentManager manager = activity.getFragmentManager();
         Fragment frag = manager.findFragmentByTag("fragment_edit_name");
 
         if (frag != null) {
@@ -223,5 +231,23 @@ public class Rverbio {
         RverbioUtils.recordData(_appContext, new Session(sessionId, endUser.endUserId));
 
         return this;
+    }
+
+    private void addContextData(Feedback feedback) {
+        Map<String, String> contextData = Rverbio.getInstance().getContextData();
+
+        if (contextData != null && contextData.size() > 0) {
+            feedback.contextData = contextData;
+        }
+    }
+
+    private void addSystemData(Feedback feedback) {
+        feedback.appVersion = AppUtils.getVersionName(_appContext) + " (" + AppUtils.getVersionCode(_appContext) + ")";
+        feedback.locale = Locale.getDefault().toString();
+        feedback.deviceManufacturer = Build.MANUFACTURER;
+        feedback.deviceModel = Build.MODEL;
+        feedback.deviceName = Build.PRODUCT;
+        feedback.osVersion = Build.VERSION.RELEASE;
+        feedback.networkType = RverbioUtils.getNetworkType(_appContext);
     }
 }
