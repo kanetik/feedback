@@ -5,6 +5,8 @@ plugins {
 
 apply plugin: 'com.android.library'
 
+project.ext.set("libraryVersion", "0.2.0-alpha")
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -13,8 +15,8 @@ android {
         targetSdkVersion 25
         versionCode 2
         group = "io.rverb"
-        version = "0.1.2"
-        versionName "0.1.2"
+        version = project.libraryVersion
+        versionName project.libraryVersion
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -81,7 +83,7 @@ bintray {
         githubRepo = 'rverbio/android-sdk' //Optional Github repository
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
         version {
-            name = '0.1.2' //Bintray logical version name
+            name = project.libraryVersion //Bintray logical version name
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
                 passphrase = 'thecatspitsatn00n' //Optional. The passphrase for GPG signing'

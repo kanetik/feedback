@@ -129,10 +129,10 @@ public class Rverbio {
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
      *
-     * @see Rverbio#updateUserEmail( String)
-     * @see Rverbio#updateUserIdentifier(String)
+     * @see Rverbio#setUserEmail( String)
+     * @see Rverbio#setUserIdentifier(String)
      */
-    public void updateUserInfo(@NonNull String emailAddress, @NonNull String userIdentifier) {
+    public void setUserInfo(@NonNull String emailAddress, @NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
         endUser.emailAddress = emailAddress;
         endUser.userIdentifier = userIdentifier;
@@ -145,10 +145,10 @@ public class Rverbio {
      *
      * @param emailAddress The end-user's contact email address.
      *
-     * @see Rverbio#updateUserInfo(String, String)
-     * @see Rverbio#updateUserIdentifier(String)
+     * @see Rverbio#setUserInfo(String, String)
+     * @see Rverbio#setUserIdentifier(String)
      */
-    public void updateUserEmail(@NonNull String emailAddress) {
+    public void setUserEmail(@NonNull String emailAddress) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
         endUser.emailAddress = emailAddress;
 
@@ -162,10 +162,10 @@ public class Rverbio {
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
      *
-     * @see Rverbio#updateUserInfo(String, String)
-     * @see Rverbio#updateUserEmail(String)
+     * @see Rverbio#setUserInfo(String, String)
+     * @see Rverbio#setUserEmail(String)
      */
-    public void updateUserIdentifier(@NonNull String userIdentifier) {
+    public void setUserIdentifier(@NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
         endUser.userIdentifier = userIdentifier;
 

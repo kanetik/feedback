@@ -135,7 +135,7 @@ public class RverbioFeedbackDialogFragment extends DialogFragment {
                     }
 
                     if (!TextUtils.isEmpty(_rverbEmail.getText()) && TextUtils.isEmpty(endUser.emailAddress)) {
-                        Rverbio.getInstance().updateUserEmail(_rverbEmail.getText().toString());
+                        Rverbio.getInstance().setUserEmail(_rverbEmail.getText().toString());
                     }
 
                     Rverbio.getInstance().sendFeedback("", _rverbFeedback.getText().toString(), _screenshot);
