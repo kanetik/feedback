@@ -6,6 +6,7 @@ import android.content.Intent;
 import java.util.UUID;
 
 import io.rverb.feedback.data.api.UserService;
+import io.rverb.feedback.utility.DataUtils;
 
 public class EndUser implements Cacheable {
     static final long serialVersionUID = 354L;
@@ -33,8 +34,8 @@ public class EndUser implements Cacheable {
     public Intent getServiceIntent(Context context, String cacheFileName) {
         Intent serviceIntent = new Intent(context, UserService.class);
 
-        serviceIntent.putExtra("temp_file_name", cacheFileName);
-        serviceIntent.putExtra("data", this);
+        serviceIntent.putExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME, cacheFileName);
+        serviceIntent.putExtra(DataUtils.EXTRA_DATA, this);
 
         return serviceIntent;
     }

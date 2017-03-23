@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import io.rverb.feedback.data.api.SessionService;
+import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.DateUtils;
 
 public class Session implements Cacheable {
@@ -35,8 +36,8 @@ public class Session implements Cacheable {
     public Intent getServiceIntent(Context context, String cacheFileName) {
         Intent serviceIntent = new Intent(context, SessionService.class);
 
-        serviceIntent.putExtra("temp_file_name", cacheFileName);
-        serviceIntent.putExtra("data", this);
+        serviceIntent.putExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME, cacheFileName);
+        serviceIntent.putExtra(DataUtils.EXTRA_DATA, this);
 
         return serviceIntent;
     }

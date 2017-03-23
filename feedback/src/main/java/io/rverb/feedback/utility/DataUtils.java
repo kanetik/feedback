@@ -1,6 +1,10 @@
 package io.rverb.feedback.utility;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Patterns;
+import android.widget.EditText;
 
 import com.google.gson.Gson;
 
@@ -12,10 +16,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 import io.rverb.feedback.model.Cacheable;
 
 public class DataUtils {
+    public static final String EXTRA_SCREENSHOT_FILE_NAME = "screenshot_file_name";
+    public static final String EXTRA_TEMPORARY_FILE_NAME = "temp_file_name";
+    public static final String EXTRA_DATA = "data";
+
     public static <T extends Cacheable> T fromJson(String json, Class<T> type) {
         Gson gson = new Gson();
         T dataObject = gson.fromJson(json, type);
@@ -95,5 +104,14 @@ public class DataUtils {
             File file = new File(fileName);
             file.delete();
         }
+    }
+
+    public static boolean validateTextEntryNotEmpty(@NonNull EditText field) {
+        return !TextUtils.isEmpty(field.getText());
+    }
+
+    public static boolean validateTextEntryIsValid(@NonNull EditText field, @NonNull Pattern
+            formatPattern) {
+        return formatPattern.matcher(field.getText()).matches();
     }
 }

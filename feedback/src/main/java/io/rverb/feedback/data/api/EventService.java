@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import java.io.Serializable;
 
 import io.rverb.feedback.model.Event;
+import io.rverb.feedback.utility.DataUtils;
 
 public class EventService extends IntentService {
     public EventService() {
@@ -15,8 +16,8 @@ public class EventService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Serializable eventObject = intent.getSerializableExtra("data");
-        String tempFileName = intent.getStringExtra("temp_file_name");
+        Serializable eventObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
+        String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
 
         if (eventObject == null) {
             throw new NullPointerException("Intent's data object is null");

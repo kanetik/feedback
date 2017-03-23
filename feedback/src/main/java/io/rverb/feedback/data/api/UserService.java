@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Patch;
+import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
 public class UserService extends IntentService {
@@ -18,8 +19,8 @@ public class UserService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Serializable userObject = intent.getSerializableExtra("data");
-        String tempFileName = intent.getStringExtra("temp_file_name");
+        Serializable userObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
+        String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
 
         if (userObject == null) {
             throw new NullPointerException("Intent's data object is null");

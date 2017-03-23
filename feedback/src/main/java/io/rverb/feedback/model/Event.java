@@ -6,6 +6,7 @@ import android.content.Intent;
 import java.util.Map;
 
 import io.rverb.feedback.data.api.EventService;
+import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.DateUtils;
 
 public class Event implements Cacheable {
@@ -39,8 +40,8 @@ public class Event implements Cacheable {
     public Intent getServiceIntent(Context context, String cacheFileName) {
         Intent serviceIntent = new Intent(context, EventService.class);
 
-        serviceIntent.putExtra("temp_file_name", cacheFileName);
-        serviceIntent.putExtra("data", this);
+        serviceIntent.putExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME, cacheFileName);
+        serviceIntent.putExtra(DataUtils.EXTRA_DATA, this);
 
         return serviceIntent;
     }

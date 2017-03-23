@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.Session;
+import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
 public class SessionService extends IntentService {
@@ -16,8 +17,8 @@ public class SessionService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Serializable sessionObject = intent.getSerializableExtra("data");
-        String tempFileName = intent.getStringExtra("temp_file_name");
+        Serializable sessionObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
+        String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
 
         if (sessionObject == null) {
             throw new NullPointerException("Intent's data object is null");

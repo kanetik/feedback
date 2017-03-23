@@ -11,6 +11,7 @@ import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.utility.AppUtils;
+import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
 public class FeedbackService extends IntentService {
@@ -20,9 +21,9 @@ public class FeedbackService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Serializable feedbackObject = intent.getSerializableExtra("data");
-        String tempFileName = intent.getStringExtra("temp_file_name");
-        String screenshotFileName = intent.getStringExtra("screenshot_file_name");
+        Serializable feedbackObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
+        String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
+        String screenshotFileName = intent.getStringExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME);
 
         if (feedbackObject == null) {
             throw new NullPointerException("Intent's data object is null");
