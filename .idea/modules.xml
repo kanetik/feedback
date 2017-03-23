@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/feedback/feedback.iml" filepath="$PROJECT_DIR$/feedback/feedback.iml" />
       <module fileurl="file://$PROJECT_DIR$/rverb.io-android-sdk.iml" filepath="$PROJECT_DIR$/rverb.io-android-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testapp2/testapp2.iml" filepath="$PROJECT_DIR$/testapp2/testapp2.iml" />
     </modules>
   </component>
 </project>
