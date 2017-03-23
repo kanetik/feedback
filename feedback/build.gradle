@@ -5,7 +5,7 @@ plugins {
 
 apply plugin: 'com.android.library'
 
-project.ext.set("libraryVersion", "0.2.1-alpha")
+project.ext.set("libraryVersion", "0.3.0-alpha")
 
 android {
     compileSdkVersion 25
@@ -19,6 +19,7 @@ android {
         versionName project.libraryVersion
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.generatedDensities = ['hdpi', 'xhdpi', 'xxhdpi']
 
     }
     buildTypes {
@@ -73,7 +74,8 @@ bintray {
     pkg {
         repo = 'feedback'
         name = 'android-sdk'
-        userOrg = 'rverbio' //An optional organization name when the repo belongs to one of the user's orgs
+        userOrg = 'rverbio'
+        //An optional organization name when the repo belongs to one of the user's orgs
         desc = 'Android SDK for Rverb.io Feedback'
         websiteUrl = 'https://rverb.io'
         issueTrackerUrl = 'https://github.com/rverbio/android-sdk/issues'
@@ -94,19 +96,9 @@ bintray {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.+'
-    compile 'com.android.support:design:25.+'
-    compile 'com.squareup.okhttp3:okhttp:3.6.+'
-    compile 'com.google.code.gson:gson:2.8.+'
-
-    debugCompile 'com.facebook.stetho:stetho:latest.release'
-    debugCompile 'com.facebook.stetho:stetho-okhttp3:latest.release'
 
     //Dependencies for JUNit and unit tests.
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.2.11'
     //Dependencies for Espresso
-    androidTestCompile 'com.android.support:appcompat-v7:25.+'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -128,4 +120,14 @@ dependencies {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
     }
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support:design:25.3.0'
+    compile 'com.squareup.okhttp3:okhttp:3.6.+'
+    compile 'com.google.code.gson:gson:2.8.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.2.11'
+    androidTestCompile 'com.android.support:appcompat-v7:25.3.0'
+    debugCompile 'com.facebook.stetho:stetho:latest.release'
+    debugCompile 'com.facebook.stetho:stetho-okhttp3:latest.release'
 }
