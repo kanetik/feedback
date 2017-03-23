@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.rverb.feedback">
 
@@ -6,17 +7,26 @@
 
     <application>
         <service
-            android:name="io.rverb.feedback.data.api.SessionService"
+            android:name=".data.api.SessionService"
             android:exported="false" />
         <service
-            android:name="io.rverb.feedback.data.api.EventService"
+            android:name=".data.api.EventService"
             android:exported="false" />
         <service
-            android:name="io.rverb.feedback.data.api.UserService"
+            android:name=".data.api.UserService"
             android:exported="false" />
         <service
-            android:name="io.rverb.feedback.data.api.FeedbackService"
+            android:name=".data.api.FeedbackService"
             android:exported="false" />
+
+        <activity
+            android:name=".presentation.FeedbackActivity"
+            android:label="Rverbio Feedback"
+            android:theme="@style/RverbioTheme.NoActionBar" />
+        <activity
+            android:name=".presentation.ScreenshotPreviewActivity"
+            android:label="Screenshot Editor"
+            android:theme="@style/RverbioTheme.NoActionBar" />
     </application>
 
 </manifest>
