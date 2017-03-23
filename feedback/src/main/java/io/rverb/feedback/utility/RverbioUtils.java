@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,13 +33,13 @@ import io.rverb.feedback.model.EndUser;
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
 public class RverbioUtils {
-    public static final String EXTRA_DATA_APP_VERSION = "App_Version";
-    public static final String EXTRA_DATA_LOCALE = "Locale";
-    public static final String EXTRA_DATA_MANUFACTURER = "Device_Manufacturer";
-    public static final String EXTRA_DATA_MODEL = "Device_Model";
-    public static final String EXTRA_DATA_DEVICE_NAME = "Device_Name";
-    public static final String EXTRA_DATA_OS_VERSION = "OS_Version";
-    public static final String EXTRA_DATA_NETWORK_TYPE = "Network_Type";
+    public static final String DATA_APP_VERSION = "App_Version";
+    public static final String DATA_LOCALE = "Locale";
+    public static final String DATA_MANUFACTURER = "Device_Manufacturer";
+    public static final String DATA_MODEL = "Device_Model";
+    public static final String DATA_DEVICE_NAME = "Device_Name";
+    public static final String DATA_OS_VERSION = "OS_Version";
+    public static final String DATA_NETWORK_TYPE = "Network_Type";
 
     private static final String RVERBIO_PREFS = "rverbio";
     private static final String END_USER_KEY = "end_user_id";
@@ -118,6 +119,23 @@ public class RverbioUtils {
         }
     }
 
+    public static File takeScreenshot(Activity activity) {
+        File screenshot = createScreenshotFile(activity);
+        if (screenshot != null) {
+            LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
+
+            Uri path = Uri.fromFile(screenshot);
+            if (path != null) {
+                return screenshot;
+            }
+
+            // TODO: The image uploadUrl expires after 30 minutes. If the image hasn't been uploaded
+            // by then, delete the local copy. Make the timeout configurable.
+        }
+
+        return null;
+    }
+
     public static File createScreenshotFile(@NonNull Activity activity) {
         try {
             File imageFile = File.createTempFile("rv_screenshot", ".png", activity.getCacheDir());
@@ -164,13 +182,13 @@ public class RverbioUtils {
     public static Map<String, String> getExtraData(Context context) {
         Map<String, String> data = new ArrayMap<>();
 
-        data.put(EXTRA_DATA_APP_VERSION, AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
-        data.put(EXTRA_DATA_LOCALE, Locale.getDefault().toString());
-        data.put(EXTRA_DATA_MANUFACTURER, Build.MANUFACTURER);
-        data.put(EXTRA_DATA_MODEL, Build.MODEL);
-        data.put(EXTRA_DATA_DEVICE_NAME, Build.PRODUCT);
-        data.put(EXTRA_DATA_OS_VERSION, Build.VERSION.RELEASE);
-        data.put(EXTRA_DATA_NETWORK_TYPE, RverbioUtils.getNetworkType(context));
+        data.put(DATA_APP_VERSION, AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
+        data.put(DATA_LOCALE, Locale.getDefault().toString());
+        data.put(DATA_MANUFACTURER, Build.MANUFACTURER);
+        data.put(DATA_MODEL, Build.MODEL);
+        data.put(DATA_DEVICE_NAME, Build.PRODUCT);
+        data.put(DATA_OS_VERSION, Build.VERSION.RELEASE);
+        data.put(DATA_NETWORK_TYPE, RverbioUtils.getNetworkType(context));
 
         return data;
     }
