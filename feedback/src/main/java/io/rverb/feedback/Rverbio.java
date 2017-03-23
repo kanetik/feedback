@@ -1,9 +1,8 @@
 package io.rverb.feedback;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
@@ -16,8 +15,9 @@ import java.util.Map;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
-import io.rverb.feedback.presentation.RverbioFeedbackDialogFragment;
+import io.rverb.feedback.presentation.FeedbackActivity;
 import io.rverb.feedback.utility.AppUtils;
+import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
 @Keep
@@ -46,7 +46,7 @@ public class Rverbio {
     /**
      * Initializes the Rverbio singleton. The developer's interactions with rverb.io will be
      * entirely via the singleton.
-     *
+     * <p>
      * Initialization must be done before the Rverbio singleton can be used.
      *
      * @param context Activity or Application Context
@@ -58,7 +58,7 @@ public class Rverbio {
     /**
      * Initializes the Rverbio singleton, with options. The developer's interactions with
      * rverb.io will be entirely via the singleton.
-     *
+     * <p>
      * Initialization must be done before the Rverbio singleton can be used.
      *
      * @param context Activity or Application Context
@@ -97,9 +97,9 @@ public class Rverbio {
     /**
      * Sends the user's request to the developer.
      *
-     * @param feedbackType   The type of feedback submitted by the user.
-     * @param feedbackText   The text submitted by the end-user.
-     * @param screenshot The screenshot of the app visible on the user's screen.
+     * @param feedbackType The type of feedback submitted by the user.
+     * @param feedbackText The text submitted by the end-user.
+     * @param screenshot   The screenshot of the app visible on the user's screen.
      */
     public void sendFeedback(String feedbackType, String feedbackText, File screenshot) {
         String screenshotFileName = "";
@@ -124,12 +124,11 @@ public class Rverbio {
      * data provided, including empty strings. If you only want to update one field, use the
      * appropriate update method.
      *
-     * @param emailAddress The end-user's contact email address.
+     * @param emailAddress   The end-user's contact email address.
      * @param userIdentifier A string that the developer knows the user by; for instance, a
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
-     *
-     * @see Rverbio#setUserEmail( String)
+     * @see Rverbio#setUserEmail(String)
      * @see Rverbio#setUserIdentifier(String)
      */
     public void setUserInfo(@NonNull String emailAddress, @NonNull String userIdentifier) {
@@ -144,7 +143,6 @@ public class Rverbio {
      * Updates the user's email address.
      *
      * @param emailAddress The end-user's contact email address.
-     *
      * @see Rverbio#setUserInfo(String, String)
      * @see Rverbio#setUserIdentifier(String)
      */
@@ -161,7 +159,6 @@ public class Rverbio {
      * @param userIdentifier A string that the developer knows the user by; for instance, a
      *                       useraccount number. This should never include private information like
      *                       credit card numbers or phone numbers.
-     *
      * @see Rverbio#setUserInfo(String, String)
      * @see Rverbio#setUserEmail(String)
      */
@@ -173,56 +170,23 @@ public class Rverbio {
     }
 
     /**
-     * Show the feedback dialog
+     * Show the feedback activity
      *
-     * @param activity The activity on which you wish to show the feedback dialog. This activity
-     *                 must be a subclass of Activity.
+     * @param context The context from which you are launching the Feedback Activity.
      */
-    public void showDialog(@NonNull Activity activity) {
-        FragmentManager manager = activity.getFragmentManager();
-        Fragment frag = manager.findFragmentByTag("fragment_edit_name");
-
-        if (frag != null) {
-            manager.beginTransaction().remove(frag).commit();
+    public void startFeedbackActivity(@NonNull Context context) {
+        File screenshot = null;
+        if (context instanceof Activity && Rverbio._options.isAttachScreenshotEnabled()) {
+            screenshot = RverbioUtils.takeScreenshot((Activity) context);
         }
 
-        final RverbioFeedbackDialogFragment fragment = RverbioFeedbackDialogFragment.create();
-        fragment.show(manager, "fragment_edit_name");
+        Intent feedbackIntent = new Intent(context, FeedbackActivity.class);
+        if (screenshot != null) {
+            feedbackIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, screenshot.getAbsolutePath());
+        }
+
+        context.startActivity(feedbackIntent);
     }
-
-//    /**
-//     * Takes a screenshot of the app as currently visible on the user's device. This
-//     * will give the developer context around the comments or questions submitted by the user.
-//     *
-//     * @param activity The activity from which you wish to take a screenshot.
-//     */
-//    public File takeScreenshot(@NonNull Activity activity) {
-//        File screenshot = RverbioUtils.createScreenshotFile(activity);
-//        if (screenshot != null) {
-//            LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
-//
-//            Uri path = Uri.fromFile(screenshot);
-//            if (path != null) {
-//                return screenshot;
-//            }
-//
-//            // TODO: The image uploadUrl expires after 30 minutes. If the image hasn't been uploaded
-//            // by then, delete the local copy. Make the timeout configurable.
-//        }
-//
-//        return null;
-//    }
-
-//    /**
-//     * Logs events related to feedback, such as feedback request started, session started, etc.
-//     *
-//     * @param event The event to track.
-//     */
-//    public void sendEvent(String event) {
-//        EndUser endUser = RverbioUtils.getEndUser(_appContext);
-//        Event eventData = new Event(endUser.endUserId, event);
-//        RverbioUtils.recordData(_appContext, eventData);
-//    }
 
     private Rverbio setSessionData() {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
