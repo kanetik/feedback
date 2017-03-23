@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="rverb_red">#FF0000</color>
+    <color name="rverb_primary_text">#414141</color>
+    <color name="rverb_secondary_text">#828282</color>
+    <color name="rverb_light_gray">#A3A3A3</color>
 </resources>
