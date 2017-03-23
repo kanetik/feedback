@@ -6,8 +6,22 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.support.annotation.AttrRes;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.ActionBar;
+import android.util.TypedValue;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import io.rverb.feedback.R;
 
@@ -102,5 +116,43 @@ public class AppUtils {
 
         NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         notifyMgr.notify(notificationId, builder.build());
+    }
+
+    @ColorInt
+    public static int getToolbarThemeColor(@NonNull ActionBar supportActionBar, @AttrRes int attributeColor) {
+        int colorAttr;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            colorAttr = android.R.attr.colorAccent;
+        } else {
+            colorAttr = supportActionBar.getThemedContext().getResources()
+                    .getIdentifier("colorAccent", "attr", getPackageName(supportActionBar.getThemedContext()));
+        }
+
+        TypedValue outValue = new TypedValue();
+        supportActionBar.getThemedContext().getTheme().resolveAttribute(colorAttr, outValue, true);
+
+        return outValue.data;
+    }
+
+    public static void tintSupportBarIcon(@NonNull Context context, @NonNull MenuItem menuItem) {
+        Drawable icon = menuItem.getIcon().mutate();
+        DrawableCompat.setTint(icon, ContextCompat.getColor(context, R.color.rverb_light_gray));
+        menuItem.setIcon(icon);
+    }
+
+    public static void tintSupportBarIcon(@NonNull ActionBar supportActionBar, @NonNull MenuItem menuItem,
+                                          @ColorRes @AttrRes int colorResource) {
+        Drawable icon = menuItem.getIcon().mutate();
+        DrawableCompat.setTint(icon, getToolbarThemeColor(supportActionBar, colorResource));
+        menuItem.setIcon(icon);
+    }
+
+    public static Drawable tintDrawable(@NonNull Context context, @DrawableRes int drawableResource, @ColorRes int
+            colorResource) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableResource).mutate();
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(context, colorResource));
+
+        return drawable;
     }
 }
