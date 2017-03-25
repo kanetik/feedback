@@ -8,7 +8,7 @@
     android:padding="16dp"
     android:theme="@style/RverbioTheme"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="io.rverb.feedback.presentation.FeedbackActivity"
+    tools:context="io.rverb.feedback.presentation.RverbioFeedbackActivity"
     tools:showIn="@layout/rverb_activity_feedback">
 
     <android.support.design.widget.TextInputLayout
@@ -86,9 +86,9 @@
         android:id="@+id/rverb_powered_by"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/rverb_rverbio_logo"
+        android:drawableLeft="@drawable/rverb_logo"
         android:drawablePadding="4dp"
-        android:drawableStart="@drawable/rverb_rverbio_logo"
+        android:drawableStart="@drawable/rverb_logo"
         android:text="@string/rverb_powered_by"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"

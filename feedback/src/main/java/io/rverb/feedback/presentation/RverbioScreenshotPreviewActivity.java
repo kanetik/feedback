@@ -22,7 +22,7 @@ import java.io.IOException;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 
-public class ScreenshotPreviewActivity extends AppCompatActivity {
+public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
     DrawingView dv;
     private Paint mPaint;
     private String mScreenshotPath;

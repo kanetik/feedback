@@ -1,6 +1,8 @@
 package io.rverb.feedback.presentation;
 
 import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -24,7 +26,6 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.Locale;
-import java.util.Map;
 
 import io.rverb.feedback.R;
 import io.rverb.feedback.Rverbio;
@@ -35,7 +36,7 @@ import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
-public class FeedbackActivity extends AppCompatActivity {
+public class RverbioFeedbackActivity extends AppCompatActivity {
     private String _screenshotFileName;
     private boolean _suppressScreenshot = false;
 
@@ -53,6 +54,8 @@ public class FeedbackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rverb_activity_feedback);
 
+        sendEvent(Event.EVENT_TYPE_FEEDBACK_START);
+
         Intent intent = getIntent();
         if (intent != null) {
             _screenshotFileName = getIntent().getStringExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME);
@@ -61,9 +64,10 @@ public class FeedbackActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(AppUtils.getAppLabel(this) + " Feedback");
+        getSupportActionBar().setTitle(String.format(Locale.US, getString(R.string.rverb_feedback_title_format, AppUtils
+                .getAppLabel(this))));
 
-        Drawable closeIcon = AppUtils.tintDrawable(this, R.drawable.ic_close_24dp, R.color
+        Drawable closeIcon = AppUtils.tintDrawable(this, R.drawable.rverb_close_24dp, R.color
                 .rverb_primary_text);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(closeIcon);
@@ -86,7 +90,7 @@ public class FeedbackActivity extends AppCompatActivity {
         _rverbPoweredBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppUtils.openWebPage(FeedbackActivity.this, "https://rverb.io");
+                AppUtils.openWebPage(RverbioFeedbackActivity.this, "https://rverb.io");
             }
         });
 
@@ -129,27 +133,23 @@ public class FeedbackActivity extends AppCompatActivity {
         });
 
         final EndUser endUser = RverbioUtils.getEndUser(this);
-
         if (endUser != null && !TextUtils.isEmpty(endUser.emailAddress)) {
             _rverbEmail.setText(endUser.emailAddress);
             _rverbEmailLayout.setVisibility(View.GONE);
         }
 
-        StringBuilder dataString = new StringBuilder();
-
-        for (Map.Entry<String, String> data : RverbioUtils.getExtraData(this)
-                .entrySet()) {
-            if (dataString.length() > 0) {
-                dataString.append("\n");
-            }
-
-            dataString.append(data.getKey().replace("_", " ")).append(": ").append(data.getValue());
-        }
-
         final ClickableSpan span = new ClickableSpan() {
             @Override
             public void onClick(View textView) {
-                // TODO: Show details in dialog.
+                FragmentManager manager = getFragmentManager();
+                Fragment frag = manager.findFragmentByTag("fragment_data_items");
+
+                if (frag != null) {
+                    manager.beginTransaction().remove(frag).commit();
+                }
+
+                final RverbioDataItemDialogFragment fragment = RverbioDataItemDialogFragment.create();
+                fragment.show(manager, "fragment_data_items");
             }
         };
 
@@ -165,7 +165,7 @@ public class FeedbackActivity extends AppCompatActivity {
         }
 
         if (screenshot != null) {
-            final Intent previewScreenshotIntent = new Intent(this, ScreenshotPreviewActivity.class);
+            final Intent previewScreenshotIntent = new Intent(this, RverbioScreenshotPreviewActivity.class);
             previewScreenshotIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, _screenshotFileName);
 
             _rverbThumbnail.setImageDrawable(Drawable.createFromPath(_screenshotFileName));
@@ -197,8 +197,7 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     private boolean validateForm() {
-        boolean feedbackEntered = DataUtils.validateTextEntryNotEmpty(_rverbFeedbackLayout
-                .getEditText());
+        boolean feedbackEntered = DataUtils.validateTextEntryNotEmpty(_rverbFeedbackLayout.getEditText());
         boolean emailEntered = DataUtils.validateTextEntryNotEmpty(_rverbEmailLayout.getEditText());
         boolean emailValid = DataUtils.validateTextEntryIsValid(_rverbEmailLayout.getEditText(),
                 Patterns.EMAIL_ADDRESS);

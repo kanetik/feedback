@@ -4,18 +4,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.Session;
-import io.rverb.feedback.presentation.FeedbackActivity;
+import io.rverb.feedback.presentation.RverbioFeedbackActivity;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.RverbioUtils;
@@ -23,7 +27,7 @@ import io.rverb.feedback.utility.RverbioUtils;
 @Keep
 public class Rverbio {
     private static Context _appContext;
-    private static HashMap<String, String> _contextData;
+    private static ArrayList<DataItem> _contextData;
     private static RverbioOptions _options;
 
     private static final Rverbio _instance = new Rverbio();
@@ -67,7 +71,7 @@ public class Rverbio {
     public static void initialize(Context context, RverbioOptions options) {
         _appContext = context.getApplicationContext();
         _options = options;
-        _contextData = new HashMap<>();
+        _contextData = new ArrayList<>();
 
         // Send any previously queued requests
         RverbioUtils.sendQueuedRequests(_appContext);
@@ -84,13 +88,21 @@ public class Rverbio {
         return _options;
     }
 
-    /**
-     * Gets the collection of Key/Value Pairs that will be sent with a feedback request
-     * You can add and remove items as you would to any map.
-     *
-     * @return HashMap of context data items
-     */
-    public HashMap<String, String> getContextData() {
+//    /**
+//     * Gets the collection of Key/Value Pairs that will be sent with a feedback request
+//     * You can add and remove items as you would to any map.
+//     *
+//     * @return HashMap of context data items
+//     */
+//    public ArrayList<DataItem> getContextData() {
+//        return _contextData;
+//    }
+
+    public void addContextDataItem(String key, String value) {
+        _contextData.add(new DataItem(key, value));
+    }
+
+    public ArrayList<DataItem> getContextData() {
         return _contextData;
     }
 
@@ -180,7 +192,7 @@ public class Rverbio {
             screenshot = RverbioUtils.takeScreenshot((Activity) context);
         }
 
-        Intent feedbackIntent = new Intent(context, FeedbackActivity.class);
+        Intent feedbackIntent = new Intent(context, RverbioFeedbackActivity.class);
         if (screenshot != null) {
             feedbackIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, screenshot.getAbsolutePath());
         }
@@ -198,10 +210,10 @@ public class Rverbio {
     }
 
     private void addContextData(Feedback feedback) {
-        Map<String, String> contextData = Rverbio.getInstance().getContextData();
-
-        if (contextData != null && contextData.size() > 0) {
-            feedback.contextData = contextData;
+        if (_contextData != null) {
+            for (DataItem dataItem : _contextData) {
+                feedback.contextData.put(dataItem.key, dataItem.value);
+            }
         }
     }
 

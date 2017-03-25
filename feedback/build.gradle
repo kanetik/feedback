@@ -24,8 +24,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "api_base_url", "https://www.rverb.io/api/"
         }
@@ -130,4 +131,6 @@ dependencies {
     androidTestCompile 'com.android.support:appcompat-v7:25.3.0'
     debugCompile 'com.facebook.stetho:stetho:latest.release'
     debugCompile 'com.facebook.stetho:stetho-okhttp3:latest.release'
+    compile 'com.android.support:support-v4:25.3.0'
+    compile 'com.android.support:recyclerview-v7:25.3.0'
 }

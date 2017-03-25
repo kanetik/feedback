@@ -13,14 +13,12 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.util.TypedValue;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import io.rverb.feedback.R;
@@ -110,7 +108,7 @@ public class AppUtils {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_rverbio_logo_no_words)
+                .setSmallIcon(R.drawable.rverb_logo)
                 .setContentTitle(title)
                 .setContentText(content);
 

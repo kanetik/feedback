@@ -20,11 +20,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".presentation.FeedbackActivity"
+            android:name=".presentation.RverbioFeedbackActivity"
             android:label="Rverbio Feedback"
             android:theme="@style/RverbioTheme.NoActionBar" />
         <activity
-            android:name=".presentation.ScreenshotPreviewActivity"
+            android:name=".presentation.RverbioScreenshotPreviewActivity"
             android:label="Screenshot Editor"
             android:theme="@style/RverbioTheme.NoActionBar" />
     </application>

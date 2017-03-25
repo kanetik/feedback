@@ -21,13 +21,16 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 import io.rverb.feedback.model.Cacheable;
+import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
 
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
@@ -179,16 +182,17 @@ public class RverbioUtils {
         return bundle.getString("io.rverb.apiKey");
     }
 
-    public static Map<String, String> getExtraData(Context context) {
-        Map<String, String> data = new ArrayMap<>();
+    public static ArrayList<DataItem> getExtraData(Context context) {
+        ArrayList<DataItem> data = new ArrayList<>();
 
-        data.put(DATA_APP_VERSION, AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")");
-        data.put(DATA_LOCALE, Locale.getDefault().toString());
-        data.put(DATA_MANUFACTURER, Build.MANUFACTURER);
-        data.put(DATA_MODEL, Build.MODEL);
-        data.put(DATA_DEVICE_NAME, Build.PRODUCT);
-        data.put(DATA_OS_VERSION, Build.VERSION.RELEASE);
-        data.put(DATA_NETWORK_TYPE, RverbioUtils.getNetworkType(context));
+        data.add(new DataItem(DATA_APP_VERSION,
+                AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")"));
+        data.add(new DataItem(DATA_LOCALE, Locale.getDefault().toString()));
+        data.add(new DataItem(DATA_MANUFACTURER, Build.MANUFACTURER));
+        data.add(new DataItem(DATA_MODEL, Build.MODEL));
+        data.add(new DataItem(DATA_DEVICE_NAME, Build.PRODUCT));
+        data.add(new DataItem(DATA_OS_VERSION, Build.VERSION.RELEASE));
+        data.add(new DataItem(DATA_NETWORK_TYPE, RverbioUtils.getNetworkType(context)));
 
         return data;
     }

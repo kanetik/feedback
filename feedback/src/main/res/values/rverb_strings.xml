@@ -9,4 +9,5 @@
     <string name="rverb_email_address_hint">Email Address</string>
     <string name="rverb_remove_screenshot">Remove screenshot</string>
     <string name="rverb_screenshot">Screenshot</string>
+    <string name="rverb_data_items">Data to be included</string>
 </resources>

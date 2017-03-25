@@ -2,4 +2,5 @@
 <resources>
     <dimen name="rverb_dialog_padding">24dp</dimen>
     <dimen name="rverb_dialog_fields_padding">22dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>
