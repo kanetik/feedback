@@ -108,7 +108,7 @@ public class AppUtils {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.rverb_logo)
+                .setSmallIcon(R.drawable.rverb_logo_grayscale)
                 .setContentTitle(title)
                 .setContentText(content);
 
