@@ -24,9 +24,8 @@ android {
     }
     buildTypes {
         release {
-            debuggable true
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "api_base_url", "https://www.rverb.io/api/"
         }
