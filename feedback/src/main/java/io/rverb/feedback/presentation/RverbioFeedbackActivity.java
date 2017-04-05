@@ -10,8 +10,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
@@ -47,6 +45,8 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
     private TextInputLayout _rverbEmailLayout;
     private TextView _rverbAdditionalDataDescription;
     private ImageView _rverbThumbnail;
+    private TextView _rverbEditScreenshot;
+    private TextView _rverbViewData;
     private ImageView _rverbThumbnailDelete;
 
     @Override
@@ -64,8 +64,8 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(String.format(Locale.US, getString(R.string.rverb_feedback_title_format, AppUtils
-                .getAppLabel(this))));
+        getSupportActionBar().setTitle(String.format(Locale.US, getString(R.string.rverb_feedback_title_format),
+                AppUtils.getAppLabel(this)));
 
         Drawable closeIcon = AppUtils.tintDrawable(this, R.drawable.rverb_close_24dp, R.color
                 .rverb_primary_text);
@@ -83,6 +83,8 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
         _rverbEmail = (EditText) findViewById(R.id.rverb_email);
         _rverbEmailLayout = (TextInputLayout) findViewById(R.id.rverb_email_layout);
         _rverbThumbnail = (ImageView) findViewById(R.id.rverb_thumbnail);
+        _rverbEditScreenshot = (TextView) findViewById(R.id.rverb_edit_screenshot);
+        _rverbViewData = (TextView) findViewById(R.id.rverb_view_data);
         _rverbAdditionalDataDescription = (TextView) findViewById(R.id
                 .rverb_additional_data_description);
         _rverbThumbnailDelete = (ImageView) findViewById(R.id.rverb_thumbnail_delete);
@@ -138,9 +140,9 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
             _rverbEmailLayout.setVisibility(View.GONE);
         }
 
-        final ClickableSpan span = new ClickableSpan() {
+        _rverbViewData.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View textView) {
+            public void onClick(View v) {
                 FragmentManager manager = getFragmentManager();
                 Fragment frag = manager.findFragmentByTag("fragment_data_items");
 
@@ -149,13 +151,36 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
                 }
 
                 final RverbioDataItemDialogFragment fragment = RverbioDataItemDialogFragment.create();
+                fragment.setShowsDialog(true);
                 fragment.show(manager, "fragment_data_items");
             }
-        };
+        });
 
-        setLinkText(_rverbAdditionalDataDescription, span);
+        _rverbEditScreenshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        _rverbAdditionalDataDescription.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        });
+
+//        final ClickableSpan span = new ClickableSpan() {
+//            @Override
+//            public void onClick(View textView) {
+//                FragmentManager manager = getFragmentManager();
+//                Fragment frag = manager.findFragmentByTag("fragment_data_items");
+//
+//                if (frag != null) {
+//                    manager.beginTransaction().remove(frag).commit();
+//                }
+//
+//                final RverbioDataItemDialogFragment fragment = RverbioDataItemDialogFragment.create();
+//                fragment.show(manager, "fragment_data_items");
+//            }
+//        };
+
+//        setLinkText(_rverbAdditionalDataDescription, span);
+
+//        _rverbAdditionalDataDescription.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void setupScreenshotUI() {
@@ -169,13 +194,14 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
             previewScreenshotIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, _screenshotFileName);
 
             _rverbThumbnail.setImageDrawable(Drawable.createFromPath(_screenshotFileName));
-            _rverbThumbnail.setOnClickListener(new View.OnClickListener() {
+            _rverbEditScreenshot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivityForResult(previewScreenshotIntent, 764);
                 }
             });
         } else {
+            _rverbEditScreenshot.setVisibility(View.GONE);
             _rverbThumbnail.setVisibility(View.GONE);
             _rverbThumbnailDelete.setVisibility(View.GONE);
         }
@@ -186,6 +212,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     _suppressScreenshot = true;
 
+                    _rverbEditScreenshot.setVisibility(View.GONE);
                     _rverbThumbnail.setVisibility(View.GONE);
                     _rverbThumbnailDelete.setVisibility(View.GONE);
 
@@ -205,22 +232,22 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
         return feedbackEntered && emailEntered && emailValid;
     }
 
-    private void setLinkText(TextView showAll, ClickableSpan span) {
-        String extraDataClickable = getString(R.string.rverb_extra_data_description_clickable);
-        String extraDataDescription = String.format(Locale.getDefault(),
-                getString(R.string.rverb_extra_data_description),
-                extraDataClickable);
-        SpannableString ss = new SpannableString(extraDataDescription);
-
-        int startSpan = extraDataDescription.indexOf(extraDataClickable);
-        int endSpan = startSpan + extraDataClickable.length();
-
-        if (extraDataClickable.length() > 0) {
-            ss.setSpan(span, startSpan, endSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-
-        showAll.setText(ss);
-    }
+//    private void setLinkText(TextView showAll, ClickableSpan span) {
+//        String extraDataClickable = getString(R.string.rverb_extra_data_description_clickable);
+//        String extraDataDescription = String.format(Locale.getDefault(),
+//                getString(R.string.rverb_extra_data_description),
+//                extraDataClickable);
+//        SpannableString ss = new SpannableString(extraDataDescription);
+//
+//        int startSpan = extraDataDescription.indexOf(extraDataClickable);
+//        int endSpan = startSpan + extraDataClickable.length();
+//
+//        if (extraDataClickable.length() > 0) {
+//            ss.setSpan(span, startSpan, endSpan, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//        }
+//
+//        showAll.setText(ss);
+//    }
 
     public void sendEvent(String event) {
         EndUser endUser = RverbioUtils.getEndUser(this);

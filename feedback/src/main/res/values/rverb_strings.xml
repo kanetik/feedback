@@ -2,12 +2,13 @@
     <string name="rverb_library_name">Rverb.io Feedback SDK</string>
     <string name="rverb_feedback_title_format">%s Feedback</string>
     <string name="rverb_send_feedback">Send Feedback</string>
-    <string name="rverb_extra_data_description_clickable">screenshot &amp; some additional data</string>
-    <string name="rverb_extra_data_description">In order to provide excellent customer service, a %s will be sent with this feedback.</string>
+    <string name="rverb_extra_data_description_clickable">View Data</string>
+    <string name="rverb_extra_data_description">In order to provide excellent customer service, a screenshot &amp; some additional data will be sent with this feedback.</string>
     <string name="rverb_powered_by">Powered by Rverb.io</string>
     <string name="rverb_feedback_hint">How can we help you?</string>
     <string name="rverb_email_address_hint">Email Address</string>
     <string name="rverb_remove_screenshot">Remove screenshot</string>
     <string name="rverb_screenshot">Screenshot</string>
     <string name="rverb_data_items">Data to be included</string>
+    <string name="rverb_edit_screenshot">Edit Screenshot</string>
 </resources>

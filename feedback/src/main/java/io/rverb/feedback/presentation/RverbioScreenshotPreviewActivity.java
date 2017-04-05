@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +36,8 @@ public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(screenshotPath)) {
             finish();
         }
+
+        Toast.makeText(this, "Swipe to mark through items", Toast.LENGTH_LONG).show();
 
         mScreenshotPath = screenshotPath;
 
