@@ -44,6 +44,15 @@ public class Rverbio {
     }
 
     /**
+     * Helper method that indicates if Rverbio has been initialized
+     *
+     * @return boolean indicating that initialization has or has not occurred
+     */
+    public static boolean isInitialized() {
+        return _appContext != null;
+    }
+
+    /**
      * Initializes the Rverbio singleton. The developer's interactions with rverb.io will be
      * entirely via the singleton.
      * <p>

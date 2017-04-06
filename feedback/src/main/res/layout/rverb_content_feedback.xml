@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/rverb_email_address_hint"
-            android:inputType="text|textEmailAddress|textAutoComplete|textWebEmailAddress" />
+            android:inputType="text|textEmailAddress" />
     </android.support.design.widget.TextInputLayout>
 
     <TextView
