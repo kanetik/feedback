@@ -3,7 +3,9 @@ package io.rverb.feedback.utility;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class DateUtils {
@@ -15,10 +17,10 @@ public class DateUtils {
     }
 
     public static String nowUtc() {
-        DateFormat df = DateFormat.getDateTimeInstance();
-        df.setTimeZone(TimeZone.getTimeZone("gmt"));
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        df.setTimeZone(tz);
 
-        Calendar c = GregorianCalendar.getInstance();
-        return df.format(c.getTime());
+        return df.format(new Date());
     }
 }

@@ -4,16 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
@@ -211,9 +207,7 @@ public class Rverbio {
 
     private void addContextData(Feedback feedback) {
         if (_contextData != null) {
-            for (DataItem dataItem : _contextData) {
-                feedback.contextData.put(dataItem.key, dataItem.value);
-            }
+            feedback.contextData = _contextData;
         }
     }
 

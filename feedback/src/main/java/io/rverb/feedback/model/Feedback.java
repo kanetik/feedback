@@ -2,8 +2,9 @@ package io.rverb.feedback.model;
 
 import android.content.Context;
 import android.content.Intent;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.ArrayList;
+
 import io.rverb.feedback.data.api.FeedbackService;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.DateUtils;
@@ -18,7 +19,7 @@ public class Feedback implements Cacheable {
     public String endUserId;
     public String timestamp;
     public String feedbackType;
-    public Map<String, Object> contextData;
+    public ArrayList<DataItem> contextData;
     public String comment;
     public String appVersion;
     public String locale;
@@ -37,7 +38,7 @@ public class Feedback implements Cacheable {
         this.comment = comment;
         this.screenshotFileName = screenshotFileName;
         this.timestamp = DateUtils.nowUtc();
-        this.contextData = new HashMap<>();
+        this.contextData = new ArrayList<>();
     }
 
     @Override

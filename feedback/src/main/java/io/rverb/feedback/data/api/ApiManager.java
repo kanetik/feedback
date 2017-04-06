@@ -170,6 +170,7 @@ class ApiManager {
             try {
                 // Delete the temp file, if it exists
                 if (response.isSuccessful()) {
+                    LogUtils.d("PUT FILE Succeeded - " + response.request().url());
                     file.delete();
                 } else {
                     LogUtils.d("PUT FILE Failed - " + response.message());
