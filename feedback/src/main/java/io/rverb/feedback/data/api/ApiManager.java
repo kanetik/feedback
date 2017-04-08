@@ -155,7 +155,7 @@ class ApiManager {
         LogUtils.d("Uploading " + file.getName() + " to " + url);
 
         OkHttpClient client = ApiUtils.getOkHttpClient();
-        RequestBody requestBody = new FileRequestBody(file, "image/png");
+        RequestBody requestBody = new FileRequestBody(file, "image/jpeg");
 
         Request request = new Request.Builder()
                 .url(url)

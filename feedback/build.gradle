@@ -5,7 +5,7 @@ plugins {
 
 apply plugin: 'com.android.library'
 
-project.ext.set("libraryVersion", "0.3.4-alpha")
+project.ext.set("libraryVersion", "0.3.6-alpha")
 
 android {
     compileSdkVersion 25

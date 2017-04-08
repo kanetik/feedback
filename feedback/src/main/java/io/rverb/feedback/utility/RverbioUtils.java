@@ -141,7 +141,7 @@ public class RverbioUtils {
 
     public static File createScreenshotFile(@NonNull Activity activity) {
         try {
-            File imageFile = File.createTempFile("rv_screenshot", ".png", activity.getCacheDir());
+            File imageFile = File.createTempFile("rv_screenshot", ".jpg", activity.getCacheDir());
 
             View v1 = activity.getWindow().getDecorView().getRootView();
             v1.setDrawingCacheEnabled(true);
@@ -154,7 +154,7 @@ public class RverbioUtils {
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
 
             FileOutputStream fout = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 40, fout);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, fout);
 
             fout.flush();
             fout.close();

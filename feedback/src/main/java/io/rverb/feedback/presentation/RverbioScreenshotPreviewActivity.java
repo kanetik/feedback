@@ -172,7 +172,7 @@ public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
     public File updateScreenshotFile(@NonNull File imageFile, @NonNull Bitmap newScreenshot) {
         try {
             FileOutputStream fout = new FileOutputStream(imageFile);
-            newScreenshot.compress(Bitmap.CompressFormat.PNG, 40, fout);
+            newScreenshot.compress(Bitmap.CompressFormat.JPEG, 40, fout);
 
             fout.flush();
             fout.close();
