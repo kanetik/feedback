@@ -9,7 +9,9 @@ import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
@@ -93,18 +95,35 @@ public class Rverbio {
         return _options;
     }
 
-//    /**
-//     * Gets the collection of Key/Value Pairs that will be sent with a feedback request
-//     * You can add and remove items as you would to any map.
-//     *
-//     * @return HashMap of context data items
-//     */
-//    public ArrayList<DataItem> getContextData() {
-//        return _contextData;
-//    }
-
+    /**
+     * Add a single name-value pair to be sent to Rverb.io with a feedback request.
+     *
+     * @param key The name of the context data item
+     * @param value The value of the context data item
+     */
     public void addContextDataItem(String key, String value) {
         _contextData.add(new DataItem(key, value));
+    }
+
+    /**
+     * Add a collection of name-value pairs to be sent to Rverb.io with a feedback request.
+     *
+     * @param items The map of name-value pairs to be sent
+     */
+    public void addContextDataItems(Map<String, Object> items) {
+        for (Map.Entry<String, Object> item : items.entrySet()) {
+            _contextData.add(new DataItem(item.getKey(), item.getValue()));
+        }
+    }
+
+    /**
+     * Remove a single name-value pair from the context data to be sent to Rverb.io with
+     * a feedback request.
+     *
+     * @param key The name of the context data item to be removed
+     */
+    public void removeContextDataItem(String key) {
+        _contextData.remove(key);
     }
 
     public ArrayList<DataItem> getContextData() {
@@ -131,7 +150,7 @@ public class Rverbio {
                 feedbackText, screenshotFileName);
 
         addSystemData(feedbackData);
-        addContextData(feedbackData);
+        addInstanceContextDataToFeedback(feedbackData);
 
         RverbioUtils.recordData(_appContext, feedbackData);
     }
@@ -214,7 +233,7 @@ public class Rverbio {
         return this;
     }
 
-    private void addContextData(Feedback feedback) {
+    private void addInstanceContextDataToFeedback(Feedback feedback) {
         if (_contextData != null) {
             feedback.contextData = _contextData;
         }
