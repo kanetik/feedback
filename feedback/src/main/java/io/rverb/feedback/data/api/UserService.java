@@ -19,6 +19,10 @@ public class UserService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
         Serializable userObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
         String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
 
