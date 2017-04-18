@@ -2,16 +2,19 @@ package io.rverb.feedback.data.api;
 
 import android.content.Context;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
 import io.rverb.feedback.R;
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.FileRequestBody;
 import io.rverb.feedback.model.Patch;
+import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
@@ -137,17 +140,26 @@ class ApiManager {
                 if (response.isSuccessful()) {
                     DataUtils.deleteFile(tempFileName);
                 } else {
-                    LogUtils.d("PATCH " + endpoint + " Failed - " + response.message());
+                    String message = "PATCH " + endpoint + " Failed (1) - " + response.message();
+                    if (AppUtils.crashlyticsCapable()) {
+                        Crashlytics.logException(new Throwable(message));
+                    }
                 }
             } catch (Exception e) {
-                LogUtils.d("PATCH " + endpoint + " Exception: " + e.getMessage());
+                String message = "PATCH " + endpoint + " Failed (2) - " + response.message();
+                if (AppUtils.crashlyticsCapable()) {
+                    Crashlytics.logException(new Throwable(message, e));
+                }
             } finally {
                 if (responseBody != null) {
                     responseBody.close();
                 }
             }
         } catch (IOException e) {
-            LogUtils.d("PATCH " + endpoint + " IOException: " + e.getMessage());
+            String message = "PATCH " + endpoint + " Failed (3) - " + e.getMessage();
+            if (AppUtils.crashlyticsCapable()) {
+                Crashlytics.logException(new Throwable(message, e));
+            }
         }
     }
 

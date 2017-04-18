@@ -21,6 +21,9 @@ import android.support.v7.app.ActionBar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
 import io.rverb.feedback.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -152,5 +155,14 @@ public class AppUtils {
         DrawableCompat.setTint(drawable, ContextCompat.getColor(context, colorResource));
 
         return drawable;
+    }
+
+    public static boolean crashlyticsCapable() {
+        try {
+            Class c = Class.forName("io.fabric.sdk.android.Fabric");
+            return c != null && Fabric.isInitialized();
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }
