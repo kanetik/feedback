@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.rverb.sample">
 
     <application
@@ -8,7 +9,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:name">
         <activity
             android:name="io.rverb.sample.MainActivity"
             android:label="@string/title_activity_main"
@@ -19,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="io.rverb.apiKey" android:value="1c204966-870e-432b-a2dc-7905827a062c" />
+        <meta-data android:name="io.rverb.apiKey" android:value="2341b8bf-c50e-4fc1-9410-6c09b5dd0119" />
     </application>
 
 </manifest>
