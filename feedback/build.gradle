@@ -4,8 +4,9 @@ plugins {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'io.fabric'
 
-project.ext.set("libraryVersion", "0.3.6-alpha")
+project.ext.set("libraryVersion", "0.3.7-alpha")
 
 android {
     compileSdkVersion 25
@@ -35,6 +36,7 @@ android {
             resValue "string", "api_base_url", "https://rverbio-dev-east.azurewebsites.net/api/"
         }
     }
+    publishNonDefault true
     resourcePrefix 'rverb_'
     testOptions {
         unitTests.returnDefaultValues = true
@@ -131,4 +133,7 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.2.11'
     debugCompile 'com.facebook.stetho:stetho:latest.release'
     debugCompile 'com.facebook.stetho:stetho-okhttp3:latest.release'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+        transitive = true;
+    }
 }
