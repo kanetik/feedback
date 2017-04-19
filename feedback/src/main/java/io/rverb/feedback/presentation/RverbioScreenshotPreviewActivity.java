@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
+import io.rverb.feedback.utility.RverbioUtils;
 
 public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
     DrawingView dv;
@@ -33,7 +34,7 @@ public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         String screenshotPath = getIntent().getStringExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME);
-        if (TextUtils.isEmpty(screenshotPath)) {
+        if (RverbioUtils.isNullOrWhiteSpace(screenshotPath)) {
             finish();
         }
 

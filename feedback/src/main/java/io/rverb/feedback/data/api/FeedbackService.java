@@ -54,7 +54,7 @@ public class FeedbackService extends IntentService {
             }
 
             EndUser endUser = RverbioUtils.getEndUser(this);
-            if (endUser != null && !TextUtils.isEmpty(endUser.emailAddress)) {
+            if (endUser != null && !RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress)) {
                 AppUtils.notifyUser(this, AppUtils.FEEDBACK_SUBMITTED);
             } else {
                 AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);

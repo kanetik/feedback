@@ -21,8 +21,6 @@ import android.support.v7.app.ActionBar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 
-import com.crashlytics.android.Crashlytics;
-
 import io.fabric.sdk.android.Fabric;
 import io.rverb.feedback.R;
 

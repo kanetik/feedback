@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import io.fabric.sdk.android.Fabric;
 import io.rverb.feedback.R;
 import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.FileRequestBody;
@@ -142,6 +141,7 @@ class ApiManager {
                 } else {
                     String message = "PATCH " + endpoint + " Failed (1) - " + response.message();
                     if (AppUtils.crashlyticsCapable()) {
+                        //TODO: Remove Crashlytics references
                         Crashlytics.logException(new Throwable(message));
                     }
                 }
