@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import io.rverb.feedback.Rverbio;
+import io.rverb.feedback.utility.RverbioUtils;
 
 public class SampleApplication extends Application {
     @Override
@@ -31,7 +32,7 @@ public class SampleApplication extends Application {
     public static String getSupportId(@NonNull Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String supportId = prefs.getString("support_id", "");
-        if (TextUtils.isEmpty(supportId)) {
+        if (RverbioUtils.isNullOrWhiteSpace(supportId)) {
             supportId = UUID.randomUUID().toString();
             prefs.edit().putString("support_id", supportId).apply();
         }
