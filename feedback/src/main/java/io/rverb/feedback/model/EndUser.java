@@ -17,6 +17,8 @@ public class EndUser implements Cacheable {
 
     public EndUser() {
         this.endUserId = UUID.randomUUID().toString();
+        this.emailAddress = "";
+        this.userIdentifier = "";
     }
 
     @Override

@@ -35,7 +35,6 @@ public class UserService extends IntentService {
         }
 
         EndUser endUser = (EndUser) userObject;
-
         if (RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
             throw new IllegalStateException("Intent EndUser object must contain EndUserId");
         }

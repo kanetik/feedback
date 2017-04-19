@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
 import android.view.View;
 
 import com.google.gson.Gson;
@@ -24,9 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 import io.rverb.feedback.model.Cacheable;
@@ -46,7 +43,6 @@ public class RverbioUtils {
 
     private static final String RVERBIO_PREFS = "rverbio";
     private static final String END_USER_KEY = "end_user_id";
-
     private static final String APPLICATION_ID_KEY = "application_id";
 
     public static String getApplicationId(Context context) {
@@ -81,14 +77,17 @@ public class RverbioUtils {
     public static EndUser getEndUser(Context context) {
         Gson gson = new Gson();
         SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        return gson.fromJson(prefs.getString(END_USER_KEY, ""), EndUser.class);
+    }
 
-        EndUser endUser = gson.fromJson(prefs.getString(END_USER_KEY, ""), EndUser.class);
-        if (endUser == null || isNullOrWhiteSpace(endUser.endUserId)) {
-            endUser = new EndUser();
-            prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
+    public static EndUser getNewEndUser(Context context) {
+        EndUser endUser = new EndUser();
 
-            recordData(context, endUser);
-        }
+        Gson gson = new Gson();
+        SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
+
+        recordData(context, endUser);
 
         return endUser;
     }
@@ -104,10 +103,11 @@ public class RverbioUtils {
     private static String _sessionId;
 
     public static String getSessionId() {
-        if (isNullOrWhiteSpace(_sessionId)) {
-            _sessionId = UUID.randomUUID().toString();
-        }
+        return _sessionId;
+    }
 
+    public static String getNewSessionId() {
+        _sessionId = UUID.randomUUID().toString();
         return _sessionId;
     }
 
