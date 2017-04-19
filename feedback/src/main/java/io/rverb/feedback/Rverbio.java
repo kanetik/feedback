@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -76,13 +75,17 @@ public class Rverbio {
      * @param options RverbioOptions object to set defaults
      */
     public static void initialize(Context context, RverbioOptions options) {
+        if (isInitialized()) {
+            return;
+        }
+
         _appContext = context.getApplicationContext();
         _options = options;
         _contextData = new ArrayList<>();
 
         // Send any previously queued requests
         RverbioUtils.sendQueuedRequests(_appContext);
-        getInstance().setSessionData();
+        getInstance().setupSession();
     }
 
     /**
@@ -98,7 +101,7 @@ public class Rverbio {
     /**
      * Add a single name-value pair to be sent to Rverb.io with a feedback request.
      *
-     * @param key The name of the context data item
+     * @param key   The name of the context data item
      * @param value The value of the context data item
      */
     public void addContextDataItem(String key, String value) {
@@ -144,9 +147,18 @@ public class Rverbio {
         }
 
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        String sessionId = RverbioUtils.getSessionId();
+
+        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            throw new IllegalStateException("Rverbio EndUser not set. Please ensure you have initialized Rverbio.");
+        }
+
+        if (RverbioUtils.isNullOrWhiteSpace(sessionId)) {
+            throw new IllegalStateException("Rverbio SessionId not set. Please ensure you have initialized Rverbio.");
+        }
 
         Feedback feedbackData = new Feedback(RverbioUtils.getApplicationId(_appContext),
-                RverbioUtils.getSessionId(), endUser.endUserId, feedbackType,
+                sessionId, endUser.endUserId, feedbackType,
                 feedbackText, screenshotFileName);
 
         addSystemData(feedbackData);
@@ -169,10 +181,24 @@ public class Rverbio {
      */
     public void setUserInfo(@NonNull String emailAddress, @NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        endUser.emailAddress = emailAddress;
-        endUser.userIdentifier = userIdentifier;
+        if (endUser == null) {
+            // TODO: If endUser is null, throw an error?
+        }
 
-        RverbioUtils.saveEndUser(_appContext, endUser);
+        if (endUser.emailAddress.equalsIgnoreCase(emailAddress) && endUser.userIdentifier.equalsIgnoreCase(userIdentifier)) {
+            return;
+        }
+
+        if (endUser.emailAddress.equalsIgnoreCase(emailAddress) && !endUser.userIdentifier.equalsIgnoreCase(userIdentifier)) {
+            setUserIdentifier(userIdentifier);
+        } else if (endUser.userIdentifier.equalsIgnoreCase(userIdentifier) && !endUser.emailAddress.equalsIgnoreCase(emailAddress)) {
+            setUserEmail(emailAddress);
+        } else {
+            endUser.emailAddress = emailAddress;
+            endUser.userIdentifier = userIdentifier;
+
+            RverbioUtils.saveEndUser(_appContext, endUser);
+        }
     }
 
     /**
@@ -184,8 +210,16 @@ public class Rverbio {
      */
     public void setUserEmail(@NonNull String emailAddress) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        endUser.emailAddress = emailAddress;
+        if (endUser == null) {
+            // Should we throw an error if this happens?
+            return;
+        }
 
+        if (endUser.emailAddress.equalsIgnoreCase(emailAddress)) {
+            return;
+        }
+
+        endUser.emailAddress = emailAddress;
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
 
@@ -200,6 +234,15 @@ public class Rverbio {
      */
     public void setUserIdentifier(@NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        if (endUser == null) {
+            // Should we throw an error if this happens?
+            return;
+        }
+
+        if (endUser.userIdentifier.equalsIgnoreCase(userIdentifier)) {
+            return;
+        }
+
         endUser.userIdentifier = userIdentifier;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
@@ -224,9 +267,16 @@ public class Rverbio {
         context.startActivity(feedbackIntent);
     }
 
-    private Rverbio setSessionData() {
+    private Rverbio setupSession() {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            endUser = RverbioUtils.getNewEndUser(_appContext);
+        }
+
         String sessionId = RverbioUtils.getSessionId();
+        if (RverbioUtils.isNullOrWhiteSpace(sessionId)) {
+            sessionId = RverbioUtils.getNewSessionId();
+        }
 
         RverbioUtils.recordData(_appContext, new Session(sessionId, endUser.endUserId));
 
