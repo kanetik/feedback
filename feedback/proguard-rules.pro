@@ -63,7 +63,7 @@
     java.lang.Object readResolve();
 }
 
--keepclassmembers class * implements io.rverb.feedback.model.Cacheable {
+-keepclassmembers class * implements io.rverb.feedback.model.Persistable {
     static final long serialVersionUID;
     static final java.io.ObjectStreamField[] serialPersistentFields;
     private void writeObject(java.io.ObjectOutputStream);
