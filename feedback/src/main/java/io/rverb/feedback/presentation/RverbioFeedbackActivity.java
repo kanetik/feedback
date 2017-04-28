@@ -1,19 +1,20 @@
 package io.rverb.feedback.presentation;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -220,8 +221,16 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
             return;
         }
 
-        Event eventData = new Event(endUser.endUserId, event);
-        RverbioUtils.recordData(this, eventData);
+        final Event eventData = new Event(endUser.endUserId, event);
+
+        RverbioUtils.persistData(this, eventData, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode != Activity.RESULT_OK) {
+                    DataUtils.writeObjectToDisk(RverbioFeedbackActivity.this, eventData);
+                }
+            }
+        });
     }
 
     Menu mMenu;

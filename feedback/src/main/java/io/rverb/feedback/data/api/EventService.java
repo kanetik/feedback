@@ -1,12 +1,17 @@
 package io.rverb.feedback.data.api;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 
 import java.io.Serializable;
 
 import io.rverb.feedback.model.Event;
+import io.rverb.feedback.model.Persistable;
+import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.DataUtils;
 
 public class EventService extends IntentService {
@@ -16,8 +21,7 @@ public class EventService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Serializable eventObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
-        String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
+        Serializable eventObject = intent.getSerializableExtra(DataUtils.EXTRA_SELF);
 
         if (eventObject == null) {
             throw new NullPointerException("Intent's data object is null");
@@ -28,6 +32,21 @@ public class EventService extends IntentService {
         }
 
         Event event = (Event) eventObject;
-        ApiManager.post(this, tempFileName, event);
+        Persistable response = ApiManager.post(this, event);
+
+        ResultReceiver resultReceiver = null;
+        if (intent.hasExtra(DataUtils.EXTRA_RESULT_RECEIVER)) {
+            resultReceiver = intent.getParcelableExtra(DataUtils.EXTRA_RESULT_RECEIVER);
+        }
+
+        if (resultReceiver != null) {
+            if (response != null && response instanceof Event) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(DataUtils.EXTRA_RESULT, response);
+                resultReceiver.send(Activity.RESULT_OK, bundle);
+            } else {
+                resultReceiver.send(Activity.RESULT_CANCELED, null);
+            }
+        }
     }
 }

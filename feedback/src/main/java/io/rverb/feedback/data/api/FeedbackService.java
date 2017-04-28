@@ -1,16 +1,17 @@
 package io.rverb.feedback.data.api;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.text.TextUtils;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 
 import java.io.File;
 import java.io.Serializable;
 
-import io.rverb.feedback.model.Cacheable;
-import io.rverb.feedback.model.EndUser;
+import io.rverb.feedback.model.Persistable;
 import io.rverb.feedback.model.Feedback;
-import io.rverb.feedback.utility.AppUtils;
+import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
@@ -25,8 +26,7 @@ public class FeedbackService extends IntentService {
             return;
         }
 
-        Serializable feedbackObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
-        String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
+        Serializable feedbackObject = intent.getSerializableExtra(DataUtils.EXTRA_SELF);
         String screenshotFileName = intent.getStringExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME);
 
         if (feedbackObject == null) {
@@ -38,11 +38,23 @@ public class FeedbackService extends IntentService {
         }
 
         Feedback feedback = (Feedback) feedbackObject;
-        postFeedback(feedback, tempFileName, screenshotFileName);
-    }
+        Persistable response = ApiManager.post(this, feedback);
 
-    void postFeedback(Feedback feedback, String tempFileName, String screenshotFileName) {
-        Cacheable response = ApiManager.postWithResponse(this, tempFileName, feedback);
+        ResultReceiver resultReceiver = null;
+        if (intent.hasExtra(DataUtils.EXTRA_RESULT_RECEIVER)) {
+            resultReceiver = intent.getParcelableExtra(DataUtils.EXTRA_RESULT_RECEIVER);
+        }
+
+        if (resultReceiver != null) {
+            if (response != null && response instanceof Feedback) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(DataUtils.EXTRA_RESULT, response);
+                resultReceiver.send(Activity.RESULT_OK, bundle);
+            } else {
+                resultReceiver.send(Activity.RESULT_CANCELED, null);
+            }
+        }
+
         if (response != null && response instanceof Feedback) {
             Feedback feedbackResponse = (Feedback) response;
 
@@ -51,13 +63,6 @@ public class FeedbackService extends IntentService {
                 if (screenshot.exists()) {
                     ApiManager.putFile(screenshot, feedbackResponse.uploadUrl);
                 }
-            }
-
-            EndUser endUser = RverbioUtils.getEndUser(this);
-            if (endUser != null && !RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress)) {
-                AppUtils.notifyUser(this, AppUtils.FEEDBACK_SUBMITTED);
-            } else {
-                AppUtils.notifyUser(this, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
             }
         }
     }

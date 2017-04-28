@@ -1,18 +1,26 @@
 package io.rverb.feedback.model;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 
 import java.util.ArrayList;
 
 import io.rverb.feedback.data.api.FeedbackService;
+import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.DateUtils;
+import io.rverb.feedback.utility.RverbioUtils;
 
-public class Feedback implements Cacheable {
+public class Feedback implements Persistable {
     static final long serialVersionUID = 325L;
 
-    private transient String screenshotFileName;
+    public static String TYPE_DESCRIPTOR = "feedback";
+
+    private String screenshotFileName;
 
     public String applicationId;
     public String sessionId;
@@ -42,23 +50,23 @@ public class Feedback implements Cacheable {
     }
 
     @Override
-    public String toString() {
-        return "SessionId: " + sessionId + " | Comment: " + comment;
-    }
-
-    @Override
     public String getDataTypeDescriptor() {
-        return "feedback";
+        return TYPE_DESCRIPTOR;
     }
 
     @Override
-    public Intent getServiceIntent(Context context, String cacheFileName) {
+    public Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver) {
         Intent serviceIntent = new Intent(context, FeedbackService.class);
 
-        serviceIntent.putExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME, cacheFileName);
-        serviceIntent.putExtra(DataUtils.EXTRA_DATA, this);
+        serviceIntent.putExtra(DataUtils.EXTRA_RESULT_RECEIVER, resultReceiver);
+        serviceIntent.putExtra(DataUtils.EXTRA_SELF, this);
         serviceIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, this.screenshotFileName);
 
         return serviceIntent;
+    }
+
+    @Override
+    public String toString() {
+        return "SessionId: " + sessionId + " | Comment: " + comment;
     }
 }

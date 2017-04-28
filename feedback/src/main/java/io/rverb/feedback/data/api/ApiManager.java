@@ -2,18 +2,15 @@ package io.rverb.feedback.data.api;
 
 import android.content.Context;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import io.rverb.feedback.R;
-import io.rverb.feedback.model.Cacheable;
+import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.FileRequestBody;
-import io.rverb.feedback.model.Patch;
-import io.rverb.feedback.utility.AppUtils;
+import io.rverb.feedback.model.Persistable;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
@@ -29,8 +26,7 @@ class ApiManager {
 
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
 
-    //, Class<? extends Cacheable> responseType
-    static void post(final Context context, final String tempFileName, final Cacheable data) {
+    static Persistable post(final Context context, final Persistable data) {
         OkHttpClient client = ApiUtils.getOkHttpClient();
 
         Gson gson = new Gson();
@@ -51,52 +47,8 @@ class ApiManager {
             ResponseBody responseBody = response.body();
 
             try {
-                // Delete the temp file, if it exists
-                if (response.isSuccessful()) {
-                    DataUtils.deleteFile(tempFileName);
-                } else {
-                    LogUtils.d("POST " + data.getDataTypeDescriptor() + " Failed: " + response.message());
-                }
-            } catch (Exception e) {
-                LogUtils.d("POST " + data.getDataTypeDescriptor() + " Exception: " + e.getMessage());
-            } finally {
-                if (responseBody != null) {
-                    responseBody.close();
-                }
-            }
-        } catch (IOException e) {
-            LogUtils.d("POST " + data.getDataTypeDescriptor() + " IOException: " + e.getMessage());
-        }
-    }
-
-    static Cacheable postWithResponse(final Context context, final String tempFileName, final Cacheable data) {
-        OkHttpClient client = ApiUtils.getOkHttpClient();
-
-        Gson gson = new Gson();
-        String json = gson.toJson(data);
-
-        LogUtils.d("POST " + data.getDataTypeDescriptor() + " - " + json);
-        RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
-
-        String url = context.getString(R.string.api_base_url) + data.getDataTypeDescriptor();
-        Request request = new Request.Builder()
-                .addHeader(API_KEY_HEADER_NAME, RverbioUtils.getApiKey(context))
-                .url(url)
-                .post(body)
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            ResponseBody responseBody = response.body();
-
-            try {
-                // Delete the temp file, if it exists
-                if (response.isSuccessful()) {
-                    DataUtils.deleteFile(tempFileName);
-
-                    if (responseBody != null) {
-                        return DataUtils.fromJson(responseBody.string(), data.getClass());
-                    }
+                if (response.isSuccessful() && responseBody != null) {
+                    return DataUtils.fromJson(responseBody.string(), data.getClass());
                 } else {
                     LogUtils.d("POST " + data.getDataTypeDescriptor() + " Failed: " + response.message());
                 }
@@ -114,53 +66,66 @@ class ApiManager {
         return null;
     }
 
-    static void patch(final Context context, final String tempFileName, final String endpoint, final List<Patch> patches, final String id) {
+    static boolean insertEndUser(final Context context, final EndUser endUser) {
         OkHttpClient client = ApiUtils.getOkHttpClient();
 
-        Gson gson = new Gson();
-        String json = gson.toJson(patches);
+        LogUtils.d("Insert endUser - " + endUser.endUserId);
 
-        LogUtils.d("PATCH " + endpoint + " - " + json);
+        Gson gson = new Gson();
+        String json = gson.toJson(endUser);
+
         RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
 
-        String url = context.getString(R.string.api_base_url) + endpoint + "?id=" + id;
+        String url = context.getString(R.string.api_base_url) + "enduser";
         Request request = new Request.Builder()
                 .addHeader(API_KEY_HEADER_NAME, RverbioUtils.getApiKey(context))
                 .url(url)
-                .patch(body)
+                .post(body)
                 .build();
 
         try {
             Response response = client.newCall(request).execute();
-            ResponseBody responseBody = response.body();
-
-            try {
-                // Delete the temp file, if it exists
-                if (response.isSuccessful()) {
-                    DataUtils.deleteFile(tempFileName);
-                } else {
-                    String message = "PATCH " + endpoint + " Failed (1) - " + response.message();
-                    if (AppUtils.crashlyticsCapable()) {
-                        //TODO: Remove Crashlytics references
-                        Crashlytics.logException(new Throwable(message));
-                    }
-                }
-            } catch (Exception e) {
-                String message = "PATCH " + endpoint + " Failed (2) - " + response.message();
-                if (AppUtils.crashlyticsCapable()) {
-                    Crashlytics.logException(new Throwable(message, e));
-                }
-            } finally {
-                if (responseBody != null) {
-                    responseBody.close();
-                }
+            if (!response.isSuccessful()) {
+                LogUtils.d("Insert EndUser Failed: " + response.message());
+                return false;
             }
         } catch (IOException e) {
-            String message = "PATCH " + endpoint + " Failed (3) - " + e.getMessage();
-            if (AppUtils.crashlyticsCapable()) {
-                Crashlytics.logException(new Throwable(message, e));
-            }
+            LogUtils.d("Insert EndUser IOException: " + e.getMessage());
+            return false;
         }
+
+        return true;
+    }
+
+    static boolean updateEndUser(final Context context, final EndUser endUser) {
+        OkHttpClient client = ApiUtils.getOkHttpClient();
+
+        LogUtils.d("Update endUser - " + endUser.endUserId);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(endUser);
+
+        RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
+
+        String url = context.getString(R.string.api_base_url) + "enduser";
+        Request request = new Request.Builder()
+                .addHeader(API_KEY_HEADER_NAME, RverbioUtils.getApiKey(context))
+                .url(url)
+                .put(body)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                LogUtils.d("Update EndUser Failed: " + response.message());
+                return false;
+            }
+        } catch (IOException e) {
+            LogUtils.d("Update EndUser IOException: " + e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     static void putFile(File file, String url) {

@@ -3,7 +3,6 @@ package io.rverb.feedback.utility;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Patterns;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
@@ -18,30 +17,32 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import io.rverb.feedback.model.Cacheable;
+import io.rverb.feedback.model.Persistable;
 
 public class DataUtils {
-    public static final String EXTRA_SCREENSHOT_FILE_NAME = "screenshot_file_name";
-    public static final String EXTRA_TEMPORARY_FILE_NAME = "temp_file_name";
-    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_RESULT_RECEIVER = "result_receiver";
+    public static final String EXTRA_RESULT = "result";
 
-    public static <T extends Cacheable> T fromJson(String json, Class<T> type) {
+    public static final String EXTRA_SCREENSHOT_FILE_NAME = "screenshot_file_name";
+    public static final String EXTRA_SELF = "data";
+
+    public static <T extends Persistable> T fromJson(String json, Class<T> type) {
         Gson gson = new Gson();
         T dataObject = gson.fromJson(json, type);
 
         return dataObject;
     }
 
-    public static Cacheable readObjectFromDisk(String fileName) {
+    public static Persistable readObjectFromDisk(String fileName) {
         ObjectInputStream input;
-        Cacheable queuedObject = null;
+        Persistable queuedObject = null;
 
         try {
             input = new ObjectInputStream(new FileInputStream(new File(fileName)));
             Object object = input.readObject();
 
             if (object instanceof Serializable) {
-                queuedObject = (Cacheable) object;
+                queuedObject = (Persistable) object;
             }
 
             input.close();
@@ -52,7 +53,7 @@ public class DataUtils {
         return queuedObject;
     }
 
-    public static String writeObjectToDisk(Context context, Cacheable object) {
+    public static String writeObjectToDisk(Context context, Persistable object) {
         try {
             //create a temp file
             String fileName = "rv_" + object.getDataTypeDescriptor();

@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
@@ -27,6 +30,8 @@ public class Rverbio {
     private static ArrayList<DataItem> _contextData;
     private static RverbioOptions _options;
 
+    private static boolean _initializing = false;
+
     private static final Rverbio _instance = new Rverbio();
 
     /**
@@ -45,12 +50,12 @@ public class Rverbio {
     }
 
     /**
-     * Helper method that indicates if Rverbio has been initialized
+     * Helper method that indicates if Rverbio has been initialized and is ready to use
      *
-     * @return boolean indicating that initialization has or has not occurred
+     * @return boolean indicating that initialization has or has not completed
      */
-    public static boolean isInitialized() {
-        return _appContext != null;
+    public static boolean isReady() {
+        return _appContext != null && !_initializing;
     }
 
     /**
@@ -75,16 +80,25 @@ public class Rverbio {
      * @param options RverbioOptions object to set defaults
      */
     public static void initialize(Context context, RverbioOptions options) {
-        if (isInitialized()) {
+        if (isReady()) {
             return;
         }
+
+        _initializing = true;
 
         _appContext = context.getApplicationContext();
         _options = options;
         _contextData = new ArrayList<>();
 
+        // Cleaning up a shared prefs mistake:
+        RverbioUtils.migrateEndUserPrefs(_appContext);
+
         // Send any previously queued requests
-        RverbioUtils.sendQueuedRequests(_appContext);
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        if (endUser != null && endUser.isPersisted) {
+            RverbioUtils.sendQueuedRequests(_appContext);
+        }
+
         getInstance().setupSession();
     }
 
@@ -157,14 +171,28 @@ public class Rverbio {
             throw new IllegalStateException("Rverbio SessionId not set. Please ensure you have initialized Rverbio.");
         }
 
-        Feedback feedbackData = new Feedback(RverbioUtils.getApplicationId(_appContext),
+        final Feedback feedbackData = new Feedback(RverbioUtils.getApplicationId(_appContext),
                 sessionId, endUser.endUserId, feedbackType,
                 feedbackText, screenshotFileName);
 
         addSystemData(feedbackData);
         addInstanceContextDataToFeedback(feedbackData);
 
-        RverbioUtils.recordData(_appContext, feedbackData);
+        RverbioUtils.persistData(_appContext, feedbackData, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == Activity.RESULT_OK) {
+                    EndUser endUser = RverbioUtils.getEndUser(_appContext);
+                    if (endUser != null && !RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress)) {
+                        AppUtils.notifyUser(_appContext, AppUtils.FEEDBACK_SUBMITTED);
+                    } else {
+                        AppUtils.notifyUser(_appContext, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
+                    }
+                } else {
+                    DataUtils.writeObjectToDisk(_appContext, feedbackData);
+                }
+            }
+        });
     }
 
     /**
@@ -189,16 +217,10 @@ public class Rverbio {
             return;
         }
 
-        if (endUser.emailAddress.equalsIgnoreCase(emailAddress) && !endUser.userIdentifier.equalsIgnoreCase(userIdentifier)) {
-            setUserIdentifier(userIdentifier);
-        } else if (endUser.userIdentifier.equalsIgnoreCase(userIdentifier) && !endUser.emailAddress.equalsIgnoreCase(emailAddress)) {
-            setUserEmail(emailAddress);
-        } else {
-            endUser.emailAddress = emailAddress;
-            endUser.userIdentifier = userIdentifier;
+        endUser.emailAddress = emailAddress;
+        endUser.userIdentifier = userIdentifier;
 
-            RverbioUtils.saveEndUser(_appContext, endUser);
-        }
+        RverbioUtils.saveEndUser(_appContext, endUser);
     }
 
     /**
@@ -220,6 +242,7 @@ public class Rverbio {
         }
 
         endUser.emailAddress = emailAddress;
+
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
 
@@ -270,7 +293,7 @@ public class Rverbio {
     private Rverbio setupSession() {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
         if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
-            endUser = RverbioUtils.getNewEndUser(_appContext);
+            endUser = RverbioUtils.initEndUser(_appContext);
         }
 
         String sessionId = RverbioUtils.getSessionId();
@@ -278,7 +301,21 @@ public class Rverbio {
             sessionId = RverbioUtils.getNewSessionId();
         }
 
-        RverbioUtils.recordData(_appContext, new Session(sessionId, endUser.endUserId));
+        final Session session = new Session(sessionId, endUser.endUserId);
+
+        RverbioUtils.persistData(_appContext, session, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == Activity.RESULT_OK) {
+                    Session session = (Session) resultData.getSerializable(DataUtils.EXTRA_RESULT);
+                    RverbioUtils.saveApplicationId(_appContext, session.applicationId);
+                } else {
+                    DataUtils.writeObjectToDisk(_appContext, session);
+                }
+
+                _initializing = false;
+            }
+        });
 
         return this;
     }

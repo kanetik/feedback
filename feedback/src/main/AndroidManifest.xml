@@ -13,7 +13,7 @@
             android:name=".data.api.EventService"
             android:exported="false" />
         <service
-            android:name=".data.api.UserService"
+            android:name=".data.api.EndUserService"
             android:exported="false" />
         <service
             android:name=".data.api.FeedbackService"

@@ -1,14 +1,16 @@
 package io.rverb.feedback.data.api;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 
 import java.io.Serializable;
 
-import io.rverb.feedback.model.Cacheable;
+import io.rverb.feedback.model.Persistable;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.DataUtils;
-import io.rverb.feedback.utility.RverbioUtils;
 
 public class SessionService extends IntentService {
     public SessionService() {
@@ -21,8 +23,7 @@ public class SessionService extends IntentService {
             return;
         }
 
-        Serializable sessionObject = intent.getSerializableExtra(DataUtils.EXTRA_DATA);
-        String tempFileName = intent.getStringExtra(DataUtils.EXTRA_TEMPORARY_FILE_NAME);
+        Serializable sessionObject = intent.getSerializableExtra(DataUtils.EXTRA_SELF);
 
         if (sessionObject == null) {
             throw new NullPointerException("Intent's data object is null");
@@ -33,11 +34,21 @@ public class SessionService extends IntentService {
         }
 
         Session session = (Session) sessionObject;
+        Persistable response = ApiManager.post(this, session);
 
-        Cacheable response = ApiManager.postWithResponse(this, tempFileName, session);
-        if (response != null && response instanceof Session) {
-            Session responseSession = (Session) response;
-            RverbioUtils.saveApplicationId(this, responseSession.applicationId);
+        ResultReceiver resultReceiver = null;
+        if (intent.hasExtra(DataUtils.EXTRA_RESULT_RECEIVER)) {
+            resultReceiver = intent.getParcelableExtra(DataUtils.EXTRA_RESULT_RECEIVER);
+        }
+
+        if (resultReceiver != null) {
+            if (response != null && response instanceof Session) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(DataUtils.EXTRA_RESULT, response);
+                resultReceiver.send(Activity.RESULT_OK, bundle);
+            } else {
+                resultReceiver.send(Activity.RESULT_CANCELED, null);
+            }
         }
     }
 }

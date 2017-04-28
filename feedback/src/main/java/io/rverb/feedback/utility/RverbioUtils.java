@@ -11,6 +11,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -26,9 +29,12 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.UUID;
 
-import io.rverb.feedback.model.Cacheable;
 import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
+import io.rverb.feedback.model.Event;
+import io.rverb.feedback.model.Feedback;
+import io.rverb.feedback.model.Persistable;
+import io.rverb.feedback.model.Session;
 
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
@@ -42,8 +48,27 @@ public class RverbioUtils {
     public static final String DATA_NETWORK_TYPE = "Network_Type";
 
     private static final String RVERBIO_PREFS = "rverbio";
-    private static final String END_USER_KEY = "end_user_id";
+    private static final String END_USER_KEY = "end_user";
+    private static final String END_USER_ID_KEY = "end_user_id";
     private static final String APPLICATION_ID_KEY = "application_id";
+
+    /*
+        For a small set of users, I was recording "EndUser" with a prefs key of "EndUserId," but now
+        I need EndUserId to actually be the EndUserId. So, for tnose users, I must migrate to the
+        proper pref.
+     */
+    public static void migrateEndUserPrefs(Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        if (prefs.contains(END_USER_ID_KEY) && !prefs.contains(END_USER_KEY)) {
+            // Move data from END_USER_ID_KEY to END_USER_KEY
+            Gson gson = new Gson();
+            EndUser userData = gson.fromJson(prefs.getString(END_USER_KEY, ""), EndUser.class);
+
+            if (userData != null) {
+                prefs.edit().putString(END_USER_KEY, gson.toJson(userData)).remove(END_USER_ID_KEY).apply();
+            }
+        }
+    }
 
     public static String getApplicationId(Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
@@ -80,24 +105,32 @@ public class RverbioUtils {
         return gson.fromJson(prefs.getString(END_USER_KEY, ""), EndUser.class);
     }
 
-    public static EndUser getNewEndUser(Context context) {
-        EndUser endUser = new EndUser();
-
-        Gson gson = new Gson();
-        SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
-
-        recordData(context, endUser);
-
+    public static EndUser initEndUser(final Context context) {
+        final EndUser endUser = new EndUser();
+        saveEndUser(context, endUser);
         return endUser;
     }
 
-    public static void saveEndUser(@NonNull Context context, @NonNull EndUser endUser) {
+    public static void saveEndUser(final Context context, final EndUser endUser) {
+        cacheEndUser(context, endUser);
+
+        saveEndUser(context, endUser, new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        if (resultCode == Activity.RESULT_OK) {
+                            endUser.isPersisted = true;
+
+                            cacheEndUser(context, endUser);
+                        }
+                    }
+                }
+        );
+    }
+
+    public static void cacheEndUser(@NonNull Context context, @NonNull EndUser endUser) {
         Gson gson = new Gson();
         SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
         prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
-
-        recordData(context, endUser);
     }
 
     private static String _sessionId;
@@ -197,14 +230,20 @@ public class RverbioUtils {
         return data;
     }
 
-    public static void sendQueuedRequests(Context context) {
-        // Stap 1: find existing files of each DATA_TYPE
+    public static void sendQueuedRequests(final Context context) {
+        RverbioUtils.sendQueuedRequests(context, Session.TYPE_DESCRIPTOR);
+        RverbioUtils.sendQueuedRequests(context, Event.TYPE_DESCRIPTOR);
+        RverbioUtils.sendQueuedRequests(context, Feedback.TYPE_DESCRIPTOR);
+    }
+
+    public static void sendQueuedRequests(final Context context, final String dataTypeDescriptor) {
+        // Stap 1: find existing files for the given DATA_TYPE
         File directory = context.getCacheDir();
 
         File[] files = directory.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
-                return pathname.getName().endsWith("rvb");
+                return pathname.getName().startsWith("rv_" + dataTypeDescriptor) && pathname.getName().endsWith("rvb");
             }
         });
 
@@ -220,20 +259,26 @@ public class RverbioUtils {
             String tempFilePath = file.getAbsolutePath();
             LogUtils.d("FileName", tempFilePath);
 
-            Cacheable data = DataUtils.readObjectFromDisk(tempFilePath);
+            final Persistable data = DataUtils.readObjectFromDisk(tempFilePath);
             if (data != null) {
-                sendData(context, data, tempFilePath);
+                DataUtils.deleteFile(tempFilePath);
+                persistData(context, data, new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        if (resultCode != Activity.RESULT_OK) {
+                            DataUtils.writeObjectToDisk(context, data);
+                        }
+                    }
+                });
             }
         }
     }
 
-    public static void recordData(Context context, Cacheable data) {
-        // Save data to file in case initial push fails
-        String tempFileName = DataUtils.writeObjectToDisk(context, data);
-        sendData(context, data, tempFileName);
+    public static void persistData(Context context, Persistable data, ResultReceiver resultReceiver) {
+        context.startService(data.getPersistServiceIntent(context, resultReceiver));
     }
 
-    public static void sendData(Context context, Cacheable data, String tempFileName) {
-        context.startService(data.getServiceIntent(context, tempFileName));
+    public static void saveEndUser(Context context, EndUser endUser, ResultReceiver resultReceiver) {
+        context.startService(endUser.getPersistServiceIntent(context, resultReceiver));
     }
 }
