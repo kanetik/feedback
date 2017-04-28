@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'com.android.library'
 apply plugin: 'io.fabric'
 
-project.ext.set("libraryVersion", "0.3.7-alpha")
+project.ext.set("libraryVersion", "0.4.0-alpha")
 
 android {
     compileSdkVersion 25

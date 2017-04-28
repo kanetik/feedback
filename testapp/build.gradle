@@ -27,6 +27,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
-    releaseCompile project(path: ':feedback', configuration: 'release')
-    debugCompile project(path: ':feedback', configuration: 'debug')
+//    releaseCompile project(path: ':feedback', configuration: 'release')
+//    debugCompile project(path: ':feedback', configuration: 'debug')
+    compile project(':feedback')
 }
