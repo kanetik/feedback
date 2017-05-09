@@ -8,7 +8,7 @@ import android.os.ResultReceiver;
 
 import java.io.Serializable;
 
-import io.rverb.feedback.model.Persistable;
+import io.rverb.feedback.model.IPersistable;
 import io.rverb.feedback.model.Session;
 import io.rverb.feedback.utility.DataUtils;
 
@@ -34,7 +34,7 @@ public class SessionService extends IntentService {
         }
 
         Session session = (Session) sessionObject;
-        Persistable response = ApiManager.post(this, session);
+        IPersistable response = ApiManager.post(this, session);
 
         ResultReceiver resultReceiver = null;
         if (intent.hasExtra(DataUtils.EXTRA_RESULT_RECEIVER)) {

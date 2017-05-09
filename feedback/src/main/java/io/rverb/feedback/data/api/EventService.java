@@ -10,8 +10,7 @@ import android.support.annotation.Nullable;
 import java.io.Serializable;
 
 import io.rverb.feedback.model.Event;
-import io.rverb.feedback.model.Persistable;
-import io.rverb.feedback.model.Session;
+import io.rverb.feedback.model.IPersistable;
 import io.rverb.feedback.utility.DataUtils;
 
 public class EventService extends IntentService {
@@ -32,7 +31,7 @@ public class EventService extends IntentService {
         }
 
         Event event = (Event) eventObject;
-        Persistable response = ApiManager.post(this, event);
+        IPersistable response = ApiManager.post(this, event);
 
         ResultReceiver resultReceiver = null;
         if (intent.hasExtra(DataUtils.EXTRA_RESULT_RECEIVER)) {

@@ -9,9 +9,8 @@ import android.os.ResultReceiver;
 import java.io.File;
 import java.io.Serializable;
 
-import io.rverb.feedback.model.Persistable;
 import io.rverb.feedback.model.Feedback;
-import io.rverb.feedback.model.Session;
+import io.rverb.feedback.model.IPersistable;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
@@ -38,7 +37,7 @@ public class FeedbackService extends IntentService {
         }
 
         Feedback feedback = (Feedback) feedbackObject;
-        Persistable response = ApiManager.post(this, feedback);
+        IPersistable response = ApiManager.post(this, feedback);
 
         ResultReceiver resultReceiver = null;
         if (intent.hasExtra(DataUtils.EXTRA_RESULT_RECEIVER)) {
@@ -61,7 +60,7 @@ public class FeedbackService extends IntentService {
             if (!RverbioUtils.isNullOrWhiteSpace(screenshotFileName) && !RverbioUtils.isNullOrWhiteSpace(feedbackResponse.uploadUrl)) {
                 final File screenshot = new File(screenshotFileName);
                 if (screenshot.exists()) {
-                    ApiManager.putFile(screenshot, feedbackResponse.uploadUrl);
+                    ApiManager.putFile(this, screenshot, feedbackResponse.uploadUrl);
                 }
             }
         }

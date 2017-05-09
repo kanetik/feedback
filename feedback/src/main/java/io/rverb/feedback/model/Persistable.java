@@ -1,12 +1,29 @@
 package io.rverb.feedback.model;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.ResultReceiver;
+import android.support.annotation.Keep;
 
-import java.io.Serializable;
+@Keep
+public abstract class Persistable implements IPersistable {
+    private int retryLimit = 1;
+    private int retryCount;
 
-public interface Persistable extends Serializable {
-    String getDataTypeDescriptor();
-    Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver);
+    public int getRetryLimit() {
+        return retryLimit;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public void incrementRetryCount() {
+        this.retryCount++;
+    }
+
+    public boolean retryAllowed() {
+        if (getRetryLimit() == 0) {
+            return true;
+        }
+
+        return getRetryLimit() - getRetryCount() > 0;
+    }
 }
