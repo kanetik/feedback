@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'com.android.library'
 apply plugin: 'io.fabric'
 
-project.ext.set("libraryVersion", "0.4.0-alpha")
+project.ext.set("libraryVersion", "0.5.0-alpha")
 
 android {
     compileSdkVersion 25
@@ -14,7 +14,7 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 2
+        versionCode 5
         group = "io.rverb"
         version = project.libraryVersion
         versionName project.libraryVersion
@@ -36,7 +36,7 @@ android {
             resValue "string", "api_base_url", "https://rverbio-dev-east.azurewebsites.net/api/"
         }
     }
-    publishNonDefault true
+    publishNonDefault false
     resourcePrefix 'rverb_'
     testOptions {
         unitTests.returnDefaultValues = true
@@ -131,9 +131,9 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.+'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.2.11'
-    debugCompile 'com.facebook.stetho:stetho:latest.release'
-    debugCompile 'com.facebook.stetho:stetho-okhttp3:latest.release'
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+    compile 'com.facebook.stetho:stetho:latest.release'
+    compile 'com.facebook.stetho:stetho-okhttp3:latest.release'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
 }
