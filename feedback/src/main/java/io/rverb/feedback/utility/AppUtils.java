@@ -70,6 +70,7 @@ public class AppUtils {
         return version;
     }
 
+
     public static String getAppLabel(Context context) {
         PackageManager packageManager = context.getPackageManager();
         ApplicationInfo applicationInfo = null;
@@ -81,10 +82,6 @@ public class AppUtils {
         }
 
         return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "");
-    }
-
-    static boolean isDebug(Context context) {
-        return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     public static void openWebPage(Context context, String url) {

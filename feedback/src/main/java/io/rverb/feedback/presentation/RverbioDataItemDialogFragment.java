@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import io.rverb.feedback.R;
 import io.rverb.feedback.Rverbio;

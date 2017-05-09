@@ -17,7 +17,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
-import io.rverb.feedback.model.Persistable;
+import io.rverb.feedback.model.IPersistable;
 
 public class DataUtils {
     public static final String EXTRA_RESULT_RECEIVER = "result_receiver";
@@ -26,23 +26,23 @@ public class DataUtils {
     public static final String EXTRA_SCREENSHOT_FILE_NAME = "screenshot_file_name";
     public static final String EXTRA_SELF = "data";
 
-    public static <T extends Persistable> T fromJson(String json, Class<T> type) {
+    public static <T extends IPersistable> T fromJson(String json, Class<T> type) {
         Gson gson = new Gson();
         T dataObject = gson.fromJson(json, type);
 
         return dataObject;
     }
 
-    public static Persistable readObjectFromDisk(String fileName) {
+    public static IPersistable readObjectFromDisk(String fileName) {
         ObjectInputStream input;
-        Persistable queuedObject = null;
+        IPersistable queuedObject = null;
 
         try {
             input = new ObjectInputStream(new FileInputStream(new File(fileName)));
             Object object = input.readObject();
 
             if (object instanceof Serializable) {
-                queuedObject = (Persistable) object;
+                queuedObject = (IPersistable) object;
             }
 
             input.close();
@@ -53,7 +53,7 @@ public class DataUtils {
         return queuedObject;
     }
 
-    public static String writeObjectToDisk(Context context, Persistable object) {
+    public static String writeObjectToDisk(Context context, IPersistable object) {
         try {
             //create a temp file
             String fileName = "rv_" + object.getDataTypeDescriptor();
