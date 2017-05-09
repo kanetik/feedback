@@ -1,21 +1,18 @@
 package io.rverb.feedback.model;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.annotation.Keep;
 
 import java.util.ArrayList;
 
 import io.rverb.feedback.data.api.FeedbackService;
-import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.DateUtils;
-import io.rverb.feedback.utility.RverbioUtils;
 
-public class Feedback implements Persistable {
+@Keep
+public class Feedback extends Persistable {
     static final long serialVersionUID = 325L;
 
     public static String TYPE_DESCRIPTOR = "feedback";
@@ -47,6 +44,11 @@ public class Feedback implements Persistable {
         this.screenshotFileName = screenshotFileName;
         this.timestamp = DateUtils.nowUtc();
         this.contextData = new ArrayList<>();
+    }
+
+    @Override
+    public int getRetryLimit() {
+        return 0;
     }
 
     @Override

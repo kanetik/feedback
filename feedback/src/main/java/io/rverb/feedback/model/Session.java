@@ -3,12 +3,14 @@ package io.rverb.feedback.model;
 import android.content.Context;
 import android.content.Intent;
 import android.os.ResultReceiver;
+import android.support.annotation.Keep;
 
 import io.rverb.feedback.data.api.SessionService;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.DateUtils;
 
-public class Session implements Persistable {
+@Keep
+public class Session extends Persistable {
     static final long serialVersionUID = 348L;
 
     public static String TYPE_DESCRIPTOR = "session";
