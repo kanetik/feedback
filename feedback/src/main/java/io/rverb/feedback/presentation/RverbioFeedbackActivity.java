@@ -227,7 +227,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode != Activity.RESULT_OK) {
-                    DataUtils.writeObjectToDisk(RverbioFeedbackActivity.this, eventData);
+                    RverbioUtils.handlePersistanceFailure(RverbioFeedbackActivity.this, eventData);
                 }
             }
         });
@@ -269,7 +269,9 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_send_feedback) {
-            LogUtils.d("Send Feedback");
+            if (RverbioUtils.isDebug(this)) {
+                LogUtils.d("Send Feedback");
+            }
 
             if (!TextUtils.isEmpty(_rverbEmail.getText())) {
                 final EndUser endUser = RverbioUtils.getEndUser(this);
@@ -308,7 +310,10 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        LogUtils.d("Screenshot Updated");
+        if (RverbioUtils.isDebug(this)) {
+            LogUtils.d("Screenshot Updated");
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
 
         _rverbThumbnail.setImageDrawable(Drawable.createFromPath(_screenshotFileName));

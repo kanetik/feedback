@@ -22,6 +22,7 @@ import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackActivity;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.DataUtils;
+import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
 
 @Keep
@@ -84,6 +85,10 @@ public class Rverbio {
             return;
         }
 
+        if (RverbioUtils.isDebug(context)) {
+            LogUtils.d("Rverbio Initialize");
+        }
+
         _initializing = true;
 
         _appContext = context.getApplicationContext();
@@ -97,6 +102,10 @@ public class Rverbio {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
         if (endUser != null && endUser.isPersisted) {
             RverbioUtils.sendQueuedRequests(_appContext);
+
+            if (!endUser.isSynced) {
+                RverbioUtils.saveEndUser(_appContext, endUser);
+            }
         }
 
         getInstance().setupSession();
@@ -189,7 +198,7 @@ public class Rverbio {
                         AppUtils.notifyUser(_appContext, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
                     }
                 } else {
-                    DataUtils.writeObjectToDisk(_appContext, feedbackData);
+                    RverbioUtils.handlePersistanceFailure(_appContext, feedbackData);
                 }
             }
         });
@@ -219,6 +228,7 @@ public class Rverbio {
 
         endUser.emailAddress = emailAddress;
         endUser.userIdentifier = userIdentifier;
+        endUser.isSynced = false;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
@@ -242,6 +252,7 @@ public class Rverbio {
         }
 
         endUser.emailAddress = emailAddress;
+        endUser.isSynced = false;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
@@ -267,6 +278,7 @@ public class Rverbio {
         }
 
         endUser.userIdentifier = userIdentifier;
+        endUser.isSynced = false;
 
         RverbioUtils.saveEndUser(_appContext, endUser);
     }
@@ -310,7 +322,7 @@ public class Rverbio {
                     Session session = (Session) resultData.getSerializable(DataUtils.EXTRA_RESULT);
                     RverbioUtils.saveApplicationId(_appContext, session.applicationId);
                 } else {
-                    DataUtils.writeObjectToDisk(_appContext, session);
+                    RverbioUtils.handlePersistanceFailure(_appContext, session);
                 }
 
                 _initializing = false;

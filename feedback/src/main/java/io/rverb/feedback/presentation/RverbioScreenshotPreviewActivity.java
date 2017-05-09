@@ -11,7 +11,6 @@ import android.graphics.Path;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -180,7 +179,9 @@ public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
 
             return imageFile;
         } catch (IOException e) {
-            LogUtils.w(e.getMessage(), e);
+            if (RverbioUtils.isDebug(this)) {
+                LogUtils.w(e.getMessage(), e);
+            }
         }
 
         return null;
