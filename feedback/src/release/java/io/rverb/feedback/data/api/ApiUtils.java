@@ -5,6 +5,10 @@ import android.support.annotation.NonNull;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import io.rverb.feedback.data.api.interceptor.ApiKeyInterceptor;
+import io.rverb.feedback.data.api.interceptor.LoggingInterceptor;
+import io.rverb.feedback.data.api.interceptor.UserAgentInterceptor;
+import io.rverb.feedback.utility.RverbioUtils;
 import okhttp3.OkHttpClient;
 
 public class ApiUtils {
@@ -12,7 +16,7 @@ public class ApiUtils {
     public static OkHttpClient getOkHttpClient(Context context) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        builder.addInterceptor(new UserAgentInterceptor());
+        builder.addInterceptor(new UserAgentInterceptor(context));
         builder.addInterceptor(new ApiKeyInterceptor(context));
 
         if (RverbioUtils.isDebug(context)) {
