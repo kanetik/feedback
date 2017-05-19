@@ -6,6 +6,7 @@ import android.os.Build;
 import java.io.IOException;
 
 import io.rverb.feedback.BuildConfig;
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.utility.RverbioUtils;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -29,7 +30,7 @@ public class UserAgentInterceptor implements Interceptor {
                 "Rverbio SDK/" + BuildConfig.VERSION_NAME + " " +
                         "(Android " + Build.VERSION.RELEASE + ")";
 
-        if (RverbioUtils.isDebug(_context)) {
+        if (Rverbio.getInstance().getOptions().isDebugMode()) {
             uaString += " DEBUG";
         }
 

@@ -6,6 +6,7 @@ import android.os.ResultReceiver;
 import android.support.annotation.Keep;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.rverb.feedback.data.api.FeedbackService;
 import io.rverb.feedback.utility.DataUtils;
@@ -19,10 +20,8 @@ public class Feedback extends Persistable {
 
     private String screenshotFileName;
 
-    public String applicationId;
-    public String sessionId;
     public String endUserId;
-    public String timestamp;
+    public String timestampUtc;
     public String feedbackType;
     public ArrayList<DataItem> contextData;
     public String comment;
@@ -34,16 +33,16 @@ public class Feedback extends Persistable {
     public String osVersion;
     public String networkType;
     public String uploadUrl;
+    public List<String> sessionStartsUtc;
 
-    public Feedback(String applicationId, String sessionId, String endUserId, String feedbackType, String comment, String screenshotFileName) {
-        this.applicationId = applicationId;
-        this.sessionId = sessionId;
+    public Feedback(String endUserId, String feedbackType, String comment, String screenshotFileName) {
         this.endUserId = endUserId;
         this.feedbackType = feedbackType;
         this.comment = comment;
         this.screenshotFileName = screenshotFileName;
-        this.timestamp = DateUtils.nowUtc();
+        this.timestampUtc = DateUtils.nowUtc();
         this.contextData = new ArrayList<>();
+        this.sessionStartsUtc = new ArrayList<>();
     }
 
     @Override
@@ -69,6 +68,6 @@ public class Feedback extends Persistable {
 
     @Override
     public String toString() {
-        return "SessionId: " + sessionId + " | Comment: " + comment;
+        return "Comment: " + comment;
     }
 }

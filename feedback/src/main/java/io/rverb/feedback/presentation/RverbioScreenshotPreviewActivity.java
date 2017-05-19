@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
 import io.rverb.feedback.utility.RverbioUtils;
@@ -169,21 +170,17 @@ public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
         }
     }
 
-    public File updateScreenshotFile(@NonNull File imageFile, @NonNull Bitmap newScreenshot) {
+    public void updateScreenshotFile(@NonNull File imageFile, @NonNull Bitmap newScreenshot) {
         try {
             FileOutputStream fout = new FileOutputStream(imageFile);
             newScreenshot.compress(Bitmap.CompressFormat.JPEG, 40, fout);
 
             fout.flush();
             fout.close();
-
-            return imageFile;
         } catch (IOException e) {
-            if (RverbioUtils.isDebug(this)) {
+            if (Rverbio.getInstance().getOptions().isDebugMode()) {
                 LogUtils.w(e.getMessage(), e);
             }
         }
-
-        return null;
     }
 }

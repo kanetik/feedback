@@ -216,12 +216,12 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
 
     public void sendEvent(String event) {
         EndUser endUser = RverbioUtils.getEndUser(this);
-
         if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
-            return;
+            throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                    new Throwable("Rverbio instance not initialized"));
         }
 
-        final Event eventData = new Event(endUser.endUserId, event);
+        final Event eventData = new Event(event);
 
         RverbioUtils.persistData(this, eventData, new ResultReceiver(new Handler()) {
             @Override
@@ -267,16 +267,22 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        cancelFeedback();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_send_feedback) {
-            if (RverbioUtils.isDebug(this)) {
+            if (Rverbio.getInstance().getOptions().isDebugMode()) {
                 LogUtils.d("Send Feedback");
             }
 
             if (!TextUtils.isEmpty(_rverbEmail.getText())) {
                 final EndUser endUser = RverbioUtils.getEndUser(this);
                 if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
-                    throw new IllegalStateException("Rverbio EndUser not set. Please ensure you have initialized Rverbio.");
+                    throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                            new Throwable("Rverbio instance not initialized"));
                 }
 
                 Rverbio.getInstance().setUserEmail(_rverbEmail.getText().toString());
@@ -293,12 +299,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
 
             return true;
         } else if (item.getItemId() == android.R.id.home) {
-            sendEvent(Event.EVENT_TYPE_FEEDBACK_CANCEL);
-
-            File screenshot = new File(_screenshotFileName);
-            screenshot.delete();
-
-            finish();
+            cancelFeedback();
 
             return true;
         }
@@ -308,9 +309,18 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void cancelFeedback() {
+        sendEvent(Event.EVENT_TYPE_FEEDBACK_CANCEL);
+
+        File screenshot = new File(_screenshotFileName);
+        screenshot.delete();
+
+        finish();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (RverbioUtils.isDebug(this)) {
+        if (Rverbio.getInstance().getOptions().isDebugMode()) {
             LogUtils.d("Screenshot Updated");
         }
 

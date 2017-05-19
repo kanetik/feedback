@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.data.api.interceptor.ApiKeyInterceptor;
 import io.rverb.feedback.data.api.interceptor.LoggingInterceptor;
 import io.rverb.feedback.data.api.interceptor.UserAgentInterceptor;
@@ -19,7 +20,7 @@ public class ApiUtils {
         builder.addInterceptor(new UserAgentInterceptor(context));
         builder.addInterceptor(new ApiKeyInterceptor(context));
 
-        if (RverbioUtils.isDebug(context)) {
+        if (Rverbio.getInstance().getOptions().isDebugMode()) {
             builder.addNetworkInterceptor(new StethoInterceptor());
             builder.addNetworkInterceptor(new LoggingInterceptor());
         }

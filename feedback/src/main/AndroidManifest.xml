@@ -7,9 +7,6 @@
 
     <application>
         <service
-            android:name=".data.api.SessionService"
-            android:exported="false" />
-        <service
             android:name=".data.api.EventService"
             android:exported="false" />
         <service

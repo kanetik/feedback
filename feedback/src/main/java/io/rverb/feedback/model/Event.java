@@ -18,14 +18,12 @@ public class Event extends Persistable {
     public static final String EVENT_TYPE_FEEDBACK_START = "feedbackStart";
     public static final String EVENT_TYPE_FEEDBACK_CANCEL = "feedbackCancel";
 
-    public String sessionId;
     public String event;
-    public String timestamp;
+    public String timestampUtc;
 
-    public Event(String sessionId, String event) {
-        this.sessionId = sessionId;
+    public Event(String event) {
         this.event = event;
-        this.timestamp = DateUtils.nowUtc();
+        this.timestampUtc = DateUtils.nowUtc();
     }
 
     @Override

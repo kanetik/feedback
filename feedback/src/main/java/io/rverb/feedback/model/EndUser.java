@@ -9,12 +9,14 @@ import java.util.UUID;
 
 import io.rverb.feedback.data.api.EndUserService;
 import io.rverb.feedback.utility.DataUtils;
+import io.rverb.feedback.utility.DateUtils;
 
 @Keep
 public class EndUser {
     public String endUserId;
     public String emailAddress;
     public String userIdentifier;
+    public String firstSeenUtc;
     public boolean isPersisted;
     public boolean isSynced;
 
@@ -22,6 +24,7 @@ public class EndUser {
         this.endUserId = UUID.randomUUID().toString();
         this.emailAddress = "";
         this.userIdentifier = "";
+        this.firstSeenUtc = DateUtils.nowUtc();
         this.isPersisted = false;
         this.isSynced = false;
     }
@@ -36,6 +39,9 @@ public class EndUser {
 
     @Override
     public String toString() {
-        return "endUserId: " + endUserId + " | emailAddress: " + emailAddress + " | userIdentifier: " + userIdentifier;
+        return "endUserId: " + endUserId
+                + " | emailAddress: " + emailAddress
+                + " | userIdentifier: " + userIdentifier
+                + " | firstSeenUtc: " + firstSeenUtc;
     }
 }

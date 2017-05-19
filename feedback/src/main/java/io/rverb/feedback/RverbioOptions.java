@@ -1,18 +1,32 @@
 package io.rverb.feedback;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class RverbioOptions {
-    private boolean attachScreenshot;
+    private boolean attachScreenshotByDefault;
+    private boolean debugMode;
 
     public RverbioOptions() {
-        attachScreenshot = true;
+        attachScreenshotByDefault = true;
+        debugMode = false;
     }
 
-    public boolean isAttachScreenshotEnabled() {
-        return attachScreenshot;
+    public boolean attachScreenshotByDefault() {
+        return attachScreenshotByDefault;
     }
 
     public RverbioOptions setAttachScreenshotEnabled(boolean attachScreenshot) {
-        this.attachScreenshot = attachScreenshot;
+        this.attachScreenshotByDefault = attachScreenshot;
+        return this;
+    }
+
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
+    public RverbioOptions setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
         return this;
     }
 }

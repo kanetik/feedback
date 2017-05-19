@@ -1,22 +1,24 @@
 package io.rverb.feedback.utility;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -25,63 +27,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
+import io.rverb.feedback.R;
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Event;
 import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.IPersistable;
-import io.rverb.feedback.model.Session;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
 import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
 public class RverbioUtils {
-    public static final String DATA_APP_VERSION = "App_Version";
-    public static final String DATA_LOCALE = "Locale";
-    public static final String DATA_MANUFACTURER = "Device_Manufacturer";
-    public static final String DATA_MODEL = "Device_Model";
-    public static final String DATA_DEVICE_NAME = "Device_Name";
-    public static final String DATA_OS_VERSION = "OS_Version";
-    public static final String DATA_NETWORK_TYPE = "Network_Type";
+    private static final String DATA_APP_VERSION = "App_Version";
+    private static final String DATA_LOCALE = "Locale";
+    private static final String DATA_MANUFACTURER = "Device_Manufacturer";
+    private static final String DATA_MODEL = "Device_Model";
+    private static final String DATA_DEVICE_NAME = "Device_Name";
+    private static final String DATA_OS_VERSION = "OS_Version";
+    private static final String DATA_NETWORK_TYPE = "Network_Type";
 
     private static final String RVERBIO_PREFS = "io.rverb.feedback.prefs";
     private static final String END_USER_KEY = "end_user";
-    private static final String END_USER_ID_KEY = "end_user_id";
-    private static final String APPLICATION_ID_KEY = "application_id";
-    public static final String NO_NETWORK = "No Network";
+    private static final String SESSION_START = "session_start_utc";
 
-    /*
-        For a small set of users, I was recording "EndUser" with a prefs key of "EndUserId," but now
-        I need EndUserId to actually be the EndUserId. So, for tnose users, I must migrate to the
-        proper pref.
-     */
-    public static void migrateEndUserPrefs(Context context) {
-        final SharedPreferences legacyPrefs = context.getSharedPreferences("rverbio", Context.MODE_PRIVATE);
-        boolean hasLegacyPrefs = (legacyPrefs != null);
-
-        if (hasLegacyPrefs) {
-            final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-
-            editor.putString(APPLICATION_ID_KEY, legacyPrefs.getString(APPLICATION_ID_KEY, ""));
-
-            String filePath = context.getApplicationContext().getFilesDir().getParent() + "/shared_prefs/rverbio.xml";
-            File prefFile = new File(filePath);
-            prefFile.delete();
-        }
-    }
-
-    public static String getApplicationId(Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        return prefs.getString(APPLICATION_ID_KEY, "");
-    }
-
-    public static void saveApplicationId(Context context, String applicationId) {
-        final SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(APPLICATION_ID_KEY, applicationId).apply();
-    }
+    public static final int FEEDBACK_SUBMITTED = 0;
+    public static final int ANONYMOUS_FEEDBACK_SUBMITTED = 1;
 
     public static boolean isNullOrWhiteSpace(String string) {
         if (string == null) {
@@ -102,71 +76,71 @@ public class RverbioUtils {
         return true;
     }
 
+    public static void setEndUser(@NonNull Context context, @NonNull EndUser endUser) {
+        Gson gson = new Gson();
+        SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
+    }
+
     public static EndUser getEndUser(Context context) {
         Gson gson = new Gson();
         SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
         return gson.fromJson(prefs.getString(END_USER_KEY, ""), EndUser.class);
     }
 
-    public static EndUser initEndUser(final Context context) {
-        final EndUser endUser = new EndUser();
-        saveEndUser(context, endUser);
-        return endUser;
-    }
+    public static void setSessionStart(@NonNull Context context) {
+        List<Long> sessionStarts = getSessionStarts(context);
+        if (sessionStarts == null) {
+            sessionStarts = new ArrayList<>();
+        } else {
+            // Clean up older data
+            List<Long> temp = new ArrayList<>();
 
-    public static void saveEndUser(final Context context, final EndUser endUser) {
-        if (RverbioUtils.isDebug(context)) {
-            LogUtils.d("SaveEndUser");
+            for (long sessionStart : sessionStarts) {
+                if (sessionStart < DateUtils.weekAgoInMillis()) {
+                    break;
+                }
+
+                temp.add(sessionStart);
+            }
+
+            sessionStarts = temp;
         }
 
-        cacheEndUser(context, endUser);
+        sessionStarts.add(DateUtils.currentInMillisUtc());
 
-        saveEndUser(context, endUser, new ResultReceiver(new Handler()) {
-                    @Override
-                    protected void onReceiveResult(int resultCode, Bundle resultData) {
-                        if (resultCode == Activity.RESULT_OK) {
-                            endUser.isPersisted = true;
-                            endUser.isSynced = true;
-
-                            cacheEndUser(context, endUser);
-                        }
-                    }
-                }
-        );
-    }
-
-    public static void cacheEndUser(@NonNull Context context, @NonNull EndUser endUser) {
         Gson gson = new Gson();
         SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(END_USER_KEY, gson.toJson(endUser)).apply();
+        prefs.edit().putString(SESSION_START, gson.toJson(sessionStarts)).apply();
     }
 
-    private static String _sessionId;
+    public static List<Long> getSessionStarts(Context context) {
+        Gson gson = new Gson();
+        SharedPreferences prefs = context.getSharedPreferences(RVERBIO_PREFS, Context.MODE_PRIVATE);
+        String sessionStarts = prefs.getString(SESSION_START, "");
 
-    public static String getSessionId() {
-        return _sessionId;
-    }
-
-    public static String getNewSessionId() {
-        _sessionId = UUID.randomUUID().toString();
-        return _sessionId;
-    }
-
-    public static String getNetworkType(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        if (activeNetwork != null && activeNetwork.isConnected()) {
-            return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
-        } else {
-            return NO_NETWORK;
+        if (!TextUtils.isEmpty(sessionStarts)) {
+            return gson.fromJson(sessionStarts, new TypeToken<List<Long>>(){}.getType());
         }
+
+        return new ArrayList<>();
+    }
+
+    public static List<String> getSessionStartTimestamps(Context context) {
+        List<Long> starts = getSessionStarts(context);
+        List<String> timestamps = new ArrayList<>();
+
+        for (long start : starts) {
+            timestamps.add(DateUtils.millisToDate(start));
+        }
+
+        return timestamps;
     }
 
     public static File takeScreenshot(Activity activity) {
         File screenshot = createScreenshotFile(activity);
         if (screenshot != null) {
-            if (RverbioUtils.isDebug(activity)) {
+            if (Rverbio.getInstance().getOptions().isDebugMode()) {
                 LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
             }
 
@@ -206,7 +180,7 @@ public class RverbioUtils {
 
             return imageFile;
         } catch (IOException e) {
-            if (RverbioUtils.isDebug(activity)) {
+            if (Rverbio.getInstance().getOptions().isDebugMode()) {
                 LogUtils.w(e.getMessage(), e);
             }
         }
@@ -227,21 +201,6 @@ public class RverbioUtils {
         return bundle.getString("io.rverb.apiKey");
     }
 
-    public static boolean isDebug(Context context) {
-        ApplicationInfo ai = null;
-
-        try {
-            ai = context.getPackageManager().getApplicationInfo(getPackageName(context), PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Bundle bundle = ai.metaData;
-        String debugValue = bundle.getString("io.rverb.debug");
-
-        return Boolean.getBoolean(debugValue);
-    }
-
     public static ArrayList<DataItem> getExtraData(Context context) {
         ArrayList<DataItem> data = new ArrayList<>();
 
@@ -252,22 +211,27 @@ public class RverbioUtils {
         data.add(new DataItem(DATA_MODEL, Build.MODEL));
         data.add(new DataItem(DATA_DEVICE_NAME, Build.PRODUCT));
         data.add(new DataItem(DATA_OS_VERSION, Build.VERSION.RELEASE));
-        data.add(new DataItem(DATA_NETWORK_TYPE, RverbioUtils.getNetworkType(context)));
+        data.add(new DataItem(DATA_NETWORK_TYPE, AppUtils.getNetworkType(context)));
 
         return data;
     }
 
-    public static void sendQueuedRequests(final Context context) {
-        if (RverbioUtils.getNetworkType(context).equals(NO_NETWORK)) {
-            return;
+    public static boolean sendQueuedRequests(final Context context) {
+        boolean hadQueuedFeedback = false;
+
+        if (AppUtils.getNetworkType(context).equals(AppUtils.NO_NETWORK)) {
+            return false;
         }
 
-        RverbioUtils.sendQueuedRequests(context, Session.TYPE_DESCRIPTOR);
         RverbioUtils.sendQueuedRequests(context, Event.TYPE_DESCRIPTOR);
-        RverbioUtils.sendQueuedRequests(context, Feedback.TYPE_DESCRIPTOR);
+        hadQueuedFeedback = RverbioUtils.sendQueuedRequests(context, Feedback.TYPE_DESCRIPTOR);
+
+        return hadQueuedFeedback;
     }
 
-    public static void sendQueuedRequests(final Context context, final String dataTypeDescriptor) {
+    private static boolean sendQueuedRequests(final Context context, final String dataTypeDescriptor) {
+        boolean hadQueuedRequests = false;
+
         // Stap 1: find existing files for the given DATA_TYPE
         File directory = context.getCacheDir();
 
@@ -287,9 +251,11 @@ public class RverbioUtils {
 
         // Step 2: loop through all found, attempting to resend
         for (File file : files) {
+            hadQueuedRequests = true;
+
             String tempFilePath = file.getAbsolutePath();
 
-            if (RverbioUtils.isDebug(context)) {
+            if (Rverbio.getInstance().getOptions().isDebugMode()) {
                 LogUtils.d("FileName", tempFilePath);
             }
 
@@ -308,6 +274,34 @@ public class RverbioUtils {
                 });
             }
         }
+
+        return hadQueuedRequests;
+    }
+
+    public static void persistData(Context context, IPersistable data, ResultReceiver resultReceiver) {
+        context.startService(data.getPersistServiceIntent(context, resultReceiver));
+    }
+
+    public static void persistEndUser(final Context context) {
+        final EndUser endUser = getEndUser(context);
+        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                    new Throwable("Rverbio instance not initialized"));
+        }
+
+        ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == Activity.RESULT_OK) {
+                    endUser.isPersisted = true;
+                    endUser.isSynced = true;
+
+                    setEndUser(context, endUser);
+                }
+            }
+        };
+
+        context.startService(endUser.getPersistServiceIntent(context, resultReceiver));
     }
 
     public static void handlePersistanceFailure(Context context, IPersistable data) {
@@ -316,11 +310,26 @@ public class RverbioUtils {
         }
     }
 
-    public static void persistData(Context context, IPersistable data, ResultReceiver resultReceiver) {
-        context.startService(data.getPersistServiceIntent(context, resultReceiver));
-    }
+    public static void notifyUser(Context context, int notificationType) {
+        int notificationId = 1;
 
-    public static void saveEndUser(Context context, EndUser endUser, ResultReceiver resultReceiver) {
-        context.startService(endUser.getPersistServiceIntent(context, resultReceiver));
+        String title = "";
+        String content = "";
+
+        if (notificationType == FEEDBACK_SUBMITTED) {
+            title = "Feedback Sent";
+            content = "Thanks! Your feedback has been sent - you should hear back soon.";
+        } else if (notificationType == ANONYMOUS_FEEDBACK_SUBMITTED) {
+            title = "Feedback Sent";
+            content = "Thanks for your feedback!";
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.rverb_logo_grayscale)
+                .setContentTitle(title)
+                .setContentText(content);
+
+        NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        notifyMgr.notify(notificationId, builder.build());
     }
 }

@@ -27,7 +27,8 @@ public class EndUserService extends IntentService {
 
         EndUser endUser = RverbioUtils.getEndUser(this);
         if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
-            throw new IllegalStateException("EndUser must be initialized and contain an EndUserId");
+            throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                    new Throwable("Rverbio instance not initialized"));
         }
 
         boolean success;

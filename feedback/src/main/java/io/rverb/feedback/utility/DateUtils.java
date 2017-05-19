@@ -23,4 +23,23 @@ public class DateUtils {
 
         return df.format(new Date());
     }
+
+    public static long currentInMillisUtc() {
+        int gmtOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+        return System.currentTimeMillis() - gmtOffset;
+    }
+
+    public static String millisToDate(long millis) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+
+        return df.format(calendar.getTime());
+    }
+
+    public static long weekAgoInMillis() {
+        return System.currentTimeMillis() - android.text.format.DateUtils.WEEK_IN_MILLIS;
+    }
 }

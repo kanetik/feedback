@@ -15,8 +15,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 
-import io.rverb.feedback.model.Session;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 public class RverbioUtilsTest {
     private static final String END_USER_ID = UUID.randomUUID().toString();
-    private static final Session SESSION_DATA = new Session("test", "test");
 
     @Mock
     Context _context;
@@ -58,11 +55,6 @@ public class RverbioUtilsTest {
         Mockito.when(sharedPreferences.getString(anyString(), anyString())).thenReturn(END_USER_ID);
 
         assertEquals(RverbioUtils.getEndUser(_context).endUserId, END_USER_ID);
-    }
-
-    @Test
-    public void canWriteObjectToDisk() throws Exception {
-        assertNotNull(DataUtils.writeObjectToDisk(_context, SESSION_DATA));
     }
 
     @Test

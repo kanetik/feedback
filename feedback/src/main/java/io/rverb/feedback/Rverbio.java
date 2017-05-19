@@ -18,7 +18,6 @@ import java.util.Map;
 import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Feedback;
-import io.rverb.feedback.model.Session;
 import io.rverb.feedback.presentation.RverbioFeedbackActivity;
 import io.rverb.feedback.utility.AppUtils;
 import io.rverb.feedback.utility.DataUtils;
@@ -30,8 +29,6 @@ public class Rverbio {
     private static Context _appContext;
     private static ArrayList<DataItem> _contextData;
     private static RverbioOptions _options;
-
-    private static boolean _initializing = false;
 
     private static final Rverbio _instance = new Rverbio();
 
@@ -56,7 +53,7 @@ public class Rverbio {
      * @return boolean indicating that initialization has or has not completed
      */
     public static boolean isReady() {
-        return _appContext != null && !_initializing;
+        return _appContext != null;
     }
 
     /**
@@ -85,30 +82,27 @@ public class Rverbio {
             return;
         }
 
-        if (RverbioUtils.isDebug(context)) {
-            LogUtils.d("Rverbio Initialize");
-        }
-
-        _initializing = true;
-
         _appContext = context.getApplicationContext();
         _options = options;
         _contextData = new ArrayList<>();
 
-        // Cleaning up a shared prefs mistake:
-        RverbioUtils.migrateEndUserPrefs(_appContext);
-
-        // Send any previously queued requests
-        EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        if (endUser != null && endUser.isPersisted) {
-            RverbioUtils.sendQueuedRequests(_appContext);
-
-            if (!endUser.isSynced) {
-                RverbioUtils.saveEndUser(_appContext, endUser);
-            }
+        if (Rverbio.getInstance().getOptions().isDebugMode()) {
+            LogUtils.d("Rverbio Initialize");
         }
 
-        getInstance().setupSession();
+        RverbioUtils.setSessionStart(context);
+
+        EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            // Create the EndUser object for future feedback and events
+            RverbioUtils.setEndUser(_appContext, new EndUser());
+        } else {
+            // Send any previously queued requests
+            boolean sentQueuedFeedback = RverbioUtils.sendQueuedRequests(_appContext);
+            if (sentQueuedFeedback && (!endUser.isPersisted || !endUser.isSynced)) {
+                RverbioUtils.persistEndUser(_appContext);
+            }
+        }
     }
 
     /**
@@ -170,21 +164,21 @@ public class Rverbio {
         }
 
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        String sessionId = RverbioUtils.getSessionId();
-
         if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
-            throw new IllegalStateException("Rverbio EndUser not set. Please ensure you have initialized Rverbio.");
+            throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                    new Throwable("Rverbio instance not initialized"));
+        } else {
+            RverbioUtils.persistEndUser(_appContext);
         }
 
-        if (RverbioUtils.isNullOrWhiteSpace(sessionId)) {
-            throw new IllegalStateException("Rverbio SessionId not set. Please ensure you have initialized Rverbio.");
-        }
-
-        final Feedback feedbackData = new Feedback(RverbioUtils.getApplicationId(_appContext),
-                sessionId, endUser.endUserId, feedbackType,
-                feedbackText, screenshotFileName);
+        final Feedback feedbackData =
+                new Feedback(endUser.endUserId,
+                        feedbackType,
+                        feedbackText,
+                        screenshotFileName);
 
         addSystemData(feedbackData);
+        addSessionStartData(feedbackData);
         addInstanceContextDataToFeedback(feedbackData);
 
         RverbioUtils.persistData(_appContext, feedbackData, new ResultReceiver(new Handler()) {
@@ -193,9 +187,9 @@ public class Rverbio {
                 if (resultCode == Activity.RESULT_OK) {
                     EndUser endUser = RverbioUtils.getEndUser(_appContext);
                     if (endUser != null && !RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress)) {
-                        AppUtils.notifyUser(_appContext, AppUtils.FEEDBACK_SUBMITTED);
+                        RverbioUtils.notifyUser(_appContext, RverbioUtils.FEEDBACK_SUBMITTED);
                     } else {
-                        AppUtils.notifyUser(_appContext, AppUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
+                        RverbioUtils.notifyUser(_appContext, RverbioUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
                     }
                 } else {
                     RverbioUtils.handlePersistanceFailure(_appContext, feedbackData);
@@ -218,8 +212,9 @@ public class Rverbio {
      */
     public void setUserInfo(@NonNull String emailAddress, @NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        if (endUser == null) {
-            // TODO: If endUser is null, throw an error?
+        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                    new Throwable("Rverbio instance not initialized"));
         }
 
         if (endUser.emailAddress.equalsIgnoreCase(emailAddress) && endUser.userIdentifier.equalsIgnoreCase(userIdentifier)) {
@@ -230,7 +225,7 @@ public class Rverbio {
         endUser.userIdentifier = userIdentifier;
         endUser.isSynced = false;
 
-        RverbioUtils.saveEndUser(_appContext, endUser);
+        RverbioUtils.setEndUser(_appContext, endUser);
     }
 
     /**
@@ -242,9 +237,9 @@ public class Rverbio {
      */
     public void setUserEmail(@NonNull String emailAddress) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        if (endUser == null) {
-            // Should we throw an error if this happens?
-            return;
+        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                    new Throwable("Rverbio instance not initialized"));
         }
 
         if (endUser.emailAddress.equalsIgnoreCase(emailAddress)) {
@@ -254,7 +249,7 @@ public class Rverbio {
         endUser.emailAddress = emailAddress;
         endUser.isSynced = false;
 
-        RverbioUtils.saveEndUser(_appContext, endUser);
+        RverbioUtils.setEndUser(_appContext, endUser);
     }
 
     /**
@@ -268,9 +263,9 @@ public class Rverbio {
      */
     public void setUserIdentifier(@NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        if (endUser == null) {
-            // Should we throw an error if this happens?
-            return;
+        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
+            throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
+                    new Throwable("Rverbio instance not initialized"));
         }
 
         if (endUser.userIdentifier.equalsIgnoreCase(userIdentifier)) {
@@ -280,7 +275,7 @@ public class Rverbio {
         endUser.userIdentifier = userIdentifier;
         endUser.isSynced = false;
 
-        RverbioUtils.saveEndUser(_appContext, endUser);
+        RverbioUtils.setEndUser(_appContext, endUser);
     }
 
     /**
@@ -290,7 +285,7 @@ public class Rverbio {
      */
     public void startFeedbackActivity(@NonNull Context context) {
         File screenshot = null;
-        if (context instanceof Activity && Rverbio._options.isAttachScreenshotEnabled()) {
+        if (context instanceof Activity && Rverbio._options.attachScreenshotByDefault()) {
             screenshot = RverbioUtils.takeScreenshot((Activity) context);
         }
 
@@ -302,42 +297,6 @@ public class Rverbio {
         context.startActivity(feedbackIntent);
     }
 
-    private Rverbio setupSession() {
-        EndUser endUser = RverbioUtils.getEndUser(_appContext);
-        if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
-            endUser = RverbioUtils.initEndUser(_appContext);
-        }
-
-        String sessionId = RverbioUtils.getSessionId();
-        if (RverbioUtils.isNullOrWhiteSpace(sessionId)) {
-            sessionId = RverbioUtils.getNewSessionId();
-        }
-
-        final Session session = new Session(sessionId, endUser.endUserId);
-
-        RverbioUtils.persistData(_appContext, session, new ResultReceiver(new Handler()) {
-            @Override
-            protected void onReceiveResult(int resultCode, Bundle resultData) {
-                if (resultCode == Activity.RESULT_OK) {
-                    Session session = (Session) resultData.getSerializable(DataUtils.EXTRA_RESULT);
-                    RverbioUtils.saveApplicationId(_appContext, session.applicationId);
-                } else {
-                    RverbioUtils.handlePersistanceFailure(_appContext, session);
-                }
-
-                _initializing = false;
-            }
-        });
-
-        return this;
-    }
-
-    private void addInstanceContextDataToFeedback(Feedback feedback) {
-        if (_contextData != null) {
-            feedback.contextData = _contextData;
-        }
-    }
-
     private void addSystemData(Feedback feedback) {
         feedback.appVersion = AppUtils.getVersionName(_appContext) + " (" + AppUtils.getVersionCode(_appContext) + ")";
         feedback.locale = Locale.getDefault().toString();
@@ -345,6 +304,16 @@ public class Rverbio {
         feedback.deviceModel = Build.MODEL;
         feedback.deviceName = Build.PRODUCT;
         feedback.osVersion = Build.VERSION.RELEASE;
-        feedback.networkType = RverbioUtils.getNetworkType(_appContext);
+        feedback.networkType = AppUtils.getNetworkType(_appContext);
+    }
+
+    private void addSessionStartData(Feedback feedback) {
+        feedback.sessionStartsUtc = RverbioUtils.getSessionStartTimestamps(_appContext);
+    }
+
+    private void addInstanceContextDataToFeedback(Feedback feedback) {
+        if (_contextData != null) {
+            feedback.contextData = _contextData;
+        }
     }
 }

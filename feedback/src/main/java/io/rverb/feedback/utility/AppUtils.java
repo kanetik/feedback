@@ -1,12 +1,13 @@
 package io.rverb.feedback.utility;
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.AttrRes;
@@ -14,23 +15,18 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 
-import io.fabric.sdk.android.Fabric;
 import io.rverb.feedback.R;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
 public class AppUtils {
-    public static final int FEEDBACK_SUBMITTED = 0;
-    public static final int ANONYMOUS_FEEDBACK_SUBMITTED = 1;
+    static final String NO_NETWORK = "No Network";
 
-    public static String getPackageName(Context context) {
+    static String getPackageName(Context context) {
         return context.getPackageName();
     }
 
@@ -91,31 +87,19 @@ public class AppUtils {
         }
     }
 
-    public static void notifyUser(Context context, int notificationType) {
-        int notificationId = 1;
+    public static String getNetworkType(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
-        String title = "";
-        String content = "";
-
-        if (notificationType == FEEDBACK_SUBMITTED) {
-            title = "Feedback Sent";
-            content = "Thanks! Your feedback has been sent - you should hear back soon.";
-        } else if (notificationType == ANONYMOUS_FEEDBACK_SUBMITTED) {
-            title = "Feedback Sent";
-            content = "Thanks for your feedback!";
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+            return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
+        } else {
+            return NO_NETWORK;
         }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.rverb_logo_grayscale)
-                .setContentTitle(title)
-                .setContentText(content);
-
-        NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        notifyMgr.notify(notificationId, builder.build());
     }
 
     @ColorInt
-    public static int getToolbarThemeColor(@NonNull ActionBar supportActionBar, @AttrRes int attributeColor) {
+    static int getToolbarThemeColor(@NonNull ActionBar supportActionBar, @AttrRes int attributeColor) {
         int colorAttr;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -150,14 +134,5 @@ public class AppUtils {
         DrawableCompat.setTint(drawable, ContextCompat.getColor(context, colorResource));
 
         return drawable;
-    }
-
-    public static boolean crashlyticsCapable() {
-        try {
-            Class c = Class.forName("io.fabric.sdk.android.Fabric");
-            return c != null && Fabric.isInitialized();
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 }

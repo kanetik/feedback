@@ -63,15 +63,7 @@
     java.lang.Object readResolve();
 }
 
--keepclassmembers class * implements io.rverb.feedback.model.IPersistable {
-    static final long serialVersionUID;
-    static final java.io.ObjectStreamField[] serialPersistentFields;
-    private void writeObject(java.io.ObjectOutputStream);
-    private void readObject(java.io.ObjectInputStream);
-    java.lang.Object writeReplace();
-    java.lang.Object readResolve();
-    public protected *;
-}
+-keepclassmembers class * implements io.rverb.feedback.model.IPersistable
 
 # Your library may contain more items that need to be preserved;
 # typically classes that are dynamically created using Class.forName:
