@@ -8,8 +8,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.facebook.stetho.Stetho;
-
 import java.util.Locale;
 import java.util.UUID;
 
@@ -20,10 +18,6 @@ public class SampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        Stetho.initialize(Stetho.newInitializerBuilder(this)
-                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                .build());
 
         Rverbio.initialize(this, new RverbioOptions().setDebugMode(BuildConfig.DEBUG));
         Rverbio.getInstance().setUserIdentifier(getSupportId(this));

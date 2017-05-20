@@ -51,10 +51,6 @@
     public protected *;
 }
 
-# Stetho
-# Note: Doesn't include Javascript console lines. See https://github.com/facebook/stetho/tree/master/stetho-js-rhino#proguard
--keep class com.facebook.stetho.** { *; }
-
 -keepclassmembernames class * {
     java.lang.Class class$(java.lang.String);
     java.lang.Class class$(java.lang.String, boolean);
