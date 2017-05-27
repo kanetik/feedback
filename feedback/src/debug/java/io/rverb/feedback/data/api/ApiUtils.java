@@ -10,10 +10,10 @@ import okhttp3.OkHttpClient;
 
 class ApiUtils {
     @NonNull
-    static OkHttpClient getOkHttpClient(Context context) {
+    static OkHttpClient getOkHttpClient() {
         return new OkHttpClient.Builder()
-                .addInterceptor(new ApiKeyInterceptor(context))
-                .addInterceptor(new UserAgentInterceptor(context))
+                .addInterceptor(new ApiKeyInterceptor())
+                .addInterceptor(new UserAgentInterceptor())
                 .addInterceptor(new LoggingInterceptor())
                 .build();
     }

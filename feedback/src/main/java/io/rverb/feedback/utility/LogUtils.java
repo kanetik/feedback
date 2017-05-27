@@ -15,6 +15,14 @@ public class LogUtils {
         Log.d(LOG_TAG, String.format(Locale.getDefault(), "%1$s: %2$s", key, value));
     }
 
+    public static void i(String message) {
+        Log.i(LOG_TAG, message);
+    }
+
+    public static void i(String key, String value) {
+        Log.i(LOG_TAG, String.format(Locale.getDefault(), "%1$s: %2$s", key, value));
+    }
+
     public static void w(String message, Throwable t) {
         Log.w(LOG_TAG, message, t);
     }

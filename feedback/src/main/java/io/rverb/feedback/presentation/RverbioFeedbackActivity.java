@@ -275,7 +275,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_send_feedback) {
             if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                LogUtils.d("Send Feedback");
+                LogUtils.i("Send Feedback");
             }
 
             if (!TextUtils.isEmpty(_rverbEmail.getText())) {
@@ -321,7 +321,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (Rverbio.getInstance().getOptions().isDebugMode()) {
-            LogUtils.d("Screenshot Updated");
+            LogUtils.i("Screenshot Updated");
         }
 
         super.onActivityResult(requestCode, resultCode, data);

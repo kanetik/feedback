@@ -120,3 +120,6 @@
 -dontwarn com.google.android.gms.**
 -dontwarn com.android.volley.toolbox.**
 -dontwarn com.instabug.**
+-dontwarn okio.**
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.ParametersAreNonnullByDefault

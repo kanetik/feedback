@@ -27,6 +27,7 @@ import io.rverb.feedback.utility.RverbioUtils;
 @Keep
 public class Rverbio {
     private static Context _appContext;
+    private static String _apiKey;
     private static ArrayList<DataItem> _contextData;
     private static RverbioOptions _options;
 
@@ -64,8 +65,8 @@ public class Rverbio {
      *
      * @param context Activity or Application Context
      */
-    public static void initialize(Context context) {
-        initialize(context, new RverbioOptions());
+    public static void initialize(Context context, String apiKey) {
+        initialize(context, apiKey, new RverbioOptions());
     }
 
     /**
@@ -77,17 +78,18 @@ public class Rverbio {
      * @param context Activity or Application Context
      * @param options RverbioOptions object to set defaults
      */
-    public static void initialize(Context context, RverbioOptions options) {
+    public static void initialize(Context context, String apiKey, RverbioOptions options) {
         if (isReady()) {
             return;
         }
 
         _appContext = context.getApplicationContext();
+        _apiKey = apiKey;
         _options = options;
         _contextData = new ArrayList<>();
 
         if (Rverbio.getInstance().getOptions().isDebugMode()) {
-            LogUtils.d("Rverbio Initialize");
+            LogUtils.i("Rverbio Initialize");
         }
 
         RverbioUtils.setSessionStart(context);
@@ -113,6 +115,15 @@ public class Rverbio {
      */
     public RverbioOptions getOptions() {
         return _options;
+    }
+
+    /**
+     * Gets the ApiKey for this Rverbio instance.
+     *
+     * @return API Key for the current instance
+     */
+    public String getApiKey() {
+        return _apiKey;
     }
 
     /**

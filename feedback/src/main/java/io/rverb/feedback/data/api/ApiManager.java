@@ -14,7 +14,6 @@ import io.rverb.feedback.model.FileRequestBody;
 import io.rverb.feedback.model.IPersistable;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.LogUtils;
-import io.rverb.feedback.utility.RverbioUtils;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,18 +25,18 @@ class ApiManager {
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
 
     static IPersistable post(final Context context, final IPersistable data) {
-        OkHttpClient client = ApiUtils.getOkHttpClient(context);
+        OkHttpClient client = ApiUtils.getOkHttpClient();
 
         Gson gson = new Gson();
         String json = gson.toJson(data);
 
         if (Rverbio.getInstance().getOptions().isDebugMode()) {
-            LogUtils.d("POST " + data.getDataTypeDescriptor() + " - " + json);
+            LogUtils.i("POST " + data.getDataTypeDescriptor() + " - " + json);
         }
 
         RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
 
-        String url = context.getString(R.string.api_base_url) + data.getDataTypeDescriptor();
+        String url = context.getString(R.string.rverb_api_base_url) + data.getDataTypeDescriptor();
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -51,11 +50,11 @@ class ApiManager {
                 if (response.isSuccessful() && responseBody != null) {
                     return DataUtils.fromJson(responseBody.string(), data.getClass());
                 } else if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                    LogUtils.d("POST " + data.getDataTypeDescriptor() + " Failed: " + response.message());
+                    LogUtils.i("POST " + data.getDataTypeDescriptor() + " Failed: " + response.message());
                 }
             } catch (Exception e) {
                 if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                    LogUtils.d("POST " + data.getDataTypeDescriptor() + " Exception: " + e.getMessage());
+                    LogUtils.i("POST " + data.getDataTypeDescriptor() + " Exception: " + e.getMessage());
                 }
             } finally {
                 if (responseBody != null) {
@@ -64,7 +63,7 @@ class ApiManager {
             }
         } catch (IOException e) {
             if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                LogUtils.d("POST " + data.getDataTypeDescriptor() + " IOException: " + e.getMessage());
+                LogUtils.i("POST " + data.getDataTypeDescriptor() + " IOException: " + e.getMessage());
             }
         }
 
@@ -72,10 +71,10 @@ class ApiManager {
     }
 
     static boolean insertEndUser(final Context context, final EndUser endUser) {
-        OkHttpClient client = ApiUtils.getOkHttpClient(context);
+        OkHttpClient client = ApiUtils.getOkHttpClient();
 
         if (Rverbio.getInstance().getOptions().isDebugMode()) {
-            LogUtils.d("Insert endUser - " + endUser.endUserId);
+            LogUtils.i("Insert endUser - " + endUser.endUserId);
         }
 
         Gson gson = new Gson();
@@ -83,7 +82,7 @@ class ApiManager {
 
         RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
 
-        String url = context.getString(R.string.api_base_url) + "enduser";
+        String url = context.getString(R.string.rverb_api_base_url) + "enduser";
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -93,14 +92,14 @@ class ApiManager {
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
                 if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                    LogUtils.d("Insert EndUser Failed: " + response.message());
+                    LogUtils.i("Insert EndUser Failed: " + response.message());
                 }
 
                 return false;
             }
         } catch (IOException e) {
             if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                LogUtils.d("Insert EndUser IOException: " + e.getMessage());
+                LogUtils.i("Insert EndUser IOException: " + e.getMessage());
             }
 
             return false;
@@ -110,10 +109,10 @@ class ApiManager {
     }
 
     static boolean updateEndUser(final Context context, final EndUser endUser) {
-        OkHttpClient client = ApiUtils.getOkHttpClient(context);
+        OkHttpClient client = ApiUtils.getOkHttpClient();
 
         if (Rverbio.getInstance().getOptions().isDebugMode()) {
-            LogUtils.d("Update endUser - " + endUser.endUserId);
+            LogUtils.i("Update endUser - " + endUser.endUserId);
         }
 
         Gson gson = new Gson();
@@ -121,7 +120,7 @@ class ApiManager {
 
         RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, json);
 
-        String url = context.getString(R.string.api_base_url) + "enduser";
+        String url = context.getString(R.string.rverb_api_base_url) + "enduser";
         Request request = new Request.Builder()
                 .url(url)
                 .put(body)
@@ -131,14 +130,14 @@ class ApiManager {
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
                 if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                    LogUtils.d("Update EndUser Failed: " + response.message());
+                    LogUtils.i("Update EndUser Failed: " + response.message());
                 }
 
                 return false;
             }
         } catch (IOException e) {
             if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                LogUtils.d("Update EndUser IOException: " + e.getMessage());
+                LogUtils.i("Update EndUser IOException: " + e.getMessage());
             }
 
             return false;
@@ -149,10 +148,10 @@ class ApiManager {
 
     static void putFile(Context context, File file, String url) {
         if (Rverbio.getInstance().getOptions().isDebugMode()) {
-            LogUtils.d("Uploading " + file.getName() + " to " + url);
+            LogUtils.i("Uploading " + file.getName() + " to " + url);
         }
 
-        OkHttpClient client = ApiUtils.getOkHttpClient(context);
+        OkHttpClient client = ApiUtils.getOkHttpClient();
         RequestBody requestBody = new FileRequestBody(file, "image/jpeg");
 
         Request request = new Request.Builder()
@@ -169,16 +168,16 @@ class ApiManager {
                 // Delete the temp file, if it exists
                 if (response.isSuccessful()) {
                     if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                        LogUtils.d("PUT FILE Succeeded - " + response.request().url());
+                        LogUtils.i("PUT FILE Succeeded - " + response.request().url());
                     }
 
                     file.delete();
                 } else if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                    LogUtils.d("PUT FILE Failed - " + response.message());
+                    LogUtils.i("PUT FILE Failed - " + response.message());
                 }
             } catch (Exception e) {
                 if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                    LogUtils.d("PUT FILE Error 1: " + e.getMessage());
+                    LogUtils.i("PUT FILE Error 1: " + e.getMessage());
                 }
             } finally {
                 if (responseBody != null) {
@@ -187,7 +186,7 @@ class ApiManager {
             }
         } catch (IOException e) {
             if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                LogUtils.d("PUT FILE IOException: " + e.getMessage());
+                LogUtils.i("PUT FILE IOException: " + e.getMessage());
             }
         }
     }

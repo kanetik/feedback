@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -39,7 +37,6 @@ import io.rverb.feedback.model.Feedback;
 import io.rverb.feedback.model.IPersistable;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static io.rverb.feedback.utility.AppUtils.getPackageName;
 
 public class RverbioUtils {
     private static final String DATA_APP_VERSION = "App_Version";
@@ -120,7 +117,8 @@ public class RverbioUtils {
         String sessionStarts = prefs.getString(SESSION_START, "");
 
         if (!TextUtils.isEmpty(sessionStarts)) {
-            return gson.fromJson(sessionStarts, new TypeToken<List<Long>>(){}.getType());
+            return gson.fromJson(sessionStarts, new TypeToken<List<Long>>() {
+            }.getType());
         }
 
         return new ArrayList<>();
@@ -141,7 +139,7 @@ public class RverbioUtils {
         File screenshot = createScreenshotFile(activity);
         if (screenshot != null) {
             if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                LogUtils.d("Screenshot File", screenshot.getAbsolutePath());
+                LogUtils.i("Screenshot File", screenshot.getAbsolutePath());
             }
 
             Uri path = Uri.fromFile(screenshot);
@@ -186,19 +184,6 @@ public class RverbioUtils {
         }
 
         return null;
-    }
-
-    public static String getApiKey(Context context) {
-        ApplicationInfo ai = null;
-
-        try {
-            ai = context.getPackageManager().getApplicationInfo(getPackageName(context), PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Bundle bundle = ai.metaData;
-        return bundle.getString("io.rverb.apiKey");
     }
 
     public static ArrayList<DataItem> getExtraData(Context context) {
@@ -256,7 +241,7 @@ public class RverbioUtils {
             String tempFilePath = file.getAbsolutePath();
 
             if (Rverbio.getInstance().getOptions().isDebugMode()) {
-                LogUtils.d("FileName", tempFilePath);
+                LogUtils.i("FileName", tempFilePath);
             }
 
             final IPersistable data = DataUtils.readObjectFromDisk(tempFilePath);
@@ -331,5 +316,9 @@ public class RverbioUtils {
 
         NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         notifyMgr.notify(notificationId, builder.build());
+    }
+
+    public static String getApiKey() {
+        return Rverbio.getInstance().getApiKey();
     }
 }
