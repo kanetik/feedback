@@ -5,7 +5,10 @@ plugins {
 
 apply plugin: 'com.android.library'
 
-project.ext.set("libraryVersion", "0.6.0-alpha")
+ext {
+    verName = "0.6.1-alpha"
+    supportLibraryVersion = "25.3.1"
+}
 
 android {
     compileSdkVersion 25
@@ -13,10 +16,10 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 6
         group = "io.rverb"
-        version = project.libraryVersion
-        versionName project.libraryVersion
+        versionCode verCode
+        version = verName
+        versionName verName
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.generatedDensities = ['hdpi', 'xhdpi', 'xxhdpi']
@@ -27,12 +30,12 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "api_base_url", "https://www.rverb.io/api/"
+            resValue "string", "rverb_api_base_url", "https://www.rverb.io/api/"
         }
         debug {
             debuggable true
             minifyEnabled false
-            resValue "string", "api_base_url", "https://rverbio-dev-east.azurewebsites.net/api/"
+            resValue "string", "rverb_api_base_url", "https://rverbio-dev-east.azurewebsites.net/api/"
         }
     }
     publishNonDefault false
@@ -86,7 +89,7 @@ bintray {
         githubRepo = 'rverbio/android-sdk' //Optional Github repository
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
         version {
-            name = project.libraryVersion //Bintray logical version name
+            name = verName //Bintray logical version name
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
                 passphrase = 'thecatspitsatn00n' //Optional. The passphrase for GPG signing'
@@ -98,34 +101,34 @@ bintray {
 dependencies {
     //Dependencies for JUNit and unit tests.
     //Dependencies for Espresso
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
+    androidTestCompile("com.android.support.test.espresso:espresso-core:2.2.2", {
+        exclude group: "com.android.support", module: "support-annotations"
     })
-    androidTestImplementation('com.android.support.test:runner:0.5') {
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
+    androidTestCompile("com.android.support.test:runner:0.5") {
+        exclude module: "support-annotations"
+        exclude module: "support-v4"
     }
-    androidTestImplementation('com.android.support.test:rules:0.5') {
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
+    androidTestCompile("com.android.support.test:rules:0.5") {
+        exclude module: "support-annotations"
+        exclude module: "support-v4"
     }
-    androidTestImplementation('com.android.support.test.espresso:espresso-intents:2.2.2') {
-        exclude module: 'recyclerview-v7'
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
+    androidTestCompile("com.android.support.test.espresso:espresso-intents:2.2.2") {
+        exclude module: "recyclerview-v7"
+        exclude module: "support-annotations"
+        exclude module: "support-v4"
     }
-    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:2.2.2') {
-        exclude module: 'recyclerview-v7'
-        exclude module: 'support-annotations'
-        exclude module: 'support-v4'
+    androidTestCompile("com.android.support.test.espresso:espresso-contrib:2.2.2") {
+        exclude module: "recyclerview-v7"
+        exclude module: "support-annotations"
+        exclude module: "support-v4"
     }
-    implementation 'com.android.support:appcompat-v7:25.3.1'
-    implementation 'com.android.support:design:25.3.1'
-    implementation 'com.android.support:support-v4:25.3.1'
-    implementation 'com.android.support:recyclerview-v7:25.3.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.8.+'
-    implementation 'com.google.code.gson:gson:2.8.+'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:2.2.11'
+    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
+    compile "com.android.support:design:$supportLibraryVersion"
+    compile "com.android.support:support-v4:$supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    compile "com.android.support.constraint:constraint-layout:1.0.2"
+    compile "com.squareup.okhttp3:okhttp:3.8.+"
+    compile "com.google.code.gson:gson:2.8.+"
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.2.11"
 }
