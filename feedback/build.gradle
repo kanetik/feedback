@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'com.android.library'
 
 ext {
-    verName = "0.6.1-alpha"
+    verName = "0.7.0-alpha"
     supportLibraryVersion = "25.3.1"
 }
 
@@ -22,7 +22,6 @@ android {
         versionName verName
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        vectorDrawables.generatedDensities = ['hdpi', 'xhdpi', 'xxhdpi']
 
     }
     buildTypes {
@@ -126,7 +125,7 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.android.support:support-v4:$supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
-    compile "com.android.support.constraint:constraint-layout:1.0.2"
+    compile 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
     compile "com.squareup.okhttp3:okhttp:3.8.+"
     compile "com.google.code.gson:gson:2.8.+"
     testCompile "junit:junit:4.12"
