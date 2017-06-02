@@ -7,7 +7,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
-        Rverbio.initialize(this);
+        Rverbio.initialize(this, "fbb9a83c-da3a-4603-b2c2-9d3104c11b6b");
 
         Rverbio.getInstance().addContextDataItem("Test 1", "Test 1 Value");
         Rverbio.getInstance().addContextDataItem("Test 2", "Test 2 Value");

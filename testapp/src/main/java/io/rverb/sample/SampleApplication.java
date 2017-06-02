@@ -19,7 +19,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Rverbio.initialize(this, new RverbioOptions().setDebugMode(BuildConfig.DEBUG));
+        Rverbio.initialize(this, "2341b8bf-c50e-4fc1-9410-6c09b5dd0119", new RverbioOptions().setDebugMode(BuildConfig.DEBUG));
         Rverbio.getInstance().setUserIdentifier(getSupportId(this));
     }
 
@@ -30,8 +30,6 @@ public class SampleApplication extends Application {
             supportId = UUID.randomUUID().toString();
             prefs.edit().putString("support_id", supportId).apply();
         }
-
-        Log.d("EndUser", String.format(Locale.getDefault(), "%1$s: %2$s", "SupportId", supportId));
 
         return supportId;
     }

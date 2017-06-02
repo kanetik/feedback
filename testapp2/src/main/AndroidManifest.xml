@@ -18,7 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="io.rverb.apiKey" android:value="fbb9a83c-da3a-4603-b2c2-9d3104c11b6b" />
     </application>
 
 </manifest>
