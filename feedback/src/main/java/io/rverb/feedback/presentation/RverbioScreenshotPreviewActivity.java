@@ -99,10 +99,13 @@ public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
             File image = new File(mScreenshotPath);
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
             Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
-            Bitmap.createScaledBitmap(bitmap, w - 500, h - 500, true);
 
-            mBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-            mCanvas = new Canvas(mBitmap);
+            if (bitmap != null) {
+                Bitmap.createScaledBitmap(bitmap, w - 500, h - 500, true);
+
+                mBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                mCanvas = new Canvas(mBitmap);
+            }
         }
 
         @Override
@@ -178,7 +181,7 @@ public class RverbioScreenshotPreviewActivity extends AppCompatActivity {
             fout.flush();
             fout.close();
         } catch (IOException e) {
-            if (Rverbio.getInstance().getOptions().isDebugMode()) {
+            if (Rverbio.isDebug()) {
                 LogUtils.w(e.getMessage(), e);
             }
         }

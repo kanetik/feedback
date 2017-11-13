@@ -33,7 +33,7 @@ public class RverbioDataItemDialogFragment extends DialogFragment {
 
         ArrayList<DataItem> arrayList = new ArrayList<>();
         arrayList.addAll(RverbioUtils.getExtraData(view.getContext()));
-        arrayList.addAll(Rverbio.getInstance().getContextData());
+        arrayList.addAll(Rverbio.getInstance(view.getContext()).getContextData());
 
         ListView listView = (ListView) view.findViewById(R.id.data_item_list);
         DataItemAdapter adapter = new DataItemAdapter(view.getContext(), arrayList);

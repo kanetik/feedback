@@ -11,4 +11,6 @@
     <string name="rverb_screenshot">Screenshot</string>
     <string name="rverb_data_items">Data to be included</string>
     <string name="rverb_edit_screenshot">Edit Screenshot</string>
+    <string name="rverb_default_notification_channel_name">Feedback by Rverbio</string>
+    <string name="rverb_default_notification_channel_description">Get updates about feedback you have submitted to the developer via Rverbio</string>
 </resources>

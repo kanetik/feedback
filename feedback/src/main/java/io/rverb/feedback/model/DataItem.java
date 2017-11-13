@@ -15,4 +15,14 @@ public class DataItem implements Serializable {
         this.key = key;
         this.value = value;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof DataItem)) {
+            return false;
+        }
+
+        DataItem that = (DataItem) other;
+        return this.key.equals(that.key);
+    }
 }

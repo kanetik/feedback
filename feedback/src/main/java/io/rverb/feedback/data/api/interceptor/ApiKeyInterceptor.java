@@ -2,6 +2,7 @@ package io.rverb.feedback.data.api.interceptor;
 
 import java.io.IOException;
 
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.utility.RverbioUtils;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -15,7 +16,7 @@ public class ApiKeyInterceptor implements Interceptor {
         Request originalRequest = chain.request();
 
         Request requestWithApiKey = originalRequest.newBuilder()
-                .header(API_KEY_HEADER_NAME, RverbioUtils.getApiKey())
+                .header(API_KEY_HEADER_NAME, Rverbio.getApiKey())
                 .build();
 
         return chain.proceed(requestWithApiKey);

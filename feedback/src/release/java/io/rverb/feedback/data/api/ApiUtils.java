@@ -16,7 +16,7 @@ public class ApiUtils {
         builder.addInterceptor(new UserAgentInterceptor());
         builder.addInterceptor(new ApiKeyInterceptor());
 
-        if (Rverbio.getInstance().getOptions().isDebugMode()) {
+        if (Rverbio.isDebug()) {
             builder.addNetworkInterceptor(new LoggingInterceptor());
         }
 

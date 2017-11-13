@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -30,6 +31,7 @@ import java.util.Locale;
 
 import io.rverb.feedback.R;
 import io.rverb.feedback.Rverbio;
+import io.rverb.feedback.RverbioOptions;
 import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Event;
@@ -50,6 +52,8 @@ public class RverbioUtils {
     private static final String RVERBIO_PREFS = "io.rverb.feedback.prefs";
     private static final String END_USER_KEY = "end_user";
     private static final String SESSION_START = "session_start_utc";
+
+    public static final String RVERBIO_NOTIFICATION_CHANNEL_ID = "rverbio";
 
     public static final int FEEDBACK_SUBMITTED = 0;
     public static final int ANONYMOUS_FEEDBACK_SUBMITTED = 1;
@@ -138,7 +142,7 @@ public class RverbioUtils {
     public static File takeScreenshot(Activity activity) {
         File screenshot = createScreenshotFile(activity);
         if (screenshot != null) {
-            if (Rverbio.getInstance().getOptions().isDebugMode()) {
+            if (Rverbio.isDebug()) {
                 LogUtils.i("Screenshot File", screenshot.getAbsolutePath());
             }
 
@@ -178,7 +182,7 @@ public class RverbioUtils {
 
             return imageFile;
         } catch (IOException e) {
-            if (Rverbio.getInstance().getOptions().isDebugMode()) {
+            if (Rverbio.isDebug()) {
                 LogUtils.w(e.getMessage(), e);
             }
         }
@@ -240,7 +244,7 @@ public class RverbioUtils {
 
             String tempFilePath = file.getAbsolutePath();
 
-            if (Rverbio.getInstance().getOptions().isDebugMode()) {
+            if (Rverbio.isDebug()) {
                 LogUtils.i("FileName", tempFilePath);
             }
 
@@ -264,7 +268,7 @@ public class RverbioUtils {
     }
 
     public static void persistData(Context context, IPersistable data, ResultReceiver resultReceiver) {
-        context.startService(data.getPersistServiceIntent(context, resultReceiver));
+        context.startService(data.getPersistServiceIntent(context, resultReceiver, data));
     }
 
     public static void persistEndUser(final Context context) {
@@ -295,30 +299,36 @@ public class RverbioUtils {
         }
     }
 
-    public static void notifyUser(Context context, int notificationType) {
+    public static void alertUser(Context context, int alertType) {
         int notificationId = 1;
 
         String title = "";
         String content = "";
 
-        if (notificationType == FEEDBACK_SUBMITTED) {
-            title = "Feedback Sent";
-            content = "Thanks! Your feedback has been sent - you should hear back soon.";
-        } else if (notificationType == ANONYMOUS_FEEDBACK_SUBMITTED) {
+        if (alertType == FEEDBACK_SUBMITTED) {
+            title = "Thank You!";
+            content = "Your feedback has been sent - you should hear back soon.";
+        } else if (alertType == ANONYMOUS_FEEDBACK_SUBMITTED) {
             title = "Feedback Sent";
             content = "Thanks for your feedback!";
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.rverb_logo_grayscale)
-                .setContentTitle(title)
-                .setContentText(content);
+        boolean alertShown = false;
+        if (Rverbio.getInstance(context).getOptions().useNotifications()) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, RVERBIO_NOTIFICATION_CHANNEL_ID)
+                    .setSmallIcon(R.drawable.rverb_logo_grayscale)
+                    .setContentTitle(title)
+                    .setContentText(content);
 
-        NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        notifyMgr.notify(notificationId, builder.build());
-    }
+            NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            if (notifyMgr != null) {
+                notifyMgr.notify(notificationId, builder.build());
+                alertShown = true;
+            }
+        }
 
-    public static String getApiKey() {
-        return Rverbio.getInstance().getApiKey();
+        if (!alertShown) {
+            Toast.makeText(context, content, Toast.LENGTH_LONG).show();
+        }
     }
 }

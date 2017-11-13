@@ -1,21 +1,20 @@
 plugins {
     id "com.jfrog.bintray" version "1.7.3"
-    id "com.github.dcendents.android-maven" version "1.5"
+    id "com.github.dcendents.android-maven" version "2.0"
 }
 
 apply plugin: 'com.android.library'
 
 ext {
-    verName = "0.7.0-alpha"
-    supportLibraryVersion = "25.3.1"
+    verName = "1.0.0-beta4"
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 27
+    buildToolsVersion "26.0.2"
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         group = "io.rverb"
         versionCode verCode
         version = verName
@@ -27,7 +26,6 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "rverb_api_base_url", "https://www.rverb.io/api/"
         }
@@ -97,6 +95,10 @@ bintray {
     }
 }
 
+ext {
+    supportLibraryVersion = "27.0.1"
+}
+
 dependencies {
     //Dependencies for JUNit and unit tests.
     //Dependencies for Espresso
@@ -121,13 +123,13 @@ dependencies {
         exclude module: "support-annotations"
         exclude module: "support-v4"
     }
-    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
-    compile "com.android.support:design:$supportLibraryVersion"
-    compile "com.android.support:support-v4:$supportLibraryVersion"
-    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
-    compile 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
-    compile "com.squareup.okhttp3:okhttp:3.8.+"
-    compile "com.google.code.gson:gson:2.8.+"
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.2.11"
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "com.android.support:support-v4:$supportLibraryVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    implementation "com.squareup.okhttp3:okhttp:3.9.0"
+    implementation "com.google.code.gson:gson:2.8.2"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
 }

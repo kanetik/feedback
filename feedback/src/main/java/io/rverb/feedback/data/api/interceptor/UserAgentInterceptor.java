@@ -22,7 +22,7 @@ public class UserAgentInterceptor implements Interceptor {
                 "Rverbio SDK/" + BuildConfig.VERSION_NAME + " " +
                         "(Android " + Build.VERSION.RELEASE + ")";
 
-        if (Rverbio.getInstance().getOptions().isDebugMode()) {
+        if (Rverbio.isDebug()) {
             uaString += " DEBUG";
         }
 

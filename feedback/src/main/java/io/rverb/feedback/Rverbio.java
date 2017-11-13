@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.provider.ContactsContract;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
@@ -26,12 +27,21 @@ import io.rverb.feedback.utility.RverbioUtils;
 
 @Keep
 public class Rverbio {
-    private static Context _appContext;
+    static Context _appContext;
+
+    private static boolean _initialized = false;
+
     private static String _apiKey;
+    private static boolean _debug;
+
     private static ArrayList<DataItem> _contextData;
     private static RverbioOptions _options;
 
-    private static final Rverbio _instance = new Rverbio();
+    private static Rverbio _instance;
+
+    public Rverbio(@NonNull Context context) {
+        _appContext = context;
+    }
 
     /**
      * Gets the rverb.io singleton, which is the primary interaction point the developer will have
@@ -39,13 +49,14 @@ public class Rverbio {
      *
      * @return Rverbio singleton instance.
      */
-    public static Rverbio getInstance() {
-        if (_appContext == null) {
-            throw new IllegalStateException("You must call Rverbio#initialize before accessing the Rverbio instance",
-                    new Throwable("Rverbio instance not initialized"));
-        }
+    public static Rverbio getInstance(@NonNull Context context) {
+        synchronized (Rverbio.class) {
+            if (_instance == null || _appContext == null) {
+                _instance = new Rverbio(context.getApplicationContext());
+            }
 
-        return _instance;
+            return _instance;
+        }
     }
 
     /**
@@ -53,8 +64,30 @@ public class Rverbio {
      *
      * @return boolean indicating that initialization has or has not completed
      */
-    public static boolean isReady() {
-        return _appContext != null;
+    public static boolean isInitialized() {
+        return _initialized;
+    }
+
+    /**
+     * Gets the Debugging state.
+     *
+     * @return debugging
+     */
+    public static boolean isDebug() {
+        return _debug;
+    }
+
+    /**
+     * Gets the ApiKey for this Rverbio instance.
+     *
+     * @return API Key
+     */
+    public static String getApiKey() {
+        return _apiKey;
+    }
+
+    public static void initialize(Context context, String apiKey) {
+        initialize(context, apiKey, false);
     }
 
     /**
@@ -65,46 +98,38 @@ public class Rverbio {
      *
      * @param context Activity or Application Context
      */
-    public static void initialize(Context context, String apiKey) {
-        initialize(context, apiKey, new RverbioOptions());
-    }
-
-    /**
-     * Initializes the Rverbio singleton, with options. The developer's interactions with
-     * rverb.io will be entirely via the singleton.
-     * <p>
-     * Initialization must be done before the Rverbio singleton can be used.
-     *
-     * @param context Activity or Application Context
-     * @param options RverbioOptions object to set defaults
-     */
-    public static void initialize(Context context, String apiKey, RverbioOptions options) {
-        if (isReady()) {
+    public static void initialize(Context context, String apiKey, boolean debug) {
+        if (isInitialized()) {
             return;
         }
 
-        _appContext = context.getApplicationContext();
+        new Rverbio(context);
+
         _apiKey = apiKey;
-        _options = options;
+        _debug = debug;
+
+        _options = new RverbioOptions();
         _contextData = new ArrayList<>();
 
-        if (Rverbio.getInstance().getOptions().isDebugMode()) {
+        if (_debug) {
             LogUtils.i("Rverbio Initialize");
         }
 
         RverbioUtils.setSessionStart(context);
 
-        EndUser endUser = RverbioUtils.getEndUser(_appContext);
+        EndUser endUser = RverbioUtils.getEndUser(context);
         if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
             // Create the EndUser object for future feedback and events
-            RverbioUtils.setEndUser(_appContext, new EndUser());
+            RverbioUtils.setEndUser(context, new EndUser());
         } else {
             // Send any previously queued requests
-            boolean sentQueuedFeedback = RverbioUtils.sendQueuedRequests(_appContext);
+            boolean sentQueuedFeedback = RverbioUtils.sendQueuedRequests(context);
             if (sentQueuedFeedback && (!endUser.isPersisted || !endUser.isSynced)) {
-                RverbioUtils.persistEndUser(_appContext);
+                RverbioUtils.persistEndUser(context);
             }
         }
+
+        _initialized = true;
     }
 
     /**
@@ -118,22 +143,20 @@ public class Rverbio {
     }
 
     /**
-     * Gets the ApiKey for this Rverbio instance.
-     *
-     * @return API Key for the current instance
-     */
-    public String getApiKey() {
-        return _apiKey;
-    }
-
-    /**
      * Add a single name-value pair to be sent to Rverb.io with a feedback request.
      *
      * @param key   The name of the context data item
      * @param value The value of the context data item
      */
-    public void addContextDataItem(String key, String value) {
-        _contextData.add(new DataItem(key, value));
+    public Rverbio addContextDataItem(String key, String value) {
+        DataItem newItem = new DataItem(key, value);
+
+        if (_contextData.contains(newItem)) {
+            _contextData.remove(newItem);
+        }
+
+        _contextData.add(newItem);
+        return _instance;
     }
 
     /**
@@ -141,10 +164,18 @@ public class Rverbio {
      *
      * @param items The map of name-value pairs to be sent
      */
-    public void addContextDataItems(Map<String, Object> items) {
+    public Rverbio addContextDataItems(Map<String, Object> items) {
         for (Map.Entry<String, Object> item : items.entrySet()) {
-            _contextData.add(new DataItem(item.getKey(), item.getValue()));
+            DataItem newItem = new DataItem(item.getKey(), item.getValue());
+
+            if (_contextData.contains(newItem)) {
+                _contextData.remove(newItem);
+            }
+
+            _contextData.add(newItem);
         }
+
+        return _instance;
     }
 
     /**
@@ -153,8 +184,14 @@ public class Rverbio {
      *
      * @param key The name of the context data item to be removed
      */
-    public void removeContextDataItem(String key) {
-        _contextData.remove(key);
+    public Rverbio removeContextDataItem(String key) {
+        for (DataItem item : _contextData) {
+            if (item.equals(key)) {
+                _contextData.remove(item);
+            }
+        }
+
+        return _instance;
     }
 
     public ArrayList<DataItem> getContextData() {
@@ -198,9 +235,9 @@ public class Rverbio {
                 if (resultCode == Activity.RESULT_OK) {
                     EndUser endUser = RverbioUtils.getEndUser(_appContext);
                     if (endUser != null && !RverbioUtils.isNullOrWhiteSpace(endUser.emailAddress)) {
-                        RverbioUtils.notifyUser(_appContext, RverbioUtils.FEEDBACK_SUBMITTED);
+                        RverbioUtils.alertUser(_appContext, RverbioUtils.FEEDBACK_SUBMITTED);
                     } else {
-                        RverbioUtils.notifyUser(_appContext, RverbioUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
+                        RverbioUtils.alertUser(_appContext, RverbioUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
                     }
                 } else {
                     RverbioUtils.handlePersistanceFailure(_appContext, feedbackData);
@@ -272,7 +309,7 @@ public class Rverbio {
      * @see Rverbio#setUserInfo(String, String)
      * @see Rverbio#setUserEmail(String)
      */
-    public void setUserIdentifier(@NonNull String userIdentifier) {
+    public Rverbio setUserIdentifier(@NonNull String userIdentifier) {
         EndUser endUser = RverbioUtils.getEndUser(_appContext);
         if (endUser == null || RverbioUtils.isNullOrWhiteSpace(endUser.endUserId)) {
             throw new IllegalStateException("You must call Rverbio#initialize to initialize the EndUser",
@@ -280,13 +317,30 @@ public class Rverbio {
         }
 
         if (endUser.userIdentifier.equalsIgnoreCase(userIdentifier)) {
-            return;
+            return _instance;
         }
 
         endUser.userIdentifier = userIdentifier;
         endUser.isSynced = false;
 
         RverbioUtils.setEndUser(_appContext, endUser);
+
+        return _instance;
+    }
+
+    public Rverbio setAttachScreenshotEnabled(boolean attachScreenshot) {
+        _options.setAttachScreenshotEnabled(attachScreenshot);
+        return _instance;
+    }
+
+    public Rverbio setUseNotifications(boolean useNotifications) throws IllegalStateException {
+        if (useNotifications) {
+            // If we're disabling the use of notifications, notification channel is not required.
+            _options.setNotificationChannel();
+        }
+
+        _options.setUseNotifications(useNotifications);
+        return _instance;
     }
 
     /**

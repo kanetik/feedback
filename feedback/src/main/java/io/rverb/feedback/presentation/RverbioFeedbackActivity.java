@@ -198,8 +198,10 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
                     _rverbThumbnail.setVisibility(View.GONE);
                     _rverbThumbnailDelete.setVisibility(View.GONE);
 
-                    File screenshot = new File(_screenshotFileName);
-                    screenshot.delete();
+                    if (!RverbioUtils.isNullOrWhiteSpace(_screenshotFileName)) {
+                        File screenshot = new File(_screenshotFileName);
+                        screenshot.delete();
+                    }
                 }
             });
         }
@@ -274,7 +276,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_send_feedback) {
-            if (Rverbio.getInstance().getOptions().isDebugMode()) {
+            if (Rverbio.isDebug()) {
                 LogUtils.i("Send Feedback");
             }
 
@@ -285,15 +287,15 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
                             new Throwable("Rverbio instance not initialized"));
                 }
 
-                Rverbio.getInstance().setUserEmail(_rverbEmail.getText().toString());
+                Rverbio.getInstance(this).setUserEmail(_rverbEmail.getText().toString());
             }
 
             File screenshot = null;
-            if (!_suppressScreenshot) {
+            if (!RverbioUtils.isNullOrWhiteSpace(_screenshotFileName) && !_suppressScreenshot) {
                 screenshot = new File(_screenshotFileName);
             }
 
-            Rverbio.getInstance().sendFeedback("", _rverbFeedback.getText().toString(), screenshot);
+            Rverbio.getInstance(this).sendFeedback("", _rverbFeedback.getText().toString(), screenshot);
 
             finish();
 
@@ -312,15 +314,17 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
     private void cancelFeedback() {
         sendEvent(Event.EVENT_TYPE_FEEDBACK_CANCEL);
 
-        File screenshot = new File(_screenshotFileName);
-        screenshot.delete();
+        if (!RverbioUtils.isNullOrWhiteSpace(_screenshotFileName)) {
+            File screenshot = new File(_screenshotFileName);
+            screenshot.delete();
+        }
 
         finish();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (Rverbio.getInstance().getOptions().isDebugMode()) {
+        if (Rverbio.isDebug()) {
             LogUtils.i("Screenshot Updated");
         }
 

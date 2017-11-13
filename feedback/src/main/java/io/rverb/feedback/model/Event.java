@@ -32,11 +32,11 @@ public class Event extends Persistable {
     }
 
     @Override
-    public Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver) {
+    public Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver, IPersistable data) {
         Intent serviceIntent = new Intent(context, EventService.class);
 
         serviceIntent.putExtra(DataUtils.EXTRA_RESULT_RECEIVER, resultReceiver);
-        serviceIntent.putExtra(DataUtils.EXTRA_SELF, this);
+        serviceIntent.putExtra(DataUtils.EXTRA_SELF, data);
 
         return serviceIntent;
     }

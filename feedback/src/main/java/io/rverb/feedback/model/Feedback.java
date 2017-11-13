@@ -56,11 +56,11 @@ public class Feedback extends Persistable {
     }
 
     @Override
-    public Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver) {
+    public Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver, IPersistable data) {
         Intent serviceIntent = new Intent(context, FeedbackService.class);
 
         serviceIntent.putExtra(DataUtils.EXTRA_RESULT_RECEIVER, resultReceiver);
-        serviceIntent.putExtra(DataUtils.EXTRA_SELF, this);
+        serviceIntent.putExtra(DataUtils.EXTRA_SELF, data);
         serviceIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, this.screenshotFileName);
 
         return serviceIntent;

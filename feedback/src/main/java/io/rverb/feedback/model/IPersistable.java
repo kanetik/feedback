@@ -11,7 +11,7 @@ import java.io.Serializable;
 public interface IPersistable extends Serializable {
     String getDataTypeDescriptor();
 
-    Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver);
+    Intent getPersistServiceIntent(Context context, ResultReceiver resultReceiver, IPersistable data);
 
     void incrementRetryCount();
 
