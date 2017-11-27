@@ -6,12 +6,12 @@ plugins {
 apply plugin: 'com.android.library'
 
 ext {
-    verName = "1.0.0-beta4"
+    verName = "1.0.0-beta7"
 }
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "26.0.2"
+    buildToolsVersion "27.0.1"
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 27
@@ -25,14 +25,16 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "rverb_api_base_url", "https://www.rverb.io/api/"
         }
         debug {
             debuggable true
             minifyEnabled false
-            resValue "string", "rverb_api_base_url", "https://rverbio-dev-east.azurewebsites.net/api/"
+            shrinkResources false
+            resValue "string", "rverb_api_base_url", "https://rverbio2-dev-east2.azurewebsites.net/api/"
         }
     }
     publishNonDefault false
@@ -132,4 +134,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:3.9.0"
     implementation "com.google.code.gson:gson:2.8.2"
     implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true;
+    }
 }

@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.ResultReceiver;
 import android.support.annotation.Keep;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.rverb.feedback.Rverbio;
 import io.rverb.feedback.data.api.FeedbackService;
 import io.rverb.feedback.utility.DataUtils;
 import io.rverb.feedback.utility.DateUtils;
@@ -62,6 +66,9 @@ public class Feedback extends Persistable {
         serviceIntent.putExtra(DataUtils.EXTRA_RESULT_RECEIVER, resultReceiver);
         serviceIntent.putExtra(DataUtils.EXTRA_SELF, data);
         serviceIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, this.screenshotFileName);
+
+        Crashlytics.log(Log.INFO, "Rverbio", "Context: " + context.toString());
+        Crashlytics.log(Log.INFO, "Rverbio", "Feedback Object: " + data.toString());
 
         return serviceIntent;
     }

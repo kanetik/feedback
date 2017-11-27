@@ -31,7 +31,6 @@ import java.util.Locale;
 
 import io.rverb.feedback.R;
 import io.rverb.feedback.Rverbio;
-import io.rverb.feedback.RverbioOptions;
 import io.rverb.feedback.model.DataItem;
 import io.rverb.feedback.model.EndUser;
 import io.rverb.feedback.model.Event;
@@ -257,7 +256,7 @@ public class RverbioUtils {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode != Activity.RESULT_OK) {
-                            handlePersistanceFailure(context, data);
+                            handlePersistenceFailure(context, data);
                         }
                     }
                 });
@@ -293,7 +292,7 @@ public class RverbioUtils {
         context.startService(endUser.getPersistServiceIntent(context, resultReceiver));
     }
 
-    public static void handlePersistanceFailure(Context context, IPersistable data) {
+    public static void handlePersistenceFailure(Context context, IPersistable data) {
         if (data.retryAllowed()) {
             DataUtils.writeObjectToDisk(context, data);
         }

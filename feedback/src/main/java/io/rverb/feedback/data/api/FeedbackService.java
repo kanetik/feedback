@@ -5,6 +5,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 import java.io.Serializable;
@@ -24,6 +27,8 @@ public class FeedbackService extends IntentService {
         if (intent == null) {
             return;
         }
+
+        Crashlytics.log(Log.INFO, "Rverbio", "FeedbackService Intent: " + intent.toString());
 
         Serializable feedbackObject = intent.getSerializableExtra(DataUtils.EXTRA_SELF);
         String screenshotFileName = intent.getStringExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME);

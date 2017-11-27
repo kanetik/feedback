@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.ResultReceiver;
 import android.support.annotation.Keep;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import io.rverb.feedback.data.api.EventService;
 import io.rverb.feedback.utility.DataUtils;
@@ -37,6 +40,9 @@ public class Event extends Persistable {
 
         serviceIntent.putExtra(DataUtils.EXTRA_RESULT_RECEIVER, resultReceiver);
         serviceIntent.putExtra(DataUtils.EXTRA_SELF, data);
+
+        Crashlytics.log(Log.INFO, "Rverbio", "Context: " + context.toString());
+        Crashlytics.log(Log.INFO, "Rverbio", "Event Object: " + data.toString());
 
         return serviceIntent;
     }

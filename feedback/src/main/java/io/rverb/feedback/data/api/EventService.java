@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import java.io.Serializable;
 
@@ -20,6 +23,12 @@ public class EventService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
+        Crashlytics.log(Log.INFO, "Rverbio", "EventService Intent: " + intent.toString());
+
         Serializable eventObject = intent.getSerializableExtra(DataUtils.EXTRA_SELF);
 
         if (eventObject == null) {

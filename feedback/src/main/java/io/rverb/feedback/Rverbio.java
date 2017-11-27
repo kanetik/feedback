@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.provider.ContactsContract;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
@@ -240,7 +239,7 @@ public class Rverbio {
                         RverbioUtils.alertUser(_appContext, RverbioUtils.ANONYMOUS_FEEDBACK_SUBMITTED);
                     }
                 } else {
-                    RverbioUtils.handlePersistanceFailure(_appContext, feedbackData);
+                    RverbioUtils.handlePersistenceFailure(_appContext, feedbackData);
                 }
             }
         });
@@ -349,14 +348,13 @@ public class Rverbio {
      * @param context The context from which you are launching the Feedback Activity.
      */
     public void startFeedbackActivity(@NonNull Context context) {
-        File screenshot = null;
-        if (context instanceof Activity && Rverbio._options.attachScreenshotByDefault()) {
-            screenshot = RverbioUtils.takeScreenshot((Activity) context);
-        }
-
         Intent feedbackIntent = new Intent(context, RverbioFeedbackActivity.class);
-        if (screenshot != null) {
-            feedbackIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, screenshot.getAbsolutePath());
+
+        if (context instanceof Activity && Rverbio._options.attachScreenshotByDefault()) {
+            File screenshot = RverbioUtils.takeScreenshot((Activity) context);
+            if (screenshot != null) {
+                feedbackIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, screenshot.getAbsolutePath());
+            }
         }
 
         context.startActivity(feedbackIntent);

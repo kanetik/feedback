@@ -1,5 +1,7 @@
 package io.rverb.feedback.data.api.interceptor;
 
+import android.text.TextUtils;
+
 import java.io.IOException;
 
 import io.rverb.feedback.Rverbio;
@@ -9,16 +11,20 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class ApiKeyInterceptor implements Interceptor {
-    private static String API_KEY_HEADER_NAME = "apiKey";
-
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
 
-        Request requestWithApiKey = originalRequest.newBuilder()
-                .header(API_KEY_HEADER_NAME, Rverbio.getApiKey())
-                .build();
+        String apiKey = Rverbio.getApiKey();
 
-        return chain.proceed(requestWithApiKey);
+        if (!TextUtils.isEmpty(apiKey)) {
+            Request requestWithApiKey = originalRequest.newBuilder()
+                    .header("apiKey", apiKey)
+                    .build();
+
+            return chain.proceed(requestWithApiKey);
+        }
+
+        return chain.proceed(originalRequest);
     }
 }

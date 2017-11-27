@@ -60,6 +60,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             _screenshotFileName = getIntent().getStringExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME);
+            _suppressScreenshot = true;
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -171,7 +172,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
             screenshot = new File(_screenshotFileName);
         }
 
-        if (screenshot != null) {
+        if (screenshot != null && !_suppressScreenshot) {
             final Intent previewScreenshotIntent = new Intent(this, RverbioScreenshotPreviewActivity.class);
             previewScreenshotIntent.putExtra(DataUtils.EXTRA_SCREENSHOT_FILE_NAME, _screenshotFileName);
 
@@ -229,7 +230,7 @@ public class RverbioFeedbackActivity extends AppCompatActivity {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode != Activity.RESULT_OK) {
-                    RverbioUtils.handlePersistanceFailure(RverbioFeedbackActivity.this, eventData);
+                    RverbioUtils.handlePersistenceFailure(RverbioFeedbackActivity.this, eventData);
                 }
             }
         });
