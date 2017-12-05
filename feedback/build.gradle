@@ -98,7 +98,7 @@ bintray {
 }
 
 ext {
-    supportLibraryVersion = "27.0.1"
+    supportLibraryVersion = "27.0.2"
 }
 
 dependencies {
