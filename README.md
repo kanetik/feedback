@@ -1,3 +1,3 @@
-# Rverbio Android SDK
+# Kanetik Feedback
 
-Hosted SDK & Documentation: <https://github.com/rverbio/android-sdk>
+Hosted SDK & Documentation: <https://github.com/jkane001/kanetik-feedback>

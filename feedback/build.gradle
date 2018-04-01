@@ -1,21 +1,21 @@
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
+    id "com.jfrog.bintray" version "1.8.0"
     id "com.github.dcendents.android-maven" version "2.0"
 }
 
 apply plugin: 'com.android.library'
 
 ext {
-    verName = "1.0.0-beta7"
+    verName = "1.0.0-beta8"
 }
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.1"
+    buildToolsVersion "27.0.3"
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 27
-        group = "io.rverb"
+        group = "com.kanetik"
         versionCode verCode
         version = verName
         versionName verName
@@ -28,17 +28,15 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            resValue "string", "rverb_api_base_url", "https://www.rverb.io/api/"
         }
         debug {
             debuggable true
             minifyEnabled false
             shrinkResources false
-            resValue "string", "rverb_api_base_url", "https://rverbio2-dev-east2.azurewebsites.net/api/"
         }
     }
     publishNonDefault false
-    resourcePrefix 'rverb_'
+    resourcePrefix 'kanetik_feedback_'
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -77,15 +75,15 @@ bintray {
     pkg {
         repo = 'feedback'
         name = 'android-sdk'
-        userOrg = 'rverbio'
+        userOrg = 'kanetik'
         //An optional organization name when the repo belongs to one of the user's orgs
-        desc = 'Android SDK for Rverb.io Feedback'
-        websiteUrl = 'https://rverb.io'
-        issueTrackerUrl = 'https://github.com/rverbio/android-sdk/issues'
-        vcsUrl = 'https://github.com/rverbio/android-sdk.git'
+        desc = 'Android SDK for Kanetik KanetikFeedback'
+        websiteUrl = 'http://kanetik.com'
+        issueTrackerUrl = 'https://github.com/jkane001/kanetik-feedback/issues'
+        vcsUrl = 'https://github.com/jkane001/kanetik-feedback.git'
         licenses = ['Apache-2.0']
         publicDownloadNumbers = true
-        githubRepo = 'rverbio/android-sdk' //Optional Github repository
+        githubRepo = 'jkane001/kanetik-feedback' //Optional Github repository
         githubReleaseNotesFile = 'README.md' //Optional Github readme file
         version {
             name = verName //Bintray logical version name
@@ -98,43 +96,44 @@ bintray {
 }
 
 ext {
-    supportLibraryVersion = "27.0.2"
+    supportLibraryVersion = "27.1.0"
 }
 
 dependencies {
     //Dependencies for JUNit and unit tests.
     //Dependencies for Espresso
-    androidTestCompile("com.android.support.test.espresso:espresso-core:2.2.2", {
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:2.2.2", {
         exclude group: "com.android.support", module: "support-annotations"
     })
-    androidTestCompile("com.android.support.test:runner:0.5") {
+    androidTestImplementation("com.android.support.test:runner:0.5") {
         exclude module: "support-annotations"
         exclude module: "support-v4"
     }
-    androidTestCompile("com.android.support.test:rules:0.5") {
+    androidTestImplementation("com.android.support.test:rules:0.5") {
         exclude module: "support-annotations"
         exclude module: "support-v4"
     }
-    androidTestCompile("com.android.support.test.espresso:espresso-intents:2.2.2") {
+    androidTestImplementation("com.android.support.test.espresso:espresso-intents:2.2.2") {
         exclude module: "recyclerview-v7"
         exclude module: "support-annotations"
         exclude module: "support-v4"
     }
-    androidTestCompile("com.android.support.test.espresso:espresso-contrib:2.2.2") {
+    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:2.2.2") {
         exclude module: "recyclerview-v7"
         exclude module: "support-annotations"
         exclude module: "support-v4"
     }
-    testCompile "junit:junit:4.12"
-    testCompile "org.mockito:mockito-core:2.2.11"
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.mockito:mockito-core:2.15.0"
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
     implementation "com.android.support:design:$supportLibraryVersion"
     implementation "com.android.support:support-v4:$supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
-    implementation "com.squareup.okhttp3:okhttp:3.9.0"
+    implementation "com.squareup.okhttp3:okhttp:3.10.0"
     implementation "com.google.code.gson:gson:2.8.2"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    implementation 'com.mailjet:mailjet-client:4.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta6'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true;
     }
 }

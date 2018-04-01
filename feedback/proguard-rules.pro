@@ -63,7 +63,7 @@
     java.lang.Object readResolve();
 }
 
--keepclassmembers class * implements io.rverb.feedback.model.IPersistable
+-keepclassmembers class * implements Feedback
 
 # Your library may contain more items that need to be preserved;
 # typically classes that are dynamically created using Class.forName:
