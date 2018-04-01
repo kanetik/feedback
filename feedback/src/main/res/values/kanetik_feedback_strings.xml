@@ -1,0 +1,15 @@
+<resources>
+    <string name="kanetik_feedback_library_name">Kanetik Feedback Feedback SDK</string>
+    <string name="kanetik_feedback_feedback_title_format">%s Feedback</string>
+    <string name="kanetik_feedback_send_feedback">Send Feedback</string>
+    <string name="kanetik_feedback_extra_data_description_clickable">View Data</string>
+    <string name="kanetik_feedback_extra_data_description">In order to provide excellent customer service, a screenshot &amp; some additional data will be sent with this feedback.</string>
+    <string name="kanetik_feedback_powered_by">Powered by Kanetik Feedback</string>
+    <string name="kanetik_feedback_feedback_hint">How can we help you?</string>
+    <string name="kanetik_feedback_email_address_hint">Email Address</string>
+    <string name="kanetik_feedback_remove_screenshot">Remove screenshot</string>
+    <string name="kanetik_feedback_screenshot">Screenshot</string>
+    <string name="kanetik_feedback_data_items">Data to be included</string>
+    <string name="kanetik_feedback_edit_screenshot">Edit Screenshot</string>
+    <string name="kanetik_feedback_thanks">Thanks for your feedback!</string>
+</resources>

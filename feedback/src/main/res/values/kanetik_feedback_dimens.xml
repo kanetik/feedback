@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="kanetik_feedback_dialog_padding">24dp</dimen>
+    <dimen name="kanetik_feedback_dialog_fields_padding">22dp</dimen>
+    <dimen name="kanetik_feedback_text_margin">16dp</dimen>
+</resources>

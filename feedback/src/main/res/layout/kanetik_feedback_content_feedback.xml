@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="16dp"
+    android:theme="@style/kanetik_feedback_theme"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.kanetik.feedback.presentation.FeedbackActivity"
+    tools:showIn="@layout/kanetik_feedback_activity_feedback">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/kanetik_feedback_feedback_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/kanetik_feedback_feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/kanetik_feedback_feedback_hint"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="3" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/kanetik_feedback_email_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kanetik_feedback_feedback_layout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/kanetik_feedback_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/kanetik_feedback_email_address_hint"
+            android:inputType="text|textEmailAddress" />
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/kanetik_feedback_additional_data_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/kanetik_feedback_extra_data_description"
+        android:textSize="14sp"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/kanetik_feedback_thumbnail"
+        app:layout_constraintTop_toBottomOf="@+id/kanetik_feedback_email_layout" />
+
+    <ImageView
+        android:id="@+id/kanetik_feedback_thumbnail"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/kanetik_feedback_border"
+        android:contentDescription="@string/kanetik_feedback_screenshot"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        tools:src="@android:color/background_dark"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginRight="0dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/kanetik_feedback_additional_data_description"
+        android:layout_marginTop="0dp" />
+
+    <ImageView
+        android:id="@+id/kanetik_feedback_thumbnail_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:contentDescription="@string/kanetik_feedback_remove_screenshot"
+        android:padding="4dp"
+        android:src="@drawable/kanetik_feedback_remove_icon_2"
+        app:layout_constraintRight_toRightOf="@+id/kanetik_feedback_thumbnail"
+        app:layout_constraintTop_toTopOf="@+id/kanetik_feedback_thumbnail" />
+
+    <TextView
+        android:id="@+id/kanetik_feedback_powered_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/kanetik_feedback_logo_color"
+        android:drawablePadding="4dp"
+        android:drawableStart="@drawable/kanetik_feedback_logo_color"
+        android:gravity="center_vertical"
+        android:text="@string/kanetik_feedback_powered_by"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/kanetik_feedback_view_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="12dp"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:text="@string/kanetik_feedback_extra_data_description_clickable"
+        android:textAllCaps="true"
+        android:textColor="?attr/colorAccent"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kanetik_feedback_additional_data_description" />
+
+    <TextView
+        android:id="@+id/kanetik_feedback_edit_screenshot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:text="@string/kanetik_feedback_edit_screenshot"
+        android:textAllCaps="true"
+        android:textColor="?attr/colorAccent"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@+id/kanetik_feedback_view_data"
+        app:layout_constraintTop_toBottomOf="@+id/kanetik_feedback_view_data" />
+
+</android.support.constraint.ConstraintLayout>
