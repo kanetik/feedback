@@ -1,9 +1,8 @@
-package com.kanetik.feedback.data.api;
+package com.kanetik.feedback.network;
 
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
@@ -36,7 +35,7 @@ public class FeedbackService extends IntentService {
         }
 
         Feedback feedback = (Feedback) feedbackObject;
-        Feedback response = ApiManager.post(this, feedback);
+        boolean isSent = MailJetSender.send(this, feedback);
 
         ResultReceiver resultReceiver = null;
         if (intent.hasExtra(Feedback.EXTRA_RESULT_RECEIVER)) {
@@ -44,10 +43,8 @@ public class FeedbackService extends IntentService {
         }
 
         if (resultReceiver != null) {
-            if (response != null) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(Feedback.EXTRA_RESULT, response);
-                resultReceiver.send(Activity.RESULT_OK, bundle);
+            if (isSent) {
+                resultReceiver.send(Activity.RESULT_OK, null);
             } else {
                 resultReceiver.send(Activity.RESULT_CANCELED, null);
             }

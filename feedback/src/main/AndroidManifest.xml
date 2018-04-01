@@ -7,13 +7,13 @@
 
     <application>
         <service
-            android:name=".data.api.EventService"
+            android:name=".network.api.EventService"
             android:exported="false" />
         <service
-            android:name=".data.api.EndUserService"
+            android:name=".network.api.EndUserService"
             android:exported="false" />
         <service
-            android:name=".data.api.FeedbackService"
+            android:name=".network.FeedbackService"
             android:exported="false" />
 
         <activity

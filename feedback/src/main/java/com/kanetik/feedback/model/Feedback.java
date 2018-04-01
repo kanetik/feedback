@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
-import com.kanetik.feedback.data.api.FeedbackService;
+import com.kanetik.feedback.network.FeedbackService;
 import com.kanetik.feedback.utility.DateUtils;
 
 import java.io.Serializable;
@@ -19,7 +19,6 @@ public class Feedback implements Serializable {
     static final long serialVersionUID = 325L;
 
     public static final String EXTRA_RESULT_RECEIVER = "result_receiver";
-    public static final String EXTRA_RESULT = "result";
     public static final String EXTRA_SELF = "data";
 
     public String timestampUtc;
