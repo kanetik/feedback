@@ -7,19 +7,13 @@
 
     <application>
         <service
-            android:name=".network.api.EventService"
-            android:exported="false" />
-        <service
-            android:name=".network.api.EndUserService"
-            android:exported="false" />
-        <service
             android:name=".network.FeedbackService"
             android:exported="false" />
 
         <activity
             android:name=".presentation.FeedbackActivity"
             android:label="Feedback"
-            android:theme="@style/FeedbackTheme.NoActionBar" />
+            android:theme="@style/kanetik_feedback_theme.NoActionBar" />
     </application>
 
 </manifest>

@@ -10,7 +10,7 @@ import android.widget.ListView;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
-import com.kanetik.feedback.model.DataItem;
+import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.DataItemAdapter;
 import com.kanetik.feedback.utility.FeedbackUtils;
 
@@ -31,11 +31,11 @@ public class FeedbackDataItemDialogFragment extends DialogFragment {
 
         getDialog().setTitle(getString(R.string.kanetik_feedback_data_items));
 
-        ArrayList<DataItem> arrayList = new ArrayList<>();
+        ArrayList<ContextDataItem> arrayList = new ArrayList<>();
         arrayList.addAll(FeedbackUtils.getExtraData(view.getContext()));
         arrayList.addAll(KanetikFeedback.getInstance(view.getContext()).getContextData());
 
-        ListView listView = (ListView) view.findViewById(R.id.data_item_list);
+        ListView listView = view.findViewById(R.id.data_item_list);
         DataItemAdapter adapter = new DataItemAdapter(view.getContext(), arrayList);
         listView.setAdapter(adapter);
 

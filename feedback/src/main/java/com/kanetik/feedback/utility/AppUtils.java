@@ -27,7 +27,7 @@ import com.kanetik.feedback.R;
 public class AppUtils {
     static final String NO_NETWORK = "No Network";
 
-    static String getPackageName(Context context) {
+    public static String getPackageName(Context context) {
         return context.getPackageName();
     }
 

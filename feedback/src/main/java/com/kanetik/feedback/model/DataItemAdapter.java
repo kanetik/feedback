@@ -11,14 +11,14 @@ import com.kanetik.feedback.R;
 
 import java.util.ArrayList;
 
-public class DataItemAdapter extends ArrayAdapter<DataItem> {
-    public DataItemAdapter(Context context, ArrayList<DataItem> dataItems) {
-        super(context, 0, dataItems);
+public class DataItemAdapter extends ArrayAdapter<ContextDataItem> {
+    public DataItemAdapter(Context context, ArrayList<ContextDataItem> contextDataItems) {
+        super(context, 0, contextDataItems);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        DataItem dataItem = getItem(position);
+        ContextDataItem contextDataItem = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.kanetik_feedback_data_item, parent, false);
@@ -27,8 +27,8 @@ public class DataItemAdapter extends ArrayAdapter<DataItem> {
         TextView key = convertView.findViewById(R.id.key);
         TextView value = convertView.findViewById(R.id.value);
 
-        key.setText(dataItem.key.replace("_", " "));
-        value.setText(dataItem.value.toString());
+        key.setText(contextDataItem.key.replace("_", " "));
+        value.setText(contextDataItem.value.toString());
 
         return convertView;
     }

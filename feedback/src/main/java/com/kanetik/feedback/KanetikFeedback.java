@@ -3,14 +3,13 @@ package com.kanetik.feedback;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
-import com.kanetik.feedback.model.DataItem;
+import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.Feedback;
 import com.kanetik.feedback.presentation.FeedbackActivity;
 import com.kanetik.feedback.utility.AppUtils;
@@ -18,7 +17,6 @@ import com.kanetik.feedback.utility.FeedbackUtils;
 import com.kanetik.feedback.utility.LogUtils;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Map;
 
 @Keep
@@ -26,11 +24,9 @@ public class KanetikFeedback {
     static Context _appContext;
 
     private static boolean _initialized = false;
-
-    private static String _apiKey;
     private static boolean _debug;
 
-    private static ArrayList<DataItem> _contextData;
+    private static ArrayList<ContextDataItem> _contextData;
 
     private static KanetikFeedback _instance;
 
@@ -72,17 +68,8 @@ public class KanetikFeedback {
         return _debug;
     }
 
-    /**
-     * Gets the ApiKey for this KanetikFeedback instance.
-     *
-     * @return API Key
-     */
-    public static String getApiKey() {
-        return _apiKey;
-    }
-
-    public static void initialize(Context context, String apiKey) {
-        initialize(context, apiKey, false);
+    public static void initialize(Context context) {
+        initialize(context, false);
     }
 
     /**
@@ -93,14 +80,13 @@ public class KanetikFeedback {
      *
      * @param context Activity or Application Context
      */
-    public static void initialize(Context context, String apiKey, boolean debug) {
+    public static void initialize(Context context, boolean debug) {
         if (isInitialized()) {
             return;
         }
 
         new KanetikFeedback(context);
 
-        _apiKey = apiKey;
         _debug = debug;
 
         _contextData = new ArrayList<>();
@@ -122,7 +108,7 @@ public class KanetikFeedback {
      * @param value The value of the context data item
      */
     public KanetikFeedback addContextDataItem(String key, String value) {
-        DataItem newItem = new DataItem(key, value);
+        ContextDataItem newItem = new ContextDataItem(key, value);
 
         if (_contextData.contains(newItem)) {
             _contextData.remove(newItem);
@@ -139,7 +125,7 @@ public class KanetikFeedback {
      */
     public KanetikFeedback addContextDataItems(Map<String, Object> items) {
         for (Map.Entry<String, Object> item : items.entrySet()) {
-            DataItem newItem = new DataItem(item.getKey(), item.getValue());
+            ContextDataItem newItem = new ContextDataItem(item.getKey(), item.getValue());
 
             if (_contextData.contains(newItem)) {
                 _contextData.remove(newItem);
@@ -158,7 +144,7 @@ public class KanetikFeedback {
      * @param key The name of the context data item to be removed
      */
     public KanetikFeedback removeContextDataItem(String key) {
-        for (DataItem item : _contextData) {
+        for (ContextDataItem item : _contextData) {
             if (item.equals(key)) {
                 _contextData.remove(item);
             }
@@ -167,30 +153,27 @@ public class KanetikFeedback {
         return _instance;
     }
 
-    public ArrayList<DataItem> getContextData() {
+    public ArrayList<ContextDataItem> getContextData() {
         return _contextData;
     }
 
     /**
      * Sends the user's request to the developer.
      *
-     * @param feedbackType The type of feedback submitted by the user.
      * @param feedbackText The text submitted by the end-user.
      */
-    public void sendFeedback(String feedbackType, String feedbackText) {
-        final Feedback feedbackData =
-                new Feedback(feedbackText);
+    public void sendFeedback(String feedbackText) {
+        final Feedback feedback = new Feedback(_appContext, feedbackText);
 
-        addSystemData(feedbackData);
-        addInstanceContextDataToFeedback(feedbackData);
+//        FeedbackUtils.addInstanceContextDataToFeedback(_appContext, feedback);
 
-        FeedbackUtils.persistData(_appContext, feedbackData, new ResultReceiver(new Handler()) {
+        FeedbackUtils.persistData(_appContext, feedback, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == Activity.RESULT_OK) {
                     AppUtils.alertUser(_appContext);
                 } else {
-                    FeedbackUtils.handlePersistenceFailure(_appContext, feedbackData);
+                    FeedbackUtils.handlePersistenceFailure(_appContext, feedback);
                 }
             }
         });
@@ -203,21 +186,5 @@ public class KanetikFeedback {
      */
     public void startFeedbackActivity(@NonNull Context context) {
         context.startActivity(new Intent(context, FeedbackActivity.class));
-    }
-
-    private void addSystemData(Feedback feedback) {
-        feedback.appVersion = AppUtils.getVersionName(_appContext) + " (" + AppUtils.getVersionCode(_appContext) + ")";
-        feedback.locale = Locale.getDefault().toString();
-        feedback.deviceManufacturer = Build.MANUFACTURER;
-        feedback.deviceModel = Build.MODEL;
-        feedback.deviceName = Build.PRODUCT;
-        feedback.osVersion = Build.VERSION.RELEASE;
-        feedback.networkType = AppUtils.getNetworkType(_appContext);
-    }
-
-    private void addInstanceContextDataToFeedback(Feedback feedback) {
-        if (_contextData != null) {
-            feedback.contextData = _contextData;
-        }
     }
 }

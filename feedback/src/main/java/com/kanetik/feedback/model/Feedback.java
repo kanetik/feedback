@@ -7,12 +7,11 @@ import android.support.annotation.Keep;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.gson.Gson;
 import com.kanetik.feedback.network.FeedbackService;
 import com.kanetik.feedback.utility.DateUtils;
+import com.kanetik.feedback.utility.FeedbackUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 @Keep
 public class Feedback implements Serializable {
@@ -22,15 +21,11 @@ public class Feedback implements Serializable {
     public static final String EXTRA_SELF = "data";
 
     public String timestampUtc;
-    public ArrayList<DataItem> contextData;
+
+    public ContextData appData;
+    public ContextData deviceData;
+
     public String comment;
-    public String appVersion;
-    public String locale;
-    public String deviceName;
-    public String deviceManufacturer;
-    public String deviceModel;
-    public String osVersion;
-    public String networkType;
 
     private int retryLimit = 1;
 
@@ -56,10 +51,12 @@ public class Feedback implements Serializable {
         return getRetryLimit() - getRetryCount() > 0;
     }
 
-    public Feedback(String comment) {
-        this.comment = comment;
+    public Feedback(Context context, String comment) {
         this.timestampUtc = DateUtils.nowUtc();
-        this.contextData = new ArrayList<>();
+
+        FeedbackUtils.addSystemData(context, this);
+
+        this.comment = comment;
     }
 
     public Intent getSendServiceIntent(Context context, ResultReceiver resultReceiver, Feedback data) {
@@ -77,15 +74,5 @@ public class Feedback implements Serializable {
     @Override
     public String toString() {
         return "Comment: " + comment;
-    }
-
-    public Feedback fromJson(String json) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, Feedback.class);
-    }
-
-    public String toJson() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
     }
 }

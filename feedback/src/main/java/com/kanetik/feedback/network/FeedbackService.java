@@ -35,7 +35,10 @@ public class FeedbackService extends IntentService {
         }
 
         Feedback feedback = (Feedback) feedbackObject;
-        boolean isSent = MailJetSender.send(this, feedback);
+
+        // TODO: Make the sender configurable
+        Sender sender = new MailJetSender(this);
+        boolean isSent = sender.send(feedback);
 
         ResultReceiver resultReceiver = null;
         if (intent.hasExtra(Feedback.EXTRA_RESULT_RECEIVER)) {
