@@ -162,8 +162,8 @@ public class KanetikFeedback {
      *
      * @param feedbackText The text submitted by the end-user.
      */
-    public void sendFeedback(String feedbackText) {
-        final Feedback feedback = new Feedback(_appContext, feedbackText);
+    public void sendFeedback(String feedbackText, String from) {
+        final Feedback feedback = new Feedback(_appContext, feedbackText, from);
 
 //        FeedbackUtils.addInstanceContextDataToFeedback(_appContext, feedback);
 
