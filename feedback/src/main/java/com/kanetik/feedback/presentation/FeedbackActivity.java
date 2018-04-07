@@ -3,7 +3,6 @@ package com.kanetik.feedback.presentation;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -176,7 +175,7 @@ public class FeedbackActivity extends AppCompatActivity {
                 LogUtils.i("Send KanetikFeedback");
             }
 
-            KanetikFeedback.getInstance(this).sendFeedback(feedback.getText().toString());
+            KanetikFeedback.getInstance(this).sendFeedback(feedback.getText().toString(), email.getText().toString());
 
             finish();
 
@@ -194,14 +193,5 @@ public class FeedbackActivity extends AppCompatActivity {
 
     private void cancelFeedback() {
         finish();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (KanetikFeedback.isDebug()) {
-            LogUtils.i("Screenshot Updated");
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
