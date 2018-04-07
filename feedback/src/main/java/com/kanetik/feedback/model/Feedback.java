@@ -26,6 +26,7 @@ public class Feedback implements Serializable {
     public ContextData deviceData;
 
     public String comment;
+    public String from;
 
     private int retryLimit = 1;
 
@@ -51,12 +52,13 @@ public class Feedback implements Serializable {
         return getRetryLimit() - getRetryCount() > 0;
     }
 
-    public Feedback(Context context, String comment) {
+    public Feedback(Context context, String comment, String from) {
         this.timestampUtc = DateUtils.nowUtc();
 
         FeedbackUtils.addSystemData(context, this);
 
         this.comment = comment;
+        this.from = from;
     }
 
     public Intent getSendServiceIntent(Context context, ResultReceiver resultReceiver, Feedback data) {
@@ -73,6 +75,6 @@ public class Feedback implements Serializable {
 
     @Override
     public String toString() {
-        return "Comment: " + comment;
+        return "Comment: " + comment + " | From: " + from;
     }
 }
