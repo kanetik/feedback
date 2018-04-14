@@ -2,6 +2,7 @@ package com.kanetik.feedback.utility;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -18,14 +19,20 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBar;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kanetik.feedback.R;
 
+import java.util.UUID;
+
+import static android.content.Context.MODE_PRIVATE;
+
 public class AppUtils {
     static final String NO_NETWORK = "No Network";
+    private static final String SUPPORT_ID_KEY = "support_id";
 
     public static String getPackageName(Context context) {
         return context.getPackageName();
@@ -161,5 +168,17 @@ public class AppUtils {
 
     public static void alertUser(Context context) {
         Toast.makeText(context, R.string.kanetik_feedback_thanks, Toast.LENGTH_LONG).show();
+    }
+
+    public static String getSupportId(@NonNull Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("com.kanetik.feedback.prefs", MODE_PRIVATE);
+
+        String supportId = prefs.getString(SUPPORT_ID_KEY, "");
+        if (TextUtils.isEmpty(supportId)) {
+            supportId = UUID.randomUUID().toString();
+            prefs.edit().putString(SUPPORT_ID_KEY, supportId).apply();
+        }
+
+        return supportId;
     }
 }
