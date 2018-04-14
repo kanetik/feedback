@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.kanetik.feedback.network.FeedbackService;
-import com.kanetik.feedback.utility.DateUtils;
 import com.kanetik.feedback.utility.FeedbackUtils;
 
 import java.io.Serializable;
@@ -20,23 +19,19 @@ public class Feedback implements Serializable {
     public static final String EXTRA_RESULT_RECEIVER = "result_receiver";
     public static final String EXTRA_SELF = "data";
 
-    public String timestampUtc;
-
     public ContextData appData;
     public ContextData deviceData;
 
     public String comment;
     public String from;
 
-    private int retryLimit = 1;
-
-    public int getRetryLimit() {
-        return retryLimit;
+    private int getRetryLimit() {
+        return 1;
     }
 
     private int retryCount;
 
-    public int getRetryCount() {
+    private int getRetryCount() {
         return retryCount;
     }
 
@@ -53,8 +48,6 @@ public class Feedback implements Serializable {
     }
 
     public Feedback(Context context, String comment, String from) {
-        this.timestampUtc = DateUtils.nowUtc();
-
         FeedbackUtils.addSystemData(context, this);
 
         this.comment = comment;
