@@ -1,6 +1,7 @@
 package com.kanetik.feedback.network;
 
 import android.content.Context;
+import android.util.Base64;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
@@ -16,8 +17,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 class MailJetSender implements Sender {
     private WeakReference<Context> context;
@@ -37,15 +38,13 @@ class MailJetSender implements Sender {
         final String developerName = AppUtils.getAppLabel(context) + " Developer"; // TODO: Get from init
 
         final String appSupportEmail = "info@kanetik.com"; // TODO: Get from init
-        final String appSupportName = AppUtils.getAppLabel(context) + " User"; // TODO: Get from init
+        final String appSupportName = AppUtils.getAppLabel(context) + " User (" + KanetikFeedback.getUserIdentifier() + ")"; // TODO: Get from init
 
         final String userEmail = feedback.from;
-        final String userName = AppUtils.getAppLabel(context) + " User";
 
-        final String subject = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_email_subject), AppUtils.getAppLabel(context));
+        final String subject = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_email_subject), AppUtils.getAppLabel(context), UUID.randomUUID().toString());
 
-        final String plainTextEmail = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_text_email_template), feedback.appData, feedback.deviceData, feedback.comment, new Date().toString());
-        final String htmlEmail = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_html_email_template), feedback.appData.toHtml(), feedback.deviceData.toHtml(), feedback.comment, new Date().toString());
+        final String plainTextEmail = feedback.comment;
 
         try {
             JSONObject message = new JSONObject();
@@ -56,19 +55,39 @@ class MailJetSender implements Sender {
 
             JSONObject replyTo = new JSONObject()
                     .put(Emailv31.Message.EMAIL, userEmail)
-                    .put(Emailv31.Message.NAME, userName);
+                    .put(Emailv31.Message.NAME, userEmail);
 
             JSONArray to = new JSONArray()
                     .put(new JSONObject()
                             .put(Emailv31.Message.EMAIL, developerEmail)
                             .put(Emailv31.Message.NAME, developerName));
 
+            byte[] data = feedback.appData.toString().getBytes("UTF-8");
+            String base64 = Base64.encodeToString(data, Base64.DEFAULT);
+
+            JSONObject appData = new JSONObject()
+                    .put("ContentType", "text/plain")
+                    .put("Filename", "appData.txt")
+                    .put("Base64Content", base64);
+
+            data = feedback.deviceData.toString().getBytes("UTF-8");
+            base64 = Base64.encodeToString(data, Base64.DEFAULT);
+
+            JSONObject deviceData = new JSONObject()
+                    .put("ContentType", "text/plain")
+                    .put("Filename", "deviceData.txt")
+                    .put("Base64Content", base64);
+
+            JSONArray attachments = new JSONArray()
+                    .put(appData)
+                    .put(deviceData);
+
             message.put(Emailv31.Message.FROM, from)
                     .put(Emailv31.Message.REPLYTO, replyTo)
                     .put(Emailv31.Message.TO, to)
                     .put(Emailv31.Message.SUBJECT, subject)
                     .put(Emailv31.Message.TEXTPART, plainTextEmail)
-                    .put(Emailv31.Message.HTMLPART, htmlEmail);
+                    .put(Emailv31.Message.ATTACHMENTS, attachments);
 
             JSONArray messageArray = new JSONArray();
             messageArray.put(message);
