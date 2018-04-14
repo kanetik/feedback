@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.Feedback;
@@ -24,7 +25,9 @@ public class KanetikFeedback {
     static Context _appContext;
 
     private static boolean _initialized = false;
+
     private static boolean _debug;
+    private static String _userIdentifier;
 
     private static ArrayList<ContextDataItem> _contextData;
 
@@ -68,8 +71,17 @@ public class KanetikFeedback {
         return _debug;
     }
 
+    /**
+     * Gets the User Identifier.
+     *
+     * @return userIdentifier
+     */
+    public static String getUserIdentifier() {
+        return _userIdentifier;
+    }
+
     public static void initialize(Context context) {
-        initialize(context, false);
+        initialize(context, "", false);
     }
 
     /**
@@ -80,7 +92,7 @@ public class KanetikFeedback {
      *
      * @param context Activity or Application Context
      */
-    public static void initialize(Context context, boolean debug) {
+    public static void initialize(Context context, String userIdentifier, boolean debug) {
         if (isInitialized()) {
             return;
         }
@@ -90,6 +102,11 @@ public class KanetikFeedback {
         _debug = debug;
 
         _contextData = new ArrayList<>();
+
+        if (TextUtils.isEmpty(userIdentifier)) {
+            userIdentifier = AppUtils.getSupportId(context);
+        }
+        _userIdentifier = userIdentifier;
 
         if (_debug) {
             LogUtils.i("KanetikFeedback Initialize");
@@ -110,11 +127,9 @@ public class KanetikFeedback {
     public KanetikFeedback addContextDataItem(String key, String value) {
         ContextDataItem newItem = new ContextDataItem(key, value);
 
-        if (_contextData.contains(newItem)) {
-            _contextData.remove(newItem);
-        }
-
+        _contextData.remove(newItem);
         _contextData.add(newItem);
+
         return _instance;
     }
 
@@ -127,10 +142,7 @@ public class KanetikFeedback {
         for (Map.Entry<String, Object> item : items.entrySet()) {
             ContextDataItem newItem = new ContextDataItem(item.getKey(), item.getValue());
 
-            if (_contextData.contains(newItem)) {
-                _contextData.remove(newItem);
-            }
-
+            _contextData.remove(newItem);
             _contextData.add(newItem);
         }
 
@@ -145,7 +157,7 @@ public class KanetikFeedback {
      */
     public KanetikFeedback removeContextDataItem(String key) {
         for (ContextDataItem item : _contextData) {
-            if (item.equals(key)) {
+            if (item.key.equals(key)) {
                 _contextData.remove(item);
             }
         }
