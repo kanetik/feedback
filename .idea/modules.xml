@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/feedback/feedback.iml" filepath="$PROJECT_DIR$/feedback/feedback.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kanetik-feedback.iml" filepath="$PROJECT_DIR$/kanetik-feedback.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Feedback.iml" filepath="$PROJECT_DIR$/Feedback.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library/feedback.iml" filepath="$PROJECT_DIR$/library/feedback.iml" />
     </modules>
   </component>
 </project>
