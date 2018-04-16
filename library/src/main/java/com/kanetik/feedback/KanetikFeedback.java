@@ -165,7 +165,7 @@ public class KanetikFeedback {
         return _instance;
     }
 
-    public ArrayList<ContextDataItem> getContextData() {
+    public static ArrayList<ContextDataItem> getContextData() {
         return _contextData;
     }
 
@@ -177,7 +177,7 @@ public class KanetikFeedback {
     public void sendFeedback(String feedbackText, String from) {
         final Feedback feedback = new Feedback(_appContext, feedbackText, from);
 
-//        FeedbackUtils.addInstanceContextDataToFeedback(_appContext, feedback);
+        FeedbackUtils.addInstanceContextDataToFeedback(feedback);
 
         FeedbackUtils.persistData(_appContext, feedback, new ResultReceiver(new Handler()) {
             @Override

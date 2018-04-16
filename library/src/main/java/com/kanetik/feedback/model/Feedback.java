@@ -21,6 +21,7 @@ public class Feedback implements Serializable {
 
     public ContextData appData;
     public ContextData deviceData;
+    public ContextData devData;
 
     public String comment;
     public String from;

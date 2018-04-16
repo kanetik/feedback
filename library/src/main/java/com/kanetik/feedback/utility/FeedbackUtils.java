@@ -32,9 +32,6 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class FeedbackUtils {
-    private static final int CONTENT_TYPE_PLAIN_TEXT = 0;
-    private static final int CONTENT_TYPE_HTML = 1;
-
     private static final String DATA_APP_VERSION = "App_Version";
     private static final String DATA_LOCALE = "Locale";
     private static final String DATA_MANUFACTURER = "Device_Manufacturer";
@@ -46,8 +43,7 @@ public class FeedbackUtils {
     public static ArrayList<ContextDataItem> getExtraData(Context context) {
         ArrayList<ContextDataItem> data = new ArrayList<>();
 
-        data.add(new ContextDataItem(DATA_APP_VERSION,
-                AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")"));
+        data.add(new ContextDataItem(DATA_APP_VERSION, AppUtils.getVersionName(context) + " (" + AppUtils.getVersionCode(context) + ")"));
         data.add(new ContextDataItem(DATA_LOCALE, Locale.getDefault().toString()));
         data.add(new ContextDataItem(DATA_MANUFACTURER, Build.MANUFACTURER));
         data.add(new ContextDataItem(DATA_MODEL, Build.MODEL));
@@ -220,34 +216,7 @@ public class FeedbackUtils {
         feedback.deviceData = deviceData;
     }
 
-//    public static String getSystemDataString(int contentType, Feedback feedback) {
-//        String labelFormat = "%s: ";
-//        String valueFormat = " %s";
-//        String lineDelimiter = "\n";
-//
-//        if (contentType == CONTENT_TYPE_HTML) {
-//            labelFormat = "<dd>%s</dd>";
-//            valueFormat = "<dt>%s</dt>";
-//            lineDelimiter = "";
-//        }
-//
-//        StringBuilder builder = new StringBuilder();
-//        for (Map.Entry<String, Object> contextItem : feedback.appData) {
-//
-//        }
-//
-//        return String.format(Locale.US, labelFormat, "App Version") + String.format(Locale.US, valueFormat, feedback.appVersion) + lineDelimiter +
-//                String.format(Locale.US, labelFormat, "User Locale") + String.format(Locale.US, valueFormat, feedback.locale) + lineDelimiter +
-//                String.format(Locale.US, labelFormat, "Device Manufacturer") + String.format(Locale.US, valueFormat, feedback.deviceManufacturer) + lineDelimiter +
-//                String.format(Locale.US, labelFormat, "Device Model") + String.format(Locale.US, valueFormat, feedback.deviceModel) + lineDelimiter +
-//                String.format(Locale.US, labelFormat, "Device Name") + String.format(Locale.US, valueFormat, feedback.deviceName) + lineDelimiter +
-//                String.format(Locale.US, labelFormat, "Android Version") + String.format(Locale.US, valueFormat, feedback.osVersion) + lineDelimiter +
-//                String.format(Locale.US, labelFormat, "Network Type") + String.format(Locale.US, valueFormat, feedback.networkType) + lineDelimiter;
-//    }
-
-//    public static void addInstanceContextDataToFeedback(Feedback feedback, ArrayList<ContextDataItem> contextData) {
-//        if (contextData != null) {
-//            feedback.contextData = contextData;
-//        }
-//    }
+    public static void addInstanceContextDataToFeedback(Feedback feedback) {
+        feedback.devData = new ContextData("Developer Info", KanetikFeedback.getContextData());
+    }
 }

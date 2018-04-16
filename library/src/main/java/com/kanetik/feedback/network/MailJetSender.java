@@ -78,9 +78,18 @@ class MailJetSender implements Sender {
                     .put("Filename", "deviceData.txt")
                     .put("Base64Content", base64);
 
+            data = feedback.devData.toString().getBytes("UTF-8");
+            base64 = Base64.encodeToString(data, Base64.DEFAULT);
+
+            JSONObject devData = new JSONObject()
+                    .put("ContentType", "text/plain")
+                    .put("Filename", "developerData.txt")
+                    .put("Base64Content", base64);
+
             JSONArray attachments = new JSONArray()
                     .put(appData)
-                    .put(deviceData);
+                    .put(deviceData)
+                    .put(devData);
 
             message.put(Emailv31.Message.FROM, from)
                     .put(Emailv31.Message.REPLYTO, replyTo)

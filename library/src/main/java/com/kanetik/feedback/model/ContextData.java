@@ -1,5 +1,7 @@
 package com.kanetik.feedback.model;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,22 +12,18 @@ public class ContextData implements Serializable {
     String title;
     List<ContextDataItem> contextData;
 
-    public ContextData(String title) {
+    public ContextData(@NonNull String title) {
         this.title = title;
         this.contextData = new ArrayList<>();
     }
 
-    public void add(String key, Object value) {
-        this.contextData.add(new ContextDataItem(key, value));
+    public ContextData(@NonNull String title, @NonNull List<ContextDataItem> data) {
+        this.title = title;
+        this.contextData = new ArrayList<>(data);
     }
 
-    public String toHtml() {
-        StringBuilder builder = new StringBuilder("<h3>" + this.title + "</h3>");
-        for (ContextDataItem contextItem : contextData) {
-            builder.append("<b>").append(contextItem.key).append("</b>: ").append(contextItem.value).append("<br>");
-        }
-
-        return builder.toString();
+    public void add(String key, Object value) {
+        this.contextData.add(new ContextDataItem(key, value));
     }
 
     public String toString() {
