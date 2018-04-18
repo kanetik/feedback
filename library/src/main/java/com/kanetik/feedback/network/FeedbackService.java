@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.ResultReceiver;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.kanetik.feedback.model.Feedback;
 
 import java.io.Serializable;
@@ -21,8 +19,6 @@ public class FeedbackService extends IntentService {
         if (intent == null) {
             return;
         }
-
-        Crashlytics.log(Log.INFO, "KanetikFeedback", "FeedbackService Intent: " + intent.toString());
 
         Serializable feedbackObject = intent.getSerializableExtra(Feedback.EXTRA_SELF);
 

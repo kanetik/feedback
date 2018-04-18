@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.ResultReceiver;
 import android.support.annotation.Keep;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.kanetik.feedback.network.FeedbackService;
 import com.kanetik.feedback.utility.FeedbackUtils;
 
@@ -60,9 +58,6 @@ public class Feedback implements Serializable {
 
         serviceIntent.putExtra(EXTRA_RESULT_RECEIVER, resultReceiver);
         serviceIntent.putExtra(EXTRA_SELF, data);
-
-        Crashlytics.log(Log.INFO, "KanetikFeedback", "Context: " + context.toString());
-        Crashlytics.log(Log.INFO, "KanetikFeedback", "KanetikFeedback Object: " + data.toString());
 
         return serviceIntent;
     }
