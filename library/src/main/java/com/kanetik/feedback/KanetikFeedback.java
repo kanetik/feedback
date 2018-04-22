@@ -33,6 +33,14 @@ public class KanetikFeedback {
 
     private static KanetikFeedback _instance;
 
+    public static ArrayList<ContextDataItem> getContextData() {
+        if (_contextData == null) {
+            _contextData = new ArrayList<>();
+        }
+
+        return _contextData;
+    }
+
     public KanetikFeedback(@NonNull Context context) {
         _appContext = context;
     }
@@ -101,8 +109,6 @@ public class KanetikFeedback {
 
         _debug = debug;
 
-        _contextData = new ArrayList<>();
-
         if (TextUtils.isEmpty(userIdentifier)) {
             userIdentifier = AppUtils.getSupportId(context);
         }
@@ -127,8 +133,8 @@ public class KanetikFeedback {
     public KanetikFeedback addContextDataItem(String key, String value) {
         ContextDataItem newItem = new ContextDataItem(key, value);
 
-        _contextData.remove(newItem);
-        _contextData.add(newItem);
+        getContextData().remove(newItem);
+        getContextData().add(newItem);
 
         return _instance;
     }
@@ -142,8 +148,8 @@ public class KanetikFeedback {
         for (Map.Entry<String, Object> item : items.entrySet()) {
             ContextDataItem newItem = new ContextDataItem(item.getKey(), item.getValue());
 
-            _contextData.remove(newItem);
-            _contextData.add(newItem);
+            getContextData().remove(newItem);
+            getContextData().add(newItem);
         }
 
         return _instance;
@@ -163,10 +169,6 @@ public class KanetikFeedback {
         }
 
         return _instance;
-    }
-
-    public static ArrayList<ContextDataItem> getContextData() {
-        return _contextData;
     }
 
     /**
