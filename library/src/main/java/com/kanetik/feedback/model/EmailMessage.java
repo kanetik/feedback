@@ -1,22 +1,22 @@
 package com.kanetik.feedback.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 import java.util.List;
 
 public class EmailMessage {
-    @SerializedName("From")
+    @Json(name = "From")
     public EmailAddress from;
 
-    @SerializedName("To")
+    @Json(name = "To")
     public List<EmailAddress> to;
 
-    @SerializedName("Subject")
+    @Json(name = "Subject")
     public String subject;
 
-    @SerializedName("TextPart")
+    @Json(name = "TextPart")
     public String text;
 
-    @SerializedName("HTMLPart")
+    @Json(name = "HTMLPart")
     public String html;
 }
