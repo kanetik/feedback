@@ -94,15 +94,11 @@ bintray {
     }
 }
 
-ext {
-    supportLibraryVersion = "27.1.1"
-}
-
 dependencies {
-    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
-    implementation "com.android.support:design:$supportLibraryVersion"
-    implementation "com.android.support:support-v4:$supportLibraryVersion"
-    implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    implementation "com.android.support:appcompat-v7:27.1.1"
+    implementation "com.android.support:design:27.1.1"
+    implementation "com.android.support:support-v4:27.1.1"
+    implementation "com.android.support:recyclerview-v7:27.1.1"
     implementation 'com.mailjet:mailjet-client:4.1.1'
     implementation 'com.squareup.moshi:moshi:1.5.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
