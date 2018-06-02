@@ -147,7 +147,7 @@ public class AppUtils {
         return drawable;
     }
 
-    public static boolean isNullOrWhiteSpace(String string) {
+    static boolean isNullOrWhiteSpace(String string) {
         if (string == null) {
             return true;
         }
