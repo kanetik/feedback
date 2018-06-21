@@ -3,14 +3,20 @@ package com.kanetik.feedback.presentation;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +25,6 @@ import android.widget.TextView;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
-import com.kanetik.feedback.utility.AppUtils;
 import com.kanetik.feedback.utility.FeedbackUtils;
 import com.kanetik.feedback.utility.LogUtils;
 
@@ -42,9 +47,12 @@ public class FeedbackActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), AppUtils.getAppLabel(this)));
+        getSupportActionBar().setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), FeedbackUtils.getAppLabel(this)));
 
-        Drawable closeIcon = AppUtils.tintDrawable(this, R.drawable.kanetik_feedback_close_24dp, R.color.kanetik_feedback_primary_text);
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp).mutate();
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.kanetik_feedback_primary_text));
+
+        Drawable closeIcon = drawable;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(closeIcon);
 
@@ -63,7 +71,10 @@ public class FeedbackActivity extends AppCompatActivity {
         poweredBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppUtils.openWebPage(FeedbackActivity.this, "https://github.com/jkane001/kanetik-feedback/");
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jkane001/kanetik-feedback/"));
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
             }
         });
 
@@ -79,7 +90,7 @@ public class FeedbackActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (validateForm()) {
-                    enableSendButton(R.attr.colorAccent);
+                    enableSendButton();
                 } else {
                     disableSendButton();
                 }
@@ -98,7 +109,7 @@ public class FeedbackActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (validateForm()) {
-                    enableSendButton(R.attr.colorAccent);
+                    enableSendButton();
                 } else {
                     disableSendButton();
                 }
@@ -149,18 +160,32 @@ public class FeedbackActivity extends AppCompatActivity {
         }
 
         MenuItem sendFeedbackIcon = mMenu.findItem(R.id.action_send_feedback);
-        AppUtils.tintSupportBarIcon(this, sendFeedbackIcon);
+        Drawable icon = sendFeedbackIcon.getIcon().mutate();
+        DrawableCompat.setTint(icon, ContextCompat.getColor(this, R.color.kanetik_feedback_light_gray));
+        sendFeedbackIcon.setIcon(icon);
         sendFeedbackIcon.setEnabled(false);
     }
 
-    private void enableSendButton(int color) {
+    private void enableSendButton() {
         if (mMenu == null) {
             return;
         }
 
         MenuItem sendFeedbackIcon = mMenu.findItem(R.id.action_send_feedback);
         sendFeedbackIcon.setEnabled(true);
-        AppUtils.tintSupportBarIcon(getSupportActionBar(), sendFeedbackIcon, color);
+
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            Drawable icon = sendFeedbackIcon.getIcon().mutate();
+            int colorAttr = supportActionBar.getThemedContext().getResources()
+                    .getIdentifier("colorAccent", "attr", supportActionBar.getThemedContext().getPackageName());
+
+            TypedValue outValue = new TypedValue();
+            supportActionBar.getThemedContext().getTheme().resolveAttribute(colorAttr, outValue, true);
+
+            DrawableCompat.setTint(icon, outValue.data);
+            sendFeedbackIcon.setIcon(icon);
+        }
     }
 
     @Override

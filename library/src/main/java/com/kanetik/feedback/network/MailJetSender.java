@@ -6,7 +6,7 @@ import android.util.Base64;
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
 import com.kanetik.feedback.model.Feedback;
-import com.kanetik.feedback.utility.AppUtils;
+import com.kanetik.feedback.utility.FeedbackUtils;
 import com.kanetik.feedback.utility.LogUtils;
 import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
@@ -16,6 +16,9 @@ import com.mailjet.client.resource.Emailv31;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 import java.util.UUID;
@@ -35,14 +38,14 @@ class MailJetSender implements Sender {
         MailjetClient client = new MailjetClient("2b65a83e271971453abd6d80e38d5691", "9c099f92dfbd4e33da387eef3c809494", new ClientOptions("v3.1"));
 
         final String developerEmail = "jkane001@gmail.com"; // TODO: Get from init
-        final String developerName = AppUtils.getAppLabel(context) + " Developer"; // TODO: Get from init
+        final String developerName = FeedbackUtils.getAppLabel(context) + " Developer"; // TODO: Get from init
 
         final String appSupportEmail = "info@kanetik.com"; // TODO: Get from init
-        final String appSupportName = AppUtils.getAppLabel(context) + " User (" + KanetikFeedback.getUserIdentifier() + ")"; // TODO: Get from init
+        final String appSupportName = FeedbackUtils.getAppLabel(context) + " User (" + KanetikFeedback.getUserIdentifier() + ")"; // TODO: Get from init
 
         final String userEmail = feedback.from;
 
-        final String subject = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_email_subject), AppUtils.getAppLabel(context), UUID.randomUUID().toString());
+        final String subject = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_email_subject), FeedbackUtils.getAppLabel(context), UUID.randomUUID().toString());
 
         final String plainTextEmail = feedback.comment;
 
@@ -62,31 +65,48 @@ class MailJetSender implements Sender {
                             .put(Emailv31.Message.EMAIL, developerEmail)
                             .put(Emailv31.Message.NAME, developerName));
 
-            byte[] data = feedback.appData.toString().getBytes("UTF-8");
-            String base64 = Base64.encodeToString(data, Base64.DEFAULT);
+            JSONArray attachments = new JSONArray();
 
+            File path = context.getFilesDir();
+            File list[] = path.listFiles((dir, name) -> name.equalsIgnoreCase("application.log"));
+            if (list != null && list.length == 1) {
+                File log = list[0];
+                int size = (int) log.length();
+                byte[] data = new byte[size];
+                try {
+                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(log));
+                    buf.read(data, 0, data.length);
+                    buf.close();
+
+                    JSONObject logData = new JSONObject()
+                            .put("ContentType", "text/plain")
+                            .put("Filename", "logcat.txt")
+                            .put("Base64Content", Base64.encodeToString(data, Base64.DEFAULT));
+
+                    attachments.put(logData);
+                } catch (Exception ignored) {
+                }
+            }
+
+            byte[] data = feedback.appData.toString().getBytes("UTF-8");
             JSONObject appData = new JSONObject()
                     .put("ContentType", "text/plain")
                     .put("Filename", "appData.txt")
-                    .put("Base64Content", base64);
+                    .put("Base64Content", Base64.encodeToString(data, Base64.DEFAULT));
 
             data = feedback.deviceData.toString().getBytes("UTF-8");
-            base64 = Base64.encodeToString(data, Base64.DEFAULT);
-
             JSONObject deviceData = new JSONObject()
                     .put("ContentType", "text/plain")
                     .put("Filename", "deviceData.txt")
-                    .put("Base64Content", base64);
+                    .put("Base64Content", Base64.encodeToString(data, Base64.DEFAULT));
 
             data = feedback.devData.toString().getBytes("UTF-8");
-            base64 = Base64.encodeToString(data, Base64.DEFAULT);
-
             JSONObject devData = new JSONObject()
                     .put("ContentType", "text/plain")
                     .put("Filename", "developerData.txt")
-                    .put("Base64Content", base64);
+                    .put("Base64Content", Base64.encodeToString(data, Base64.DEFAULT));
 
-            JSONArray attachments = new JSONArray()
+            attachments
                     .put(appData)
                     .put(deviceData)
                     .put(devData);

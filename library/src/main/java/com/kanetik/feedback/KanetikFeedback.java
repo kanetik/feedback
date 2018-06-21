@@ -1,6 +1,7 @@
 package com.kanetik.feedback;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,12 +9,11 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
+import android.support.annotation.Nullable;
 
 import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.Feedback;
 import com.kanetik.feedback.presentation.FeedbackActivity;
-import com.kanetik.feedback.utility.AppUtils;
 import com.kanetik.feedback.utility.FeedbackUtils;
 import com.kanetik.feedback.utility.LogUtils;
 
@@ -100,7 +100,7 @@ public class KanetikFeedback {
      *
      * @param context Activity or Application Context
      */
-    public static void initialize(Context context, String userIdentifier, boolean debug) {
+    public static void initialize(final Context context, String userIdentifier, boolean debug) {
         if (isInitialized()) {
             return;
         }
@@ -108,15 +108,17 @@ public class KanetikFeedback {
         new KanetikFeedback(context);
 
         _debug = debug;
-
-        if (TextUtils.isEmpty(userIdentifier)) {
-            userIdentifier = AppUtils.getSupportId(context);
-        }
-        _userIdentifier = userIdentifier;
-
         if (_debug) {
             LogUtils.i("KanetikFeedback Initialize");
         }
+
+        FeedbackUtils.getSupportId(context).observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                _userIdentifier = s;
+                FeedbackUtils.getSupportId(context).removeObserver(this);
+            }
+        });
 
         // Send any previously queued requests
         FeedbackUtils.sendQueuedRequests(context);
@@ -185,7 +187,7 @@ public class KanetikFeedback {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == Activity.RESULT_OK) {
-                    AppUtils.alertUser(_appContext);
+                    FeedbackUtils.alertUser(_appContext);
                 } else {
                     FeedbackUtils.handlePersistenceFailure(_appContext, feedback);
                 }
