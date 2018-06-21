@@ -3,7 +3,7 @@
     <string name="kanetik_feedback_feedback_title_format">%s Feedback</string>
     <string name="kanetik_feedback_send_feedback">Send Feedback</string>
     <string name="kanetik_feedback_extra_data_description_clickable">View Data</string>
-    <string name="kanetik_feedback_extra_data_description">In order to provide excellent customer service, some additional data will be sent with this feedback.</string>
+    <string name="kanetik_feedback_extra_data_description">In order to provide excellent customer service, a log of recent actions (if enabled in settings), along with some additional data, will be sent with your feedback.</string>
     <string name="kanetik_feedback_powered_by">Powered by Kanetik Feedback</string>
     <string name="kanetik_feedback_feedback_hint">How can we help you?</string>
     <string name="kanetik_feedback_email_address_hint">Email Address</string>
