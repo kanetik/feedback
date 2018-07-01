@@ -10,11 +10,11 @@ ext {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 22
-        targetSdkVersion 27
+        targetSdkVersion 28
         group = "com.kanetik"
         versionCode verCode
         version = verName
@@ -99,10 +99,10 @@ bintray {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:27.1.1"
-    implementation "com.android.support:design:27.1.1"
-    implementation "com.android.support:support-v4:27.1.1"
-    implementation "com.android.support:recyclerview-v7:27.1.1"
+    implementation "com.android.support:appcompat-v7:28.0.0-alpha3"
+    implementation "com.android.support:design:28.0.0-alpha3"
+    implementation "com.android.support:support-v4:28.0.0-alpha3"
+    implementation "com.android.support:recyclerview-v7:28.0.0-alpha3"
     implementation 'com.mailjet:mailjet-client:4.1.1'
     implementation 'com.squareup.moshi:moshi:1.6.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
