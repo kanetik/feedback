@@ -20,6 +20,7 @@ android {
         version = verName
         versionName verName
         consumerProguardFiles 'consumer-proguard-rules.pro'
+        vectorDrawables.useSupportLibrary = true
 
     }
     buildTypes {
