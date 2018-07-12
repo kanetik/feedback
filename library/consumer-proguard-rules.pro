@@ -69,15 +69,15 @@
 
 ## Google AdMob specific rules ##
 ## https://developers.google.com/admob/android/quick-start ##
--keep public class com.google.ads.** {
-   public *;
-}
+#-keep public class com.google.ads.** {
+#   public *;
+#}
 
 ## Google Play Services 4.3.23 specific rules ##
 ## https://developer.android.com/google/play-services/setup.html#Proguard ##
--keep class * extends java.util.ListResourceBundle {
-    protected Object[][] getContents();
-}
+#-keep class * extends java.util.ListResourceBundle {
+#    protected Object[][] getContents();
+#}
 
 -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
     public static final *** NULL;
