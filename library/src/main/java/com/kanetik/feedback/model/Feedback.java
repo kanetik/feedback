@@ -3,12 +3,13 @@ package com.kanetik.feedback.model;
 import android.content.Context;
 import android.content.Intent;
 import android.os.ResultReceiver;
-import android.support.annotation.Keep;
 
 import com.kanetik.feedback.network.FeedbackService;
 import com.kanetik.feedback.utility.FeedbackUtils;
 
 import java.io.Serializable;
+
+import androidx.annotation.Keep;
 
 @Keep
 public class Feedback implements Serializable {

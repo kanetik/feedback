@@ -1,8 +1,8 @@
 package com.kanetik.feedback.model;
 
-import android.support.annotation.Keep;
-
 import java.io.Serializable;
+
+import androidx.annotation.Keep;
 
 @Keep
 public class ContextDataItem implements Serializable {
