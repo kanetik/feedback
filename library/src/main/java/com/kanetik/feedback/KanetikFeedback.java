@@ -1,15 +1,13 @@
 package com.kanetik.feedback;
 
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 
 import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.Feedback;
@@ -22,7 +20,7 @@ import java.util.Map;
 
 @Keep
 public class KanetikFeedback {
-    static Context _appContext;
+    private static Context _appContext;
 
     private static boolean _initialized = false;
 
@@ -33,7 +31,7 @@ public class KanetikFeedback {
 
     private static KanetikFeedback _instance;
 
-    public static ArrayList<ContextDataItem> getContextData() {
+    public ArrayList<ContextDataItem> getContextData() {
         if (_contextData == null) {
             _contextData = new ArrayList<>();
         }
@@ -88,10 +86,6 @@ public class KanetikFeedback {
         return _userIdentifier;
     }
 
-    public static void initialize(Context context) {
-        initialize(context, "", false);
-    }
-
     /**
      * Initializes the KanetikFeedback singleton. The developer's interactions with Kanetik KanetikFeedback will be
      * entirely via the singleton.
@@ -112,13 +106,7 @@ public class KanetikFeedback {
             LogUtils.i("KanetikFeedback Initialize");
         }
 
-        FeedbackUtils.getSupportId(context).observeForever(new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                _userIdentifier = s;
-                FeedbackUtils.getSupportId(context).removeObserver(this);
-            }
-        });
+        _userIdentifier = userIdentifier;
 
         // Send any previously queued requests
         FeedbackUtils.sendQueuedRequests(context);
@@ -181,7 +169,7 @@ public class KanetikFeedback {
     public void sendFeedback(String feedbackText, String from) {
         final Feedback feedback = new Feedback(_appContext, feedbackText, from);
 
-        FeedbackUtils.addInstanceContextDataToFeedback(feedback);
+        FeedbackUtils.addInstanceContextDataToFeedback(_appContext, feedback);
 
         FeedbackUtils.persistData(_appContext, feedback, new ResultReceiver(new Handler()) {
             @Override

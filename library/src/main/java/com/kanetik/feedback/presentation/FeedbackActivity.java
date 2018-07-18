@@ -7,22 +7,16 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
 import com.kanetik.feedback.utility.FeedbackUtils;
@@ -30,14 +24,17 @@ import com.kanetik.feedback.utility.LogUtils;
 
 import java.util.Locale;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+
 public class FeedbackActivity extends AppCompatActivity {
-    private TextView poweredBy;
     private EditText feedback;
     private TextInputLayout feedbackLayout;
     private EditText email;
     private TextInputLayout emailLayout;
-    private TextView additionalDataDescription;
-    private TextView viewData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +46,9 @@ public class FeedbackActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), FeedbackUtils.getAppLabel(this)));
 
-        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp).mutate();
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.kanetik_feedback_primary_text));
+        Drawable closeIcon = ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp).mutate();
+        DrawableCompat.setTint(closeIcon, ContextCompat.getColor(this, R.color.kanetik_feedback_primary_text));
 
-        Drawable closeIcon = drawable;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(closeIcon);
 
@@ -60,21 +56,17 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     private void setupUiElements() {
-        poweredBy = findViewById(R.id.kanetik_feedback_powered_by);
+        TextView poweredBy = findViewById(R.id.kanetik_feedback_powered_by);
         feedback = findViewById(R.id.kanetik_feedback_feedback);
         feedbackLayout = findViewById(R.id.kanetik_feedback_feedback_layout);
         email = findViewById(R.id.kanetik_feedback_email);
         emailLayout = findViewById(R.id.kanetik_feedback_email_layout);
-        viewData = findViewById(R.id.kanetik_feedback_view_data);
-        additionalDataDescription = findViewById(R.id.kanetik_feedback_additional_data_description);
+        TextView viewData = findViewById(R.id.kanetik_feedback_view_data);
 
-        poweredBy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jkane001/kanetik-feedback/"));
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
+        poweredBy.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/jkane001/kanetik-feedback/"));
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
             }
         });
 
@@ -116,20 +108,17 @@ public class FeedbackActivity extends AppCompatActivity {
             }
         });
 
-        viewData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager manager = getFragmentManager();
-                Fragment frag = manager.findFragmentByTag("fragment_data_items");
+        viewData.setOnClickListener(v -> {
+            FragmentManager manager = getFragmentManager();
+            Fragment frag = manager.findFragmentByTag("fragment_data_items");
 
-                if (frag != null) {
-                    manager.beginTransaction().remove(frag).commit();
-                }
-
-                final FeedbackDataItemDialogFragment fragment = FeedbackDataItemDialogFragment.create();
-                fragment.setShowsDialog(true);
-                fragment.show(manager, "fragment_data_items");
+            if (frag != null) {
+                manager.beginTransaction().remove(frag).commit();
             }
+
+            final FeedbackDataItemDialogFragment fragment = FeedbackDataItemDialogFragment.create();
+            fragment.setShowsDialog(true);
+            fragment.show(manager, "fragment_data_items");
         });
     }
 
