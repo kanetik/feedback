@@ -1,8 +1,6 @@
 package com.kanetik.feedback.utility;
 
 import android.app.Activity;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -14,8 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -39,6 +35,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -142,11 +141,11 @@ public class FeedbackUtils {
         feedback.deviceData = deviceData;
     }
 
-    public static void addInstanceContextDataToFeedback(Feedback feedback) {
-        feedback.devData = new ContextData("Developer Info", KanetikFeedback.getContextData());
+    public static void addInstanceContextDataToFeedback(Context context, Feedback feedback) {
+        feedback.devData = new ContextData("Developer Info", KanetikFeedback.getInstance(context).getContextData());
     }
 
-    public static LiveData<String> getSupportId(@NonNull Context context) {
+    public static String getSupportId(@NonNull Context context) {
         SharedPreferences prefs = context.getSharedPreferences("com.kanetik.feedback.prefs", MODE_PRIVATE);
 
         String supportId = prefs.getString(SUPPORT_ID_KEY, "");
@@ -155,10 +154,7 @@ public class FeedbackUtils {
             prefs.edit().putString(SUPPORT_ID_KEY, supportId).apply();
         }
 
-        MutableLiveData<String> response = new MutableLiveData<>();
-        response.postValue(supportId);
-
-        return response;
+        return supportId;
     }
 
     public static String getAppLabel(Context context) {
