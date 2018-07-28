@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
@@ -146,7 +147,7 @@ public class FeedbackUtils {
     }
 
     public static String getSupportId(@NonNull Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("com.kanetik.feedback.prefs", MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences("com.kanetik.shared.prefs", MODE_PRIVATE);
 
         String supportId = prefs.getString(SUPPORT_ID_KEY, "");
         if (TextUtils.isEmpty(supportId)) {
