@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
     id "com.jfrog.bintray" version "1.8.0"
     id "com.github.dcendents.android-maven" version "2.1"
@@ -7,6 +9,16 @@ apply plugin: 'com.android.library'
 
 ext {
     verName = "1.1.0"
+
+    boolean isDebug = false
+    for (String taskName : gradle.startParameter.taskNames) {
+        if (taskName.contains("Debug")) {
+            isDebug = true
+            break
+        }
+    }
+
+    verCode = isDebug ? 1 : Integer.parseInt(new SimpleDateFormat("yyMMddHHmm", Locale.US).format(new Date())) - 1400000000
 }
 
 android {

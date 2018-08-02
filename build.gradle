@@ -24,9 +24,9 @@ allprojects {
     }
 }
 
-ext {
-    verCode = Integer.parseInt(new SimpleDateFormat("yyMMddHHmm", Locale.US).format(new Date())) - 1400000000
-}
+//ext {
+//    verCode = Integer.parseInt(new SimpleDateFormat("yyMMddHHmm", Locale.US).format(new Date())) - 1400000000
+//}
 
 task clean(type: Delete) {
     delete rootProject.buildDir
