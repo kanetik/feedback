@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 plugins {
-    id "com.jfrog.bintray" version "1.8.0"
+    id "com.jfrog.bintray" version "1.8.4"
     id "com.github.dcendents.android-maven" version "2.1"
 }
 
@@ -116,7 +116,7 @@ bintray {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
-    implementation 'com.google.android.material:material:1.1.0-alpha06'
+    implementation 'com.google.android.material:material:1.1.0-alpha07'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha05'
 
