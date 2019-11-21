@@ -7,6 +7,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +17,9 @@ import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
@@ -34,18 +39,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class FeedbackUtils {
     private static final String SUPPORT_ID_KEY = "support_id";
-
-    private static final String NO_NETWORK = "No Network";
 
     private static final String DATA_APP_VERSION = "App_Version";
     private static final String DATA_LOCALE = "Locale";
@@ -70,7 +69,7 @@ public class FeedbackUtils {
     }
 
     public static void sendQueuedRequests(final Context context) {
-        if (getNetworkType(context).equals(NO_NETWORK)) {
+        if (!isConnected(context)) {
             return;
         }
 
@@ -78,31 +77,32 @@ public class FeedbackUtils {
         File directory = context.getCacheDir();
 
         File[] files = directory.listFiles(pathname -> pathname.getName().startsWith("kanetik_feedback") && pathname.getName().endsWith("kf"));
+        if (files != null) {
+            // Ensure we submit queued requests in the order they were made
+            Arrays.sort(files, (f1, f2) -> Long.compare(f1.lastModified(), f2.lastModified()));
 
-        // Ensure we submit queued requests in the order they were made
-        Arrays.sort(files, (f1, f2) -> Long.compare(f1.lastModified(), f2.lastModified()));
+            // Step 2: loop through all found, attempting to resend
+            for (File file : files) {
+                String tempFilePath = file.getAbsolutePath();
 
-        // Step 2: loop through all found, attempting to resend
-        for (File file : files) {
-            String tempFilePath = file.getAbsolutePath();
+                if (KanetikFeedback.isDebug()) {
+                    LogUtils.i("FileName", tempFilePath);
+                }
 
-            if (KanetikFeedback.isDebug()) {
-                LogUtils.i("FileName", tempFilePath);
-            }
+                final Feedback feedback = getQueuedFeedbackFromDisk(tempFilePath);
+                if (feedback != null) {
+                    feedback.incrementRetryCount();
 
-            final Feedback feedback = getQueuedFeedbackFromDisk(tempFilePath);
-            if (feedback != null) {
-                feedback.incrementRetryCount();
-
-                deleteQueuedFeedback(tempFilePath);
-                persistData(context, feedback, new ResultReceiver(new Handler()) {
-                    @Override
-                    protected void onReceiveResult(int resultCode, Bundle resultData) {
-                        if (resultCode != Activity.RESULT_OK) {
-                            handlePersistenceFailure(context, feedback);
+                    deleteQueuedFeedback(tempFilePath);
+                    persistData(context, feedback, new ResultReceiver(new Handler()) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            if (resultCode != Activity.RESULT_OK) {
+                                handlePersistenceFailure(context, feedback);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }
@@ -230,18 +230,51 @@ public class FeedbackUtils {
         return version;
     }
 
+    @SuppressWarnings("deprecation")
     private static String getNetworkType(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = null;
+        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
-            activeNetwork = cm.getActiveNetworkInfo();
+            if (Build.VERSION.SDK_INT < 23) {
+                final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                if (activeNetwork != null) {
+                    return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
+                }
+            } else {
+                final Network activeNetwork = cm.getActiveNetwork();
+                if (activeNetwork != null) {
+                    final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+
+                    if (activeNetworkCapabilities != null) {
+                        return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "WiFi" : "Not WiFi";
+                    }
+                }
+            }
         }
 
-        if (activeNetwork != null && activeNetwork.isConnected()) {
-            return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
-        } else {
-            return NO_NETWORK;
+        return "Unknown";
+    }
+
+    @SuppressWarnings("deprecation")
+    private static boolean isConnected(Context context) {
+        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            if (Build.VERSION.SDK_INT < 23) {
+                final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                if (activeNetwork != null) {
+                    return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI || activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE || activeNetwork.getType() == ConnectivityManager.TYPE_VPN;
+                }
+            } else {
+                final Network activeNetwork = cm.getActiveNetwork();
+                if (activeNetwork != null) {
+                    final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+                    if (activeNetworkCapabilities != null) {
+                        return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
+                    }
+                }
+            }
         }
+
+        return false;
     }
 
     private static Feedback getQueuedFeedbackFromDisk(String fileName) {

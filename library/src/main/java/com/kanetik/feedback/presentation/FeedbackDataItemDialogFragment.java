@@ -1,11 +1,13 @@
 package com.kanetik.feedback.presentation;
 
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
@@ -14,8 +16,6 @@ import com.kanetik.feedback.model.DataItemAdapter;
 import com.kanetik.feedback.utility.FeedbackUtils;
 
 import java.util.ArrayList;
-
-import androidx.annotation.Nullable;
 
 public class FeedbackDataItemDialogFragment extends DialogFragment {
     public static FeedbackDataItemDialogFragment create() {

@@ -1,8 +1,6 @@
 package com.kanetik.feedback.presentation;
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -16,6 +14,14 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.android.material.textfield.TextInputLayout;
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
@@ -23,12 +29,7 @@ import com.kanetik.feedback.utility.FeedbackUtils;
 import com.kanetik.feedback.utility.LogUtils;
 
 import java.util.Locale;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
+import java.util.Objects;
 
 public class FeedbackActivity extends AppCompatActivity {
     private EditText feedback;
@@ -44,9 +45,9 @@ public class FeedbackActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), FeedbackUtils.getAppLabel(this)));
+        Objects.requireNonNull(getSupportActionBar()).setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), FeedbackUtils.getAppLabel(this)));
 
-        Drawable closeIcon = ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp).mutate();
+        Drawable closeIcon = Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp)).mutate();
         DrawableCompat.setTint(closeIcon, ContextCompat.getColor(this, R.color.kanetik_feedback_primary_text));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -109,7 +110,7 @@ public class FeedbackActivity extends AppCompatActivity {
         });
 
         viewData.setOnClickListener(v -> {
-            FragmentManager manager = getFragmentManager();
+            FragmentManager manager = getSupportFragmentManager();
             Fragment frag = manager.findFragmentByTag("fragment_data_items");
 
             if (frag != null) {

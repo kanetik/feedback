@@ -4,12 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.ResultReceiver;
 
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+
 import com.kanetik.feedback.network.FeedbackService;
 import com.kanetik.feedback.utility.FeedbackUtils;
 
 import java.io.Serializable;
-
-import androidx.annotation.Keep;
 
 @Keep
 public class Feedback implements Serializable {
@@ -64,6 +65,7 @@ public class Feedback implements Serializable {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "Comment: " + comment + " | From: " + from;
     }

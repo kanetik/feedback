@@ -1,10 +1,10 @@
 package com.kanetik.feedback.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
 
 public class ContextData implements Serializable {
     static final long serialVersionUID = 327L;
@@ -26,6 +26,7 @@ public class ContextData implements Serializable {
         this.contextData.add(new ContextDataItem(key, value));
     }
 
+    @NonNull
     public String toString() {
         StringBuilder builder = new StringBuilder(this.title + "\n\n");
         for (ContextDataItem contextItem : contextData) {
