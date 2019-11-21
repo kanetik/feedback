@@ -1,1 +1,2 @@
-include ':feedback'
+include ':library'
+project(':library').name = "feedback"

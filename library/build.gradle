@@ -1,0 +1,129 @@
+import java.text.SimpleDateFormat
+
+plugins {
+    id "com.jfrog.bintray" version "1.8.4"
+    id "com.github.dcendents.android-maven" version "2.1"
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+ext {
+    verName = "1.2.0"
+
+    boolean isDebug = false
+    for (String taskName : gradle.startParameter.taskNames) {
+        if (taskName.contains("Debug")) {
+            isDebug = true
+            break
+        }
+    }
+
+    verCode = isDebug ? 1 : Integer.parseInt(new SimpleDateFormat("yyMMddHHmm", Locale.US).format(new Date())) - 1400000000
+}
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 22
+        targetSdkVersion 29
+        group = "com.kanetik"
+        versionCode verCode
+        version = verName
+        versionName verName
+        consumerProguardFiles 'consumer-proguard-rules.pro'
+        vectorDrawables.useSupportLibrary = true
+
+    }
+    buildTypes {
+        release {
+            zipAlignEnabled true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    resourcePrefix 'kanetik_feedback_'
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    compileOptions {
+        sourceCompatibility '1.8'
+        targetCompatibility '1.8'
+    }
+}
+
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
+//task generateJavadocs(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//}
+//
+//task generateJavadocsJar(type: Jar) {
+//    from generateJavadocs.destinationDir
+//    classifier 'javadoc'
+//}
+//
+//generateJavadocsJar.dependsOn generateJavadocs
+
+artifacts {
+//    archives generateJavadocsJar
+    archives generateSourcesJar
+}
+
+tasks.withType(Javadoc) {
+    options.addBooleanOption('Xdoclint:none', true)
+}
+
+bintray {
+    user = 'jkane001'
+    key = 'b8dbe863aaade99fd023e468b9f91923918812fb'
+    configurations = ['archives']
+    pkg {
+        repo = 'feedback'
+        name = 'android-sdk'
+        userOrg = 'kanetik'
+        //An optional organization name when the repo belongs to one of the user's orgs
+        desc = 'Android SDK for Kanetik KanetikFeedback'
+        websiteUrl = 'http://kanetik.com'
+        issueTrackerUrl = 'https://github.com/jkane001/kanetik-feedback/issues'
+        vcsUrl = 'https://github.com/jkane001/kanetik-feedback.git'
+        licenses = ['Apache-2.0']
+        publicDownloadNumbers = true
+        githubRepo = 'jkane001/kanetik-feedback' //Optional Github repository
+        githubReleaseNotesFile = 'README.md' //Optional Github readme file
+        version {
+            name = verName //Bintray logical version name
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+                passphrase = 'thecatspitsatn00n' //Optional. The passphrase for GPG signing'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta3'
+
+    implementation 'com.mailjet:mailjet-client:4.2.1'
+    implementation 'com.squareup.moshi:moshi:1.8.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+}
