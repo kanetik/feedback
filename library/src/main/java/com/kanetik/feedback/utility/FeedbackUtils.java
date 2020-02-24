@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -233,19 +232,12 @@ public class FeedbackUtils {
     private static String getNetworkType(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
-            if (Build.VERSION.SDK_INT < 23) {
-                final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                if (activeNetwork != null) {
-                    return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? "WiFi" : "Not WiFi";
-                }
-            } else {
-                final Network activeNetwork = cm.getActiveNetwork();
-                if (activeNetwork != null) {
-                    final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+            final Network activeNetwork = cm.getActiveNetwork();
+            if (activeNetwork != null) {
+                final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
 
-                    if (activeNetworkCapabilities != null) {
-                        return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "WiFi" : "Not WiFi";
-                    }
+                if (activeNetworkCapabilities != null) {
+                    return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "WiFi" : "Not WiFi";
                 }
             }
         }
@@ -256,18 +248,11 @@ public class FeedbackUtils {
     private static boolean isConnected(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
-            if (Build.VERSION.SDK_INT < 23) {
-                final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                if (activeNetwork != null) {
-                    return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI || activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE || activeNetwork.getType() == ConnectivityManager.TYPE_VPN;
-                }
-            } else {
-                final Network activeNetwork = cm.getActiveNetwork();
-                if (activeNetwork != null) {
-                    final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
-                    if (activeNetworkCapabilities != null) {
-                        return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
-                    }
+            final Network activeNetwork = cm.getActiveNetwork();
+            if (activeNetwork != null) {
+                final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+                if (activeNetworkCapabilities != null) {
+                    return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
                 }
             }
         }
