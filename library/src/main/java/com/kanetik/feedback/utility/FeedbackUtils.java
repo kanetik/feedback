@@ -230,7 +230,6 @@ public class FeedbackUtils {
         return version;
     }
 
-    @SuppressWarnings("deprecation")
     private static String getNetworkType(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
@@ -254,7 +253,6 @@ public class FeedbackUtils {
         return "Unknown";
     }
 
-    @SuppressWarnings("deprecation")
     private static boolean isConnected(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
