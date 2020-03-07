@@ -60,6 +60,10 @@ android {
         unitTests.returnDefaultValues = true
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     compileOptions {
         sourceCompatibility '1.8'
         targetCompatibility '1.8'
