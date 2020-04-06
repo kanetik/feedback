@@ -28,7 +28,7 @@ public class ContextData implements Serializable {
 
     @NonNull
     public String toString() {
-        StringBuilder builder = new StringBuilder(this.title + "\n\n");
+        StringBuilder builder = new StringBuilder(this.title + "\n------------------------\n");
         for (ContextDataItem contextItem : contextData) {
             builder.append(contextItem.key).append(": ").append(contextItem.value).append("\n");
         }

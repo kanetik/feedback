@@ -1,6 +1,7 @@
 package com.kanetik.feedback.network;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import com.kanetik.feedback.KanetikFeedback;
@@ -20,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -47,7 +49,7 @@ class MailJetSender implements Sender {
 
         final String subject = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_email_subject), FeedbackUtils.getAppLabel(context), UUID.randomUUID().toString());
 
-        final String plainTextEmail = feedback.comment;
+        String plainTextEmail = feedback.comment;
 
         try {
             JSONObject message = new JSONObject();
@@ -88,28 +90,14 @@ class MailJetSender implements Sender {
                 }
             }
 
-            byte[] data = feedback.appData.toString().getBytes("UTF-8");
-            JSONObject appData = new JSONObject()
-                    .put("ContentType", "text/plain")
-                    .put("Filename", "appData.txt")
-                    .put("Base64Content", Base64.encodeToString(data, Base64.DEFAULT));
-
-            data = feedback.deviceData.toString().getBytes("UTF-8");
-            JSONObject deviceData = new JSONObject()
-                    .put("ContentType", "text/plain")
-                    .put("Filename", "deviceData.txt")
-                    .put("Base64Content", Base64.encodeToString(data, Base64.DEFAULT));
-
-            data = feedback.devData.toString().getBytes("UTF-8");
-            JSONObject devData = new JSONObject()
-                    .put("ContentType", "text/plain")
-                    .put("Filename", "developerData.txt")
-                    .put("Base64Content", Base64.encodeToString(data, Base64.DEFAULT));
-
-            attachments
-                    .put(appData)
-                    .put(deviceData)
-                    .put(devData);
+            plainTextEmail = TextUtils.concat(
+                    plainTextEmail,
+                    "\n\n\n",
+                    feedback.appData.toString(),
+                    "\n\n",
+                    feedback.deviceData.toString(),
+                    "\n\n",
+                    feedback.devData.toString()).toString();
 
             message.put(Emailv31.Message.FROM, from)
                     .put(Emailv31.Message.REPLYTO, replyTo)
