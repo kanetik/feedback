@@ -1,2 +1,2 @@
 include ':library'
-project(':library').name = "feedback"
+rootProject.name = "Feedback"

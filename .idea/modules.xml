@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Feedback.iml" filepath="$PROJECT_DIR$/Feedback.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/feedback.iml" filepath="$PROJECT_DIR$/library/feedback.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Feedback.iml" filepath="$PROJECT_DIR$/.idea/modules/Feedback.iml" group="Feedback" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/library.iml" filepath="$PROJECT_DIR$/.idea/modules/library/library.iml" group="Feedback/library" />
     </modules>
   </component>
 </project>
