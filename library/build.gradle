@@ -37,7 +37,7 @@ android {
         versionCode verCode
         version = verName
         versionName verName
-        consumerProguardFiles 'consumer-proguard-rules.pro'
+        consumerProguardFiles 'consumer-rules.pro'
         vectorDrawables.useSupportLibrary = true
     }
 
