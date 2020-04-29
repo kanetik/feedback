@@ -3,8 +3,11 @@ package com.kanetik.feedback.utility;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import androidx.annotation.Keep;
+
 import java.util.Locale;
 
+@Keep
 @SuppressLint("LogNotTimber")
 public class LogUtils {
     private static final String LOG_TAG = "kanetik_feedback";

@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Feedback.iml" filepath="$PROJECT_DIR$/.idea/modules/Feedback.iml" group="Feedback" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/library.iml" filepath="$PROJECT_DIR$/.idea/modules/library/library.iml" group="Feedback/library" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/feedback.iml" filepath="$PROJECT_DIR$/.idea/modules/library/feedback.iml" group="Feedback/feedback" />
     </modules>
   </component>
 </project>
