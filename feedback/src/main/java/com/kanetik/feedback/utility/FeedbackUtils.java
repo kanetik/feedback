@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.pm.PackageInfoCompat;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
@@ -221,8 +222,8 @@ public class FeedbackUtils {
 
         try {
             PackageInfo pi = packageManager.getPackageInfo(packageName, 0);
-            if (pi != null && pi.versionCode > 0) {
-                version = pi.versionCode;
+            if (pi != null && PackageInfoCompat.getLongVersionCode(pi) > 0) {
+                version = (int) PackageInfoCompat.getLongVersionCode(pi);
             }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

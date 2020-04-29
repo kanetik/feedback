@@ -1,6 +1,6 @@
 # compiler: R8
 # compiler_version: 2.0.68
-# pg_map_id: 5dc140d
+# pg_map_id: 2201745
 # common_typos_disable
 com.kanetik.feedback.KanetikFeedback -> com.kanetik.feedback.KanetikFeedback:
     1:2:void <init>(android.content.Context):43:44 -> <init>
@@ -94,62 +94,62 @@ com.kanetik.feedback.presentation.FeedbackDataItemDialogFragment -> a.a.a.c.a:
     1:1:int getTheme():47:47 -> getTheme
     1:11:android.view.View onCreateView(android.view.LayoutInflater,android.view.ViewGroup,android.os.Bundle):31:41 -> onCreateView
 com.kanetik.feedback.utility.FeedbackUtils -> com.kanetik.feedback.utility.FeedbackUtils:
-    1:1:void <init>():47:47 -> <init>
-    1:1:boolean lambda$sendQueuedRequests$0(java.io.File):80:80 -> a
-    2:2:int lambda$sendQueuedRequests$1(java.io.File,java.io.File):83:83 -> a
-    1:1:void addInstanceContextDataToFeedback(android.content.Context,com.kanetik.feedback.model.Feedback):147:147 -> addInstanceContextDataToFeedback
-    1:2:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):130:131 -> addSystemData
+    1:1:void <init>():48:48 -> <init>
+    1:1:boolean lambda$sendQueuedRequests$0(java.io.File):81:81 -> a
+    2:2:int lambda$sendQueuedRequests$1(java.io.File,java.io.File):84:84 -> a
+    1:1:void addInstanceContextDataToFeedback(android.content.Context,com.kanetik.feedback.model.Feedback):148:148 -> addInstanceContextDataToFeedback
+    1:2:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):131:132 -> addSystemData
     3:3:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    3:3:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):131 -> addSystemData
-    4:4:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):132:132 -> addSystemData
+    3:3:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):132 -> addSystemData
+    4:4:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):133:133 -> addSystemData
     5:5:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    5:5:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):132 -> addSystemData
-    6:6:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):133:133 -> addSystemData
+    5:5:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):133 -> addSystemData
+    6:6:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):134:134 -> addSystemData
     7:7:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    7:7:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):133 -> addSystemData
-    8:11:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):134:137 -> addSystemData
+    7:7:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):134 -> addSystemData
+    8:11:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):135:138 -> addSystemData
     12:12:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    12:12:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):137 -> addSystemData
-    13:13:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):138:138 -> addSystemData
+    12:12:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):138 -> addSystemData
+    13:13:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):139:139 -> addSystemData
     14:14:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    14:14:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):138 -> addSystemData
-    15:15:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):139:139 -> addSystemData
+    14:14:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):139 -> addSystemData
+    15:15:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):140:140 -> addSystemData
     16:16:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    16:16:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):139 -> addSystemData
-    17:17:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):140:140 -> addSystemData
+    16:16:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):140 -> addSystemData
+    17:17:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):141:141 -> addSystemData
     18:18:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    18:18:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):140 -> addSystemData
-    19:19:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):141:141 -> addSystemData
+    18:18:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):141 -> addSystemData
+    19:19:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):142:142 -> addSystemData
     20:20:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    20:20:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):141 -> addSystemData
-    21:21:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):142:142 -> addSystemData
+    20:20:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):142 -> addSystemData
+    21:21:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):143:143 -> addSystemData
     22:22:void com.kanetik.feedback.model.ContextData.add(java.lang.String,java.lang.Object):26:26 -> addSystemData
-    22:22:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):142 -> addSystemData
-    23:23:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):143:143 -> addSystemData
-    1:1:void alertUser(android.content.Context):176:176 -> alertUser
-    1:3:void deleteQueuedFeedback(java.lang.String):329:331 -> deleteQueuedFeedback
-    1:10:java.lang.String getAppLabel(android.content.Context):163:172 -> getAppLabel
-    1:9:java.util.ArrayList getExtraData(android.content.Context):59:67 -> getExtraData
-    1:1:java.io.FileOutputStream getFileOutputStream(java.io.File):313:313 -> getFileOutputStream
-    1:8:java.lang.String getNetworkType(android.content.Context):235:242 -> getNetworkType
-    1:1:java.io.ObjectOutputStream getObjectOutputStream(java.io.FileOutputStream):321:321 -> getObjectOutputStream
-    1:10:com.kanetik.feedback.model.Feedback getQueuedFeedbackFromDisk(java.lang.String):270:279 -> getQueuedFeedbackFromDisk
-    1:6:java.lang.String getSupportId(android.content.Context):151:156 -> getSupportId
-    1:12:java.lang.Integer getVersionCode(android.content.Context):217:228 -> getVersionCode
-    1:12:java.lang.String getVersionName(android.content.Context):199:210 -> getVersionName
-    1:2:void handlePersistenceFailure(android.content.Context,com.kanetik.feedback.model.Feedback):116:117 -> handlePersistenceFailure
-    1:7:boolean isConnected(android.content.Context):251:257 -> isConnected
-    1:7:boolean isNullOrWhiteSpace(java.lang.String):184:190 -> isNullOrWhiteSpace
-    1:1:void persistData(android.content.Context,com.kanetik.feedback.model.Feedback,android.os.ResultReceiver):112:112 -> persistData
-    1:18:void queueFeedbackToDisk(android.content.Context,com.kanetik.feedback.model.Feedback):290:307 -> queueFeedbackToDisk
-    1:26:void sendQueuedRequests(android.content.Context):73:98 -> sendQueuedRequests
-    1:1:boolean validateTextEntryIsValid(android.widget.EditText,java.util.regex.Pattern):126:126 -> validateTextEntryIsValid
-    1:1:boolean validateTextEntryNotEmpty(android.widget.EditText):122:122 -> validateTextEntryNotEmpty
+    22:22:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):143 -> addSystemData
+    23:23:void addSystemData(android.content.Context,com.kanetik.feedback.model.Feedback):144:144 -> addSystemData
+    1:1:void alertUser(android.content.Context):177:177 -> alertUser
+    1:3:void deleteQueuedFeedback(java.lang.String):330:332 -> deleteQueuedFeedback
+    1:10:java.lang.String getAppLabel(android.content.Context):164:173 -> getAppLabel
+    1:9:java.util.ArrayList getExtraData(android.content.Context):60:68 -> getExtraData
+    1:1:java.io.FileOutputStream getFileOutputStream(java.io.File):314:314 -> getFileOutputStream
+    1:8:java.lang.String getNetworkType(android.content.Context):236:243 -> getNetworkType
+    1:1:java.io.ObjectOutputStream getObjectOutputStream(java.io.FileOutputStream):322:322 -> getObjectOutputStream
+    1:10:com.kanetik.feedback.model.Feedback getQueuedFeedbackFromDisk(java.lang.String):271:280 -> getQueuedFeedbackFromDisk
+    1:6:java.lang.String getSupportId(android.content.Context):152:157 -> getSupportId
+    1:12:java.lang.Integer getVersionCode(android.content.Context):218:229 -> getVersionCode
+    1:12:java.lang.String getVersionName(android.content.Context):200:211 -> getVersionName
+    1:2:void handlePersistenceFailure(android.content.Context,com.kanetik.feedback.model.Feedback):117:118 -> handlePersistenceFailure
+    1:7:boolean isConnected(android.content.Context):252:258 -> isConnected
+    1:7:boolean isNullOrWhiteSpace(java.lang.String):185:191 -> isNullOrWhiteSpace
+    1:1:void persistData(android.content.Context,com.kanetik.feedback.model.Feedback,android.os.ResultReceiver):113:113 -> persistData
+    1:18:void queueFeedbackToDisk(android.content.Context,com.kanetik.feedback.model.Feedback):291:308 -> queueFeedbackToDisk
+    1:26:void sendQueuedRequests(android.content.Context):74:99 -> sendQueuedRequests
+    1:1:boolean validateTextEntryIsValid(android.widget.EditText,java.util.regex.Pattern):127:127 -> validateTextEntryIsValid
+    1:1:boolean validateTextEntryNotEmpty(android.widget.EditText):123:123 -> validateTextEntryNotEmpty
 com.kanetik.feedback.utility.FeedbackUtils$1 -> com.kanetik.feedback.utility.FeedbackUtils$a:
     android.content.Context val$context -> a
     com.kanetik.feedback.model.Feedback val$feedback -> b
-    1:1:void <init>(android.os.Handler,android.content.Context,com.kanetik.feedback.model.Feedback):98:98 -> <init>
-    1:1:void onReceiveResult(int,android.os.Bundle):102:102 -> onReceiveResult
+    1:1:void <init>(android.os.Handler,android.content.Context,com.kanetik.feedback.model.Feedback):99:99 -> <init>
+    1:1:void onReceiveResult(int,android.os.Bundle):103:103 -> onReceiveResult
 com.kanetik.feedback.utility.LogUtils -> com.kanetik.feedback.utility.LogUtils:
     1:1:void <init>():12:12 -> <init>
     1:1:void d(java.lang.String):16:16 -> d
