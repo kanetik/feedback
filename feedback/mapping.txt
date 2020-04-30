@@ -1,25 +1,29 @@
 # compiler: R8
 # compiler_version: 2.0.68
-# pg_map_id: 2201745
+# pg_map_id: 5df1feb
 # common_typos_disable
+com.kanetik.feedback.FeedbackContextProvider -> com.kanetik.feedback.FeedbackContextProvider:
+    1:1:void <init>():14:14 -> <init>
+    1:4:boolean onCreate():17:20 -> onCreate
+    5:5:boolean onCreate():18:18 -> onCreate
 com.kanetik.feedback.KanetikFeedback -> com.kanetik.feedback.KanetikFeedback:
     1:2:void <init>(android.content.Context):43:44 -> <init>
-    1:1:android.content.Context access$000():23:23 -> access$000
-    1:6:com.kanetik.feedback.KanetikFeedback addContextDataItem(java.lang.String,java.lang.String):125:130 -> addContextDataItem
-    1:8:com.kanetik.feedback.KanetikFeedback addContextDataItems(java.util.Map):139:146 -> addContextDataItems
+    1:1:android.content.Context access$000():24:24 -> access$000
+    1:6:com.kanetik.feedback.KanetikFeedback addContextDataItem(java.lang.String,java.lang.String):124:129 -> addContextDataItem
+    1:8:com.kanetik.feedback.KanetikFeedback addContextDataItems(java.util.Map):138:145 -> addContextDataItems
     1:5:java.util.ArrayList getContextData():36:40 -> getContextData
     1:7:com.kanetik.feedback.KanetikFeedback getInstance(android.content.Context):54:60 -> getInstance
     1:1:java.lang.String getUserIdentifier():87:87 -> getUserIdentifier
-    1:17:void initialize(android.content.Context,java.lang.String,boolean):99:115 -> initialize
+    1:16:void initialize(android.content.Context,java.lang.String):99:114 -> initialize
     1:1:boolean isDebug():78:78 -> isDebug
     1:1:boolean isInitialized():69:69 -> isInitialized
-    1:7:com.kanetik.feedback.KanetikFeedback removeContextDataItem(java.lang.String):156:162 -> removeContextDataItem
-    1:5:void sendFeedback(java.lang.String,java.lang.String):171:175 -> sendFeedback
-    1:1:void startFeedbackActivity(android.content.Context):193:193 -> startFeedbackActivity
+    1:7:com.kanetik.feedback.KanetikFeedback removeContextDataItem(java.lang.String):155:161 -> removeContextDataItem
+    1:5:void sendFeedback(java.lang.String,java.lang.String):170:174 -> sendFeedback
+    1:1:void startFeedbackActivity(android.content.Context):192:192 -> startFeedbackActivity
 com.kanetik.feedback.KanetikFeedback$1 -> com.kanetik.feedback.KanetikFeedback$a:
     com.kanetik.feedback.model.Feedback val$feedback -> a
-    1:1:void <init>(com.kanetik.feedback.KanetikFeedback,android.os.Handler,com.kanetik.feedback.model.Feedback):175:175 -> <init>
-    1:3:void onReceiveResult(int,android.os.Bundle):179:181 -> onReceiveResult
+    1:1:void <init>(com.kanetik.feedback.KanetikFeedback,android.os.Handler,com.kanetik.feedback.model.Feedback):174:174 -> <init>
+    1:3:void onReceiveResult(int,android.os.Bundle):178:180 -> onReceiveResult
 com.kanetik.feedback.model.ContextData -> a.a.a.a.a:
     java.util.List contextData -> b
     java.lang.String title -> a

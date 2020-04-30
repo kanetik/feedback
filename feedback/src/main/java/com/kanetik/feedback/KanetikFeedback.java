@@ -3,6 +3,7 @@ package com.kanetik.feedback;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -25,7 +26,6 @@ public class KanetikFeedback {
 
     private static boolean _initialized = false;
 
-    private static boolean _debug;
     private static String _userIdentifier;
 
     private static ArrayList<ContextDataItem> _contextData;
@@ -75,7 +75,7 @@ public class KanetikFeedback {
      * @return debugging
      */
     public static boolean isDebug() {
-        return _debug;
+        return (0 != (_appContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
     /**
@@ -95,15 +95,14 @@ public class KanetikFeedback {
      *
      * @param context Activity or Application Context
      */
-    public static void initialize(final Context context, String userIdentifier, boolean debug) {
+    public static void initialize(final Context context, String userIdentifier) {
         if (isInitialized()) {
             return;
         }
 
         new KanetikFeedback(context);
 
-        _debug = debug;
-        if (_debug) {
+        if (isDebug()) {
             LogUtils.i("KanetikFeedback Initialize");
         }
 
