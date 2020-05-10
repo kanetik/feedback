@@ -31,4 +31,8 @@ public class LogUtils {
     public static void w(String message, Throwable t) {
         Log.w(LOG_TAG, message, t);
     }
+
+    public static void w(String message) {
+        Log.w(LOG_TAG, message);
+    }
 }
