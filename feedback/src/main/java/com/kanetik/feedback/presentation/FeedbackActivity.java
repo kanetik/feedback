@@ -186,7 +186,7 @@ public class FeedbackActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_send_feedback) {
-            if (KanetikFeedback.isDebug()) {
+            if (KanetikFeedback.Companion.isDebug()) {
                 LogUtils.i("Send KanetikFeedback");
             }
 

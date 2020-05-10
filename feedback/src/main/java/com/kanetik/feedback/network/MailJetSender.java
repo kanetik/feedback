@@ -42,7 +42,7 @@ class MailJetSender implements Sender {
         final String developerName = FeedbackUtils.getAppLabel(context) + " Developer"; // TODO: Get from init
 
         final String appSupportEmail = "info@kanetik.com"; // TODO: Get from init
-        final String appSupportName = FeedbackUtils.getAppLabel(context) + " User (" + KanetikFeedback.getUserIdentifier() + ")"; // TODO: Get from init
+        final String appSupportName = FeedbackUtils.getAppLabel(context) + " User (" + KanetikFeedback.Companion.getUserIdentifier() + ")"; // TODO: Get from init
 
         final String userEmail = feedback.from;
 
@@ -110,11 +110,11 @@ class MailJetSender implements Sender {
 
             String finalJson = messageArray.toString(4).replace("\\", "");
 
-            if (KanetikFeedback.isDebug()) {
+            if (KanetikFeedback.Companion.isDebug()) {
                 LogUtils.i("POST KanetikFeedback - " + finalJson);
             }
 
-            client.setDebug(KanetikFeedback.isDebug() ? MailjetClient.VERBOSE_DEBUG : MailjetClient.NO_DEBUG);
+            client.setDebug(KanetikFeedback.Companion.isDebug() ? MailjetClient.VERBOSE_DEBUG : MailjetClient.NO_DEBUG);
             client.post(new MailjetRequest(Emailv31.resource).property(Emailv31.MESSAGES, messageArray));
         } catch (Exception e) {
             e.printStackTrace();

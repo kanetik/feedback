@@ -87,7 +87,7 @@ public class FeedbackUtils {
             for (File file : files) {
                 String tempFilePath = file.getAbsolutePath();
 
-                if (KanetikFeedback.isDebug()) {
+                if (KanetikFeedback.Companion.isDebug()) {
                     LogUtils.i("FileName", tempFilePath);
                 }
 
