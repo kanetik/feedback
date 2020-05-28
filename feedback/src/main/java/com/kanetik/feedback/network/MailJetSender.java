@@ -42,7 +42,7 @@ class MailJetSender implements Sender {
         final String developerName = FeedbackUtils.getAppLabel(context) + " Developer"; // TODO: Get from init
 
         final String appSupportEmail = "info@kanetik.com"; // TODO: Get from init
-        final String appSupportName = FeedbackUtils.getAppLabel(context) + " User (" + KanetikFeedback.getUserIdentifier() + ")"; // TODO: Get from init
+        final String appSupportName = FeedbackUtils.getAppLabel(context) + " User"; // TODO: Get from init
 
         final String userEmail = feedback.from;
 
