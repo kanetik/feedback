@@ -147,7 +147,7 @@ public class FeedbackUtils {
 
     public static void addInstanceContextDataToFeedback(Context context, Feedback feedback) {
         feedback.devData = new ContextData("Developer Info", KanetikFeedback.getInstance(context).getContextData());
-        feedback.devData.add("Support ID", KanetikFeedback.getUserIdentifier());
+        feedback.devData.add("Support ID", KanetikFeedback.Companion.getUserIdentifier());
     }
 
     public static String getSupportId(@NonNull Context context) {
