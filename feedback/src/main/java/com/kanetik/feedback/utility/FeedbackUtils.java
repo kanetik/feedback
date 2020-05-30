@@ -131,7 +131,8 @@ public class FeedbackUtils {
         ContextData appData = new ContextData("App Info");
         appData.add("App Name", getAppLabel(context));
         appData.add("Package Name", context.getPackageName());
-        appData.add("App Version", getVersionName(context));
+        appData.add("Version Name", getVersionName(context));
+        appData.add("Version Code", getVersionCode(context));
         feedback.appData = appData;
 
         ContextData deviceData = new ContextData("Device Info");
@@ -146,6 +147,7 @@ public class FeedbackUtils {
 
     public static void addInstanceContextDataToFeedback(Context context, Feedback feedback) {
         feedback.devData = new ContextData("Developer Info", KanetikFeedback.getInstance(context).getContextData());
+        feedback.devData.add("Support ID", KanetikFeedback.getUserIdentifier());
     }
 
     public static String getSupportId(@NonNull Context context) {
