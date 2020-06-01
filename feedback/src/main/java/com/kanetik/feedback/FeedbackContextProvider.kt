@@ -10,21 +10,12 @@ class FeedbackContextProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         val applicationContext = context ?: return false
 
-        KanetikFeedback.initialize(
-            applicationContext,
-            FeedbackUtils.getSupportId(applicationContext)
-        )
+        KanetikFeedback.initialize(applicationContext, FeedbackUtils.getSupportId(applicationContext))
 
         return true
     }
 
-    override fun query(
-        uri: Uri,
-        strings: Array<String>?,
-        s: String?,
-        strings1: Array<String>?,
-        s1: String?
-    ): Cursor? {
+    override fun query(uri: Uri, strings: Array<String>?, s: String?, strings1: Array<String>?, s1: String?): Cursor? {
         return null
     }
 
@@ -32,27 +23,15 @@ class FeedbackContextProvider : ContentProvider() {
         return null
     }
 
-    override fun insert(
-        uri: Uri,
-        contentValues: ContentValues?
-    ): Uri? {
+    override fun insert(uri: Uri, contentValues: ContentValues?): Uri? {
         return null
     }
 
-    override fun delete(
-        uri: Uri,
-        s: String?,
-        strings: Array<String>?
-    ): Int {
+    override fun delete(uri: Uri, s: String?, strings: Array<String>?): Int {
         return 0
     }
 
-    override fun update(
-        uri: Uri,
-        contentValues: ContentValues?,
-        s: String?,
-        strings: Array<String>?
-    ): Int {
+    override fun update(uri: Uri, contentValues: ContentValues?, s: String?, strings: Array<String>?): Int {
         return 0
     }
 }
