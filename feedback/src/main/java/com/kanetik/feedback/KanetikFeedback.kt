@@ -81,28 +81,28 @@ class KanetikFeedback(context: Context) {
         val feedback = Feedback(appContext, feedbackText, from)
 
         FeedbackUtils.addInstanceContextDataToFeedback(
-            appContext,
-            feedback
+                appContext,
+                feedback
         )
 
         FeedbackUtils.persistData(
-            appContext,
-            feedback,
-            object : ResultReceiver(Handler()) {
-                override fun onReceiveResult(
-                    resultCode: Int,
-                    resultData: Bundle
-                ) {
-                    if (resultCode == Activity.RESULT_OK) {
-                        FeedbackUtils.alertUser(appContext)
-                    } else {
-                        FeedbackUtils.handlePersistenceFailure(
-                            appContext,
-                            feedback
-                        )
+                appContext,
+                feedback,
+                object : ResultReceiver(Handler()) {
+                    override fun onReceiveResult(
+                            resultCode: Int,
+                            resultData: Bundle
+                    ) {
+                        if (resultCode == Activity.RESULT_OK) {
+                            FeedbackUtils.alertUser(appContext)
+                        } else {
+                            FeedbackUtils.handlePersistenceFailure(
+                                    appContext,
+                                    feedback
+                            )
+                        }
                     }
-                }
-            })
+                })
     }
 
     /**
@@ -168,21 +168,22 @@ class KanetikFeedback(context: Context) {
          *
          * @param context Activity or Application Context
          */
-        fun initialize(
-            context: Context,
-            userIdentifier: String?
-        ) {
+        fun initialize(context: Context, userIdentifier: String?) {
             if (isInitialized) {
                 return
             }
+
             KanetikFeedback(context)
+
             if (isDebug) {
                 LogUtils.i("KanetikFeedback Initialize")
             }
+
             this.userIdentifier = userIdentifier
 
             // Send any previously queued requests
             FeedbackUtils.sendQueuedRequests(context)
+
             this.isInitialized = true
         }
     }
