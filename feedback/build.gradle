@@ -129,10 +129,10 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta6'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta7'
 
     implementation 'com.mailjet:mailjet-client:4.2.1'
     implementation 'com.squareup.moshi:moshi:1.9.2'
-    implementation 'com.google.firebase:firebase-crashlytics:17.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 }
