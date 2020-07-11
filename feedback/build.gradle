@@ -1,8 +1,8 @@
 import java.text.SimpleDateFormat
 
 plugins {
-    id "com.jfrog.bintray" version "1.8.4"
-    id "com.github.dcendents.android-maven" version "2.1"
+//    id "com.jfrog.bintray" version "1.8.4"
+//    id "com.github.dcendents.android-maven" version "2.1"
 }
 
 apply plugin: 'com.android.library'
@@ -27,18 +27,16 @@ android {
     compileSdkVersion 29
 
     buildFeatures {
-        viewBinding true
+        viewBinding false
     }
 
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 29
-        group = "com.kanetik"
         versionCode verCode
-        version = verName
         versionName verName
         consumerProguardFiles 'consumer-rules.pro'
-        vectorDrawables.useSupportLibrary = true
+        vectorDrawables.useSupportLibrary = false
     }
 
     buildTypes {
@@ -48,6 +46,7 @@ android {
             shrinkResources false
         }
         release {
+            debuggable false
             zipAlignEnabled true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -70,58 +69,58 @@ android {
     }
 }
 
-task generateSourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier 'sources'
-}
+//task generateSourcesJar(type: Jar) {
+//    from android.sourceSets.main.java.srcDirs
+//    classifier 'sources'
+//}
 
 //task generateJavadocs(type: Javadoc) {
 //    source = android.sourceSets.main.java.srcDirs
 //    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 //}
-//
+
 //task generateJavadocsJar(type: Jar) {
 //    from generateJavadocs.destinationDir
 //    classifier 'javadoc'
 //}
-//
+
 //generateJavadocsJar.dependsOn generateJavadocs
 
 artifacts {
 //    archives generateJavadocsJar
-    archives generateSourcesJar
+//    archives generateSourcesJar
 }
 
 tasks.withType(Javadoc) {
-    options.addBooleanOption('Xdoclint:none', true)
+//    options.addBooleanOption('Xdoclint:none', true)
 }
 
-bintray {
-    user = 'jkane001'
-    key = 'b8dbe863aaade99fd023e468b9f91923918812fb'
-    configurations = ['archives']
-    pkg {
-        repo = 'feedback'
-        name = 'android-sdk'
-        userOrg = 'kanetik'
-        //An optional organization name when the repo belongs to one of the user's orgs
-        desc = 'Android SDK for Kanetik KanetikFeedback'
-        websiteUrl = 'http://kanetik.com'
-        issueTrackerUrl = 'https://github.com/jkane001/kanetik-feedback/issues'
-        vcsUrl = 'https://github.com/jkane001/kanetik-feedback.git'
-        licenses = ['Apache-2.0']
-        publicDownloadNumbers = true
-        githubRepo = 'jkane001/kanetik-feedback' //Optional Github repository
-        githubReleaseNotesFile = 'README.md' //Optional Github readme file
-        version {
-            name = verName //Bintray logical version name
-            gpg {
-                sign = true //Determines whether to GPG sign the files. The default is false
-                passphrase = 'thecatspitsatn00n' //Optional. The passphrase for GPG signing'
-            }
-        }
-    }
-}
+//bintray {
+//    user = 'jkane001'
+//    key = 'b8dbe863aaade99fd023e468b9f91923918812fb'
+//    configurations = ['archives']
+//    pkg {
+//        repo = 'feedback'
+//        name = 'android-sdk'
+//        userOrg = 'kanetik'
+//        //An optional organization name when the repo belongs to one of the user's orgs
+//        desc = 'Android SDK for Kanetik KanetikFeedback'
+//        websiteUrl = 'http://kanetik.com'
+//        issueTrackerUrl = 'https://github.com/jkane001/kanetik-feedback/issues'
+//        vcsUrl = 'https://github.com/jkane001/kanetik-feedback.git'
+//        licenses = ['Apache-2.0']
+//        publicDownloadNumbers = true
+//        githubRepo = 'jkane001/kanetik-feedback' //Optional Github repository
+//        githubReleaseNotesFile = 'README.md' //Optional Github readme file
+//        version {
+//            name = verName //Bintray logical version name
+//            gpg {
+//                sign = true //Determines whether to GPG sign the files. The default is false
+//                passphrase = 'thecatspitsatn00n' //Optional. The passphrase for GPG signing'
+//            }
+//        }
+//    }
+//}
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
