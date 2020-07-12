@@ -19,8 +19,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref##*v }}
-          release_name: Release ${{ github.ref##*v }}
+          tag_name: ${GITHUB_REF#refs/*/v}
+          release_name: Release ${GITHUB_REF#refs/*/v}
           body: |
             Changes in this Release
             - Initial Release of Open Source library
