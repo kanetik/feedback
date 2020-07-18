@@ -2,7 +2,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+-?.*' # Push events to matching x.y.z, i.e. 1.0.0, 20.15.10, 1.0.0-alpha01
+      - '[0-9]+.[0-9]+.[0-9]+*' # Push events to matching x.y.z, i.e. 1.0.0, 20.15.10, 1.0.0-alpha01
 
 name: Create Release
 
