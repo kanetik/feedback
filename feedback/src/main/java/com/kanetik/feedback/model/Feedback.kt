@@ -10,7 +10,7 @@ import java.io.Serializable
 
 @Keep
 data class Feedback(val context: Context?, val comment: String, val from: String) : Serializable {
-    var appData: ContextData? = null
+    var appData: ContextData = ContextData()
     var deviceData: ContextData? = null
     var devData: ContextData? = null
 

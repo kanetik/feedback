@@ -44,11 +44,11 @@ class MailJetSender implements Sender {
         final String appSupportEmail = "info@kanetik.com"; // TODO: Get from init
         final String appSupportName = FeedbackUtils.getAppLabel(context) + " User"; // TODO: Get from init
 
-        final String userEmail = feedback.from;
+        final String userEmail = feedback.getFrom();
 
         final String subject = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_email_subject), FeedbackUtils.getAppLabel(context), UUID.randomUUID().toString());
 
-        String plainTextEmail = feedback.comment;
+        String plainTextEmail = feedback.getComment();
 
         try {
             JSONObject message = new JSONObject();
@@ -92,11 +92,11 @@ class MailJetSender implements Sender {
             plainTextEmail = TextUtils.concat(
                     plainTextEmail,
                     "\n\n\n",
-                    feedback.appData.toString(),
+                    feedback.getAppData().toString(),
                     "\n\n",
-                    feedback.deviceData.toString(),
+                    feedback.getDeviceData().toString(),
                     "\n\n",
-                    feedback.devData.toString()).toString();
+                    feedback.getDevData().toString()).toString();
 
             message.put(Emailv31.Message.FROM, from)
                     .put(Emailv31.Message.REPLYTO, replyTo)

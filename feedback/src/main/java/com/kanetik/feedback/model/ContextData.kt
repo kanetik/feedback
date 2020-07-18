@@ -3,7 +3,7 @@ package com.kanetik.feedback.model
 import java.io.Serializable
 import java.lang.StringBuilder
 
-data class ContextData(val title: String) : Serializable {
+data class ContextData(val title: String? = "Context Data") : Serializable {
     var contextData: MutableList<ContextDataItem> = mutableListOf()
 
     fun add(key: String, value: Any) {
@@ -11,7 +11,7 @@ data class ContextData(val title: String) : Serializable {
     }
 
     override fun toString(): String {
-        val builder = StringBuilder(title)
+        val builder = StringBuilder(title!!)
                 .append("\n")
                 .append("------------------------")
                 .append("\n")

@@ -5,30 +5,19 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 ext {
-    verName = "1.4.0"
-
-    boolean isDebug = false
-    for (String taskName : gradle.startParameter.taskNames) {
-        if (taskName.contains("Debug")) {
-            isDebug = true
-            break
-        }
-    }
-
-    verCode = isDebug ? 1 : Integer.parseInt(new SimpleDateFormat("yyMMddHHmm", Locale.US).format(new Date())) - 1400000000
+    verName = "1.5.0-alpha01"
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     buildFeatures {
         viewBinding false
     }
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 29
-        versionCode verCode
+        minSdkVersion 21
+        targetSdkVersion 30
         versionName verName
         consumerProguardFiles 'consumer-rules.pro'
         vectorDrawables.useSupportLibrary = false
@@ -64,42 +53,16 @@ android {
     }
 }
 
-//task generateSourcesJar(type: Jar) {
-//    from android.sourceSets.main.java.srcDirs
-//    classifier 'sources'
-//}
-
-//task generateJavadocs(type: Javadoc) {
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//}
-
-//task generateJavadocsJar(type: Jar) {
-//    from generateJavadocs.destinationDir
-//    classifier 'javadoc'
-//}
-
-//generateJavadocsJar.dependsOn generateJavadocs
-
-artifacts {
-//    archives generateJavadocsJar
-//    archives generateSourcesJar
-}
-
-tasks.withType(Javadoc) {
-//    options.addBooleanOption('Xdoclint:none', true)
-}
-
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.3.0-alpha01'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta8'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
-    implementation 'com.mailjet:mailjet-client:4.2.1'
-    implementation 'com.squareup.moshi:moshi:1.9.2'
+    implementation 'com.mailjet:mailjet-client:4.5.0'
+    implementation 'com.squareup.moshi:moshi:1.9.3'
     implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 }

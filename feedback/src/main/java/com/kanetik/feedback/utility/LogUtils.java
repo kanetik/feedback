@@ -8,8 +8,8 @@ import androidx.annotation.Keep;
 import java.util.Locale;
 
 @Keep
-@SuppressLint("LogNotTimber")
 public class LogUtils {
+    // TODO: Debug mode only w/ debug flag (may already exist)
     private static final String LOG_TAG = "kanetik_feedback";
 
     public static void d(String message) {

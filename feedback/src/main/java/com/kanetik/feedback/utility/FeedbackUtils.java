@@ -133,7 +133,7 @@ public class FeedbackUtils {
         appData.add("Package Name", context.getPackageName());
         appData.add("Version Name", getVersionName(context));
         appData.add("Version Code", getVersionCode(context));
-        feedback.appData = appData;
+        feedback.setAppData(appData);
 
         ContextData deviceData = new ContextData("Device Info");
         deviceData.add("Manufacturer", Build.MANUFACTURER);
@@ -142,13 +142,14 @@ public class FeedbackUtils {
         deviceData.add("Android Version", Build.VERSION.RELEASE);
         deviceData.add("Locale", Locale.getDefault().toString());
         deviceData.add("Network Type", getNetworkType(context));
-        feedback.deviceData = deviceData;
+        feedback.setDevData(deviceData);
     }
 
     public static void addInstanceContextDataToFeedback(Context context, Feedback feedback) {
-        feedback.devData = new ContextData("Developer Info");
-        feedback.devData.setContextData(KanetikFeedback.getInstance(context).getContextData());
-        feedback.devData.add("Support ID", KanetikFeedback.Companion.getUserIdentifier());
+        ContextData contextData = new ContextData("Developer Info");
+        contextData.setContextData(KanetikFeedback.getInstance(context).getContextData());
+        contextData.add("Support ID", KanetikFeedback.Companion.getUserIdentifier());
+        feedback.setDevData(contextData);
     }
 
     public static String getSupportId(@NonNull Context context) {
@@ -238,7 +239,10 @@ public class FeedbackUtils {
     private static String getNetworkType(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
-            final Network activeNetwork = cm.getActiveNetwork();
+            Network activeNetwork = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                activeNetwork = cm.getActiveNetwork();
+            }
             if (activeNetwork != null) {
                 final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
 
@@ -254,7 +258,10 @@ public class FeedbackUtils {
     private static boolean isConnected(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
-            final Network activeNetwork = cm.getActiveNetwork();
+            Network activeNetwork = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                activeNetwork = cm.getActiveNetwork();
+            }
             if (activeNetwork != null) {
                 final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
                 if (activeNetworkCapabilities != null) {
@@ -263,6 +270,7 @@ public class FeedbackUtils {
             }
         }
 
+        // TODO: Deal w/ pre-M lack of support for checking
         return false;
     }
 

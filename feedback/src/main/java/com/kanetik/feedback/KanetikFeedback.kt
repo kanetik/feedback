@@ -36,7 +36,7 @@ class KanetikFeedback(context: Context) {
      * @param key   The name of the context data item
      * @param value The value of the context data item
      */
-    fun addContextDataItem(key: String?, value: String?): KanetikFeedback? {
+    fun addContextDataItem(key: String, value: String): KanetikFeedback? {
         val newItem = ContextDataItem(key, value)
         contextData!!.remove(newItem)
         contextData!!.add(newItem)
@@ -48,7 +48,7 @@ class KanetikFeedback(context: Context) {
      *
      * @param items The map of name-value pairs to be sent
      */
-    fun addContextDataItems(items: Map<String?, Any?>): KanetikFeedback? {
+    fun addContextDataItems(items: Map<String, Any?>): KanetikFeedback? {
         for ((key, value) in items) {
             val newItem = ContextDataItem(key, value)
             contextData!!.remove(newItem)
@@ -77,7 +77,7 @@ class KanetikFeedback(context: Context) {
      *
      * @param feedbackText The text submitted by the end-user.
      */
-    fun sendFeedback(feedbackText: String?, from: String?) {
+    fun sendFeedback(feedbackText: String, from: String) {
         val feedback = Feedback(appContext, feedbackText, from)
 
         FeedbackUtils.addInstanceContextDataToFeedback(
@@ -132,7 +132,7 @@ class KanetikFeedback(context: Context) {
          */
         var userIdentifier: String? = null
         private var contextData: ArrayList<ContextDataItem>? = null
-        private var instance: KanetikFeedback? = null
+        private lateinit var instance: KanetikFeedback
 
         /**
          * Gets the Kanetik feedback singleton, which is the primary interaction point the developer will have
