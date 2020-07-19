@@ -114,6 +114,7 @@ class KanetikFeedback(context: Context) {
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
+    @Keep
     companion object {
         private var appContext: Context? = null
 
