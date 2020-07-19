@@ -114,6 +114,10 @@ class KanetikFeedback(context: Context) {
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
+    fun nothing(): Int {
+        return 212
+    }
+
     @Keep
     companion object {
         private var appContext: Context? = null
