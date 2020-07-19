@@ -63,7 +63,11 @@
     java.lang.Object readResolve();
 }
 
--keepclassmembers class * implements Feedback
+-keepclassmembers class * {
+    public static ** Companion;
+}
+
+-keepclassmembers class * implements com.kanetik.feedback.model.Feedback
 
 # Your library may contain more items that need to be preserved;
 # typically classes that are dynamically created using Class.forName:
