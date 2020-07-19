@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -38,10 +36,6 @@ android {
     }
 
     resourcePrefix 'kanetik_feedback_'
-
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
 
     lintOptions {
         abortOnError false
