@@ -67,8 +67,6 @@
     public static ** Companion;
 }
 
--keep class **$Companion { *; }
-
 -keepclassmembers class * implements com.kanetik.feedback.model.Feedback
 
 # Your library may contain more items that need to be preserved;

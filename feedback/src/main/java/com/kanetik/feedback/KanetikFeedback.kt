@@ -114,11 +114,6 @@ class KanetikFeedback(context: Context) {
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
-    fun nothing(): Int {
-        return 212
-    }
-
-    @Keep
     companion object {
         private var appContext: Context? = null
 
@@ -146,9 +141,9 @@ class KanetikFeedback(context: Context) {
          * @return KanetikFeedback singleton instance.
          */
         @JvmStatic
-        fun getInstance(context: Context): KanetikFeedback? {
+        fun getInstance(context: Context): KanetikFeedback {
             synchronized(KanetikFeedback::class.java) {
-                if (instance == null || appContext == null) {
+                if (appContext == null) {
                     instance = KanetikFeedback(context.applicationContext)
                 }
 
