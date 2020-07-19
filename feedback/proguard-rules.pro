@@ -63,9 +63,7 @@
     java.lang.Object readResolve();
 }
 
--keepclassmembers class * {
-    public static ** Companion;
-}
+-keep class *$Companion { *; }
 
 -keepclassmembers class * implements com.kanetik.feedback.model.Feedback
 
