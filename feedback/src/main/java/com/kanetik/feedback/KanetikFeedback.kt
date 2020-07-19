@@ -142,6 +142,7 @@ class KanetikFeedback(context: Context) {
          */
         @JvmStatic
         fun getInstance(context: Context): KanetikFeedback {
+            // TODO: Proper singletons
             synchronized(KanetikFeedback::class.java) {
                 if (appContext == null) {
                     instance = KanetikFeedback(context.applicationContext)
