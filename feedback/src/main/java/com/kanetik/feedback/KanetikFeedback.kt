@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.ResultReceiver
 import androidx.annotation.Keep
 import com.kanetik.feedback.model.ContextDataItem
@@ -88,7 +89,7 @@ class KanetikFeedback(context: Context) {
         FeedbackUtils.persistData(
                 appContext,
                 feedback,
-                object : ResultReceiver(Handler()) {
+                object : ResultReceiver(Handler(Looper.getMainLooper())) {
                     override fun onReceiveResult(
                             resultCode: Int,
                             resultData: Bundle
@@ -114,25 +115,16 @@ class KanetikFeedback(context: Context) {
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
-    @Keep
     companion object {
-        private var appContext: Context? = null
-
-        /**
-         * Helper method that indicates if KanetikFeedback has been initialized and is ready to use
-         *
-         * @return boolean indicating that initialization has or has not completed
-         */
-        var isInitialized = false
-            private set
-
         /**
          * Gets the User Identifier.
          *
          * @return userIdentifier
          */
-        var userIdentifier: String? = null
-        private var contextData: ArrayList<ContextDataItem>? = null
+        var userIdentifier: String = ""
+        var contextData: ArrayList<ContextDataItem> = arrayListOf()
+
+        private lateinit var appContext: Context
         private lateinit var instance: KanetikFeedback
 
         /**
@@ -142,13 +134,9 @@ class KanetikFeedback(context: Context) {
          * @return KanetikFeedback singleton instance.
          */
         @JvmStatic
-        fun getInstance(context: Context): KanetikFeedback {
+        fun getInstance(): KanetikFeedback {
             // TODO: Proper singletons
             synchronized(KanetikFeedback::class.java) {
-                if (appContext == null) {
-                    instance = KanetikFeedback(context.applicationContext)
-                }
-
                 return instance
             }
         }
@@ -159,7 +147,7 @@ class KanetikFeedback(context: Context) {
          * @return debugging
          */
         val isDebug: Boolean
-            get() = 0 != appContext!!.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+            get() = 0 != appContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
 
         /**
          * Initializes the KanetikFeedback singleton. The developer's interactions with Kanetik KanetikFeedback will be
@@ -170,11 +158,7 @@ class KanetikFeedback(context: Context) {
          *
          * @param context Activity or Application Context
          */
-        fun initialize(context: Context, userIdentifier: String?) {
-            if (isInitialized) {
-                return
-            }
-
+        fun initialize(context: Context, userIdentifier: String) {
             KanetikFeedback(context)
 
             if (isDebug) {
@@ -185,8 +169,6 @@ class KanetikFeedback(context: Context) {
 
             // Send any previously queued requests
             FeedbackUtils.sendQueuedRequests(context)
-
-            this.isInitialized = true
         }
     }
 }

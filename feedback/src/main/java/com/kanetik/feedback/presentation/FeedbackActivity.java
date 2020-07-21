@@ -56,6 +56,7 @@ public class FeedbackActivity extends AppCompatActivity {
         setupUiElements();
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     private void setupUiElements() {
         TextView poweredBy = findViewById(R.id.kanetik_feedback_powered_by);
         feedback = findViewById(R.id.kanetik_feedback_feedback);
@@ -190,7 +191,7 @@ public class FeedbackActivity extends AppCompatActivity {
                 LogUtils.i("Send KanetikFeedback");
             }
 
-            KanetikFeedback.getInstance(this).sendFeedback(feedback.getText().toString(), email.getText().toString());
+            KanetikFeedback.Companion.getInstance().sendFeedback(feedback.getText().toString(), email.getText().toString());
 
             finish();
 
