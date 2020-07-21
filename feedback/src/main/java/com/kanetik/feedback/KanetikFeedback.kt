@@ -37,24 +37,10 @@ class KanetikFeedback(context: Context) {
      * @param key   The name of the context data item
      * @param value The value of the context data item
      */
-    fun addContextDataItem(key: String, value: String): KanetikFeedback? {
+    fun addContextItem(key: String, value: String): KanetikFeedback? {
         val newItem = ContextDataItem(key, value)
         contextData!!.remove(newItem)
         contextData!!.add(newItem)
-        return instance
-    }
-
-    /**
-     * Add a collection of name-value pairs to be sent to the developer with a feedback request.
-     *
-     * @param items The map of name-value pairs to be sent
-     */
-    fun addContextDataItems(items: Map<String, Any?>): KanetikFeedback? {
-        for ((key, value) in items) {
-            val newItem = ContextDataItem(key, value)
-            contextData!!.remove(newItem)
-            contextData!!.add(newItem)
-        }
         return instance
     }
 
@@ -64,7 +50,7 @@ class KanetikFeedback(context: Context) {
      *
      * @param key The name of the context data item to be removed
      */
-    fun removeContextDataItem(key: String): KanetikFeedback? {
+    fun removeContextItem(key: String): KanetikFeedback? {
         for (item in contextData!!) {
             if (item.key == key) {
                 contextData!!.remove(item)
