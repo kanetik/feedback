@@ -35,7 +35,7 @@ public class FeedbackDataItemDialogFragment extends DialogFragment {
 
         ArrayList<ContextDataItem> arrayList = new ArrayList<>();
         arrayList.addAll(FeedbackUtils.getExtraData(view.getContext()));
-        arrayList.addAll(Objects.requireNonNull(KanetikFeedback.Companion.getInstance().getContextData()));
+        arrayList.addAll(Objects.requireNonNull(KanetikFeedback.Companion.getContextData()));
 
         ListView listView = view.findViewById(R.id.data_item_list);
         DataItemAdapter adapter = new DataItemAdapter(view.getContext(), arrayList);

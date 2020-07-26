@@ -12,6 +12,7 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.widget.EditText;
@@ -96,7 +97,7 @@ public class FeedbackUtils {
                     feedback.incrementRetryCount();
 
                     deleteQueuedFeedback(tempFilePath);
-                    persistData(context, feedback, new ResultReceiver(new Handler()) {
+                    persistData(context, feedback, new ResultReceiver(new Handler(Looper.myLooper())) {
                         @Override
                         protected void onReceiveResult(int resultCode, Bundle resultData) {
                             if (resultCode != Activity.RESULT_OK) {

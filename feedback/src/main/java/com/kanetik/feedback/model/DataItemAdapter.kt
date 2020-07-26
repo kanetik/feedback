@@ -18,11 +18,11 @@ class DataItemAdapter(context: Context, contextDataItems: ArrayList<ContextDataI
             cvtView = LayoutInflater.from(context).inflate(R.layout.kanetik_feedback_data_item, parent, false)
         }
 
-        val key = convertView!!.findViewById<TextView>(R.id.key)
-        key.text = contextDataItem!!.key.replace("_", " ")
+        val key = convertView?.findViewById<TextView>(R.id.key)
+        key?.text = contextDataItem!!.key.replace("_", " ")
 
-        val value = convertView.findViewById<TextView>(R.id.value)
-        value.text = contextDataItem.value.toString()
+        val value = convertView?.findViewById<TextView>(R.id.value)
+        value?.text = contextDataItem.value.toString()
 
         return cvtView!!
     }

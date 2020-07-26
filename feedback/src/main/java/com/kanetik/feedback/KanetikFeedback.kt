@@ -8,27 +8,24 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
+import android.service.carrier.CarrierIdentifier
 import androidx.annotation.Keep
 import com.kanetik.feedback.model.ContextDataItem
 import com.kanetik.feedback.model.Feedback
+import com.kanetik.feedback.model.SingletonHolder
 import com.kanetik.feedback.presentation.FeedbackActivity
 import com.kanetik.feedback.utility.FeedbackUtils
 import com.kanetik.feedback.utility.LogUtils
 import java.util.*
 
 @Keep
-class KanetikFeedback(context: Context) {
-    var contextData: ArrayList<ContextDataItem>? = null
-        get() {
-            if (field == null) {
-                contextData = ArrayList()
-            }
-
-            return field
-        }
-
+class KanetikFeedback private constructor(context: Context) {
     init {
-        appContext = context
+        appContext = context.applicationContext
+    }
+
+    fun setUserIdentifier(identifier: String) {
+        userIdentifier = identifier
     }
 
     /**
@@ -41,7 +38,7 @@ class KanetikFeedback(context: Context) {
         val newItem = ContextDataItem(key, value)
         contextData!!.remove(newItem)
         contextData!!.add(newItem)
-        return instance
+        return getInstance(appContext)
     }
 
     /**
@@ -56,7 +53,7 @@ class KanetikFeedback(context: Context) {
                 contextData!!.remove(item)
             }
         }
-        return instance
+        return getInstance(appContext)
     }
 
     /**
@@ -101,31 +98,24 @@ class KanetikFeedback(context: Context) {
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
-    companion object {
+    companion object : SingletonHolder<KanetikFeedback, Context>(::KanetikFeedback) {
+        private lateinit var appContext: Context
+
         /**
          * Gets the User Identifier.
          *
          * @return userIdentifier
          */
         var userIdentifier: String = ""
-        var contextData: ArrayList<ContextDataItem> = arrayListOf()
 
-        private lateinit var appContext: Context
-        private lateinit var instance: KanetikFeedback
+        var contextData: ArrayList<ContextDataItem>? = null
+            get() {
+                if (field == null) {
+                    contextData = arrayListOf()
+                }
 
-        /**
-         * Gets the Kanetik feedback singleton, which is the primary interaction point the developer will have
-         * with the feedback SDK.
-         *
-         * @return KanetikFeedback singleton instance.
-         */
-        @JvmStatic
-        fun getInstance(): KanetikFeedback {
-            // TODO: Proper singletons
-            synchronized(KanetikFeedback::class.java) {
-                return instance
+                return field
             }
-        }
 
         /**
          * Gets the Debugging state.
@@ -144,17 +134,78 @@ class KanetikFeedback(context: Context) {
          *
          * @param context Activity or Application Context
          */
-        fun initialize(context: Context, userIdentifier: String) {
-            KanetikFeedback(context)
-
-            if (isDebug) {
-                LogUtils.i("KanetikFeedback Initialize")
-            }
-
-            this.userIdentifier = userIdentifier
-
-            // Send any previously queued requests
-            FeedbackUtils.sendQueuedRequests(context)
-        }
+//        fun initialize(context: Context, userIdentifier: String) {
+//            KanetikFeedback(context)
+//
+//            if (isDebug) {
+//                LogUtils.i("KanetikFeedback Initialize")
+//            }
+//
+//            this.userIdentifier = userIdentifier
+//
+//            // Send any previously queued requests
+//            FeedbackUtils.sendQueuedRequests(context)
+//        }
     }
+
+//    companion object {
+//        /**
+//         * Gets the User Identifier.
+//         *
+//         * @return userIdentifier
+//         */
+//        var userIdentifier: String = ""
+//        var contextData: ArrayList<ContextDataItem> = arrayListOf()
+//
+//        private lateinit var appContext: Context
+//        private lateinit var instance: KanetikFeedback
+//
+//        /**
+//         * Gets the Kanetik feedback singleton, which is the primary interaction point the developer will have
+//         * with the feedback SDK.
+//         *
+//         * @return KanetikFeedback singleton instance.
+//         */
+//        @JvmStatic
+//        fun getInstance(): KanetikFeedback {
+//            // TODO: Proper singletons
+////            synchronized(KanetikFeedback::class.java) {
+////                if (instance == null) {
+////                    instance = KanetikFeedback(appContext)
+////                }
+//
+//                return instance
+////            }
+//        }
+//
+//        /**
+//         * Gets the Debugging state.
+//         *
+//         * @return debugging
+//         */
+//        val isDebug: Boolean
+//            get() = 0 != appContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+//
+//        /**
+//         * Initializes the KanetikFeedback singleton. The developer's interactions with Kanetik KanetikFeedback will be
+//         * entirely via the singleton.
+//         *
+//         *
+//         * Initialization must be done before the KanetikFeedback singleton can be used.
+//         *
+//         * @param context Activity or Application Context
+//         */
+//        fun initialize(context: Context, userIdentifier: String) {
+//            KanetikFeedback(context)
+//
+//            if (isDebug) {
+//                LogUtils.i("KanetikFeedback Initialize")
+//            }
+//
+//            this.userIdentifier = userIdentifier
+//
+//            // Send any previously queued requests
+//            FeedbackUtils.sendQueuedRequests(context)
+//        }
+//    }
 }

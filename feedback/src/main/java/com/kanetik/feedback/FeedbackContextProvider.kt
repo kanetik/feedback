@@ -10,7 +10,7 @@ class FeedbackContextProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         val applicationContext = context ?: return false
 
-        KanetikFeedback.initialize(applicationContext, FeedbackUtils.getSupportId(applicationContext))
+        KanetikFeedback.getInstance(applicationContext).setUserIdentifier(FeedbackUtils.getSupportId(applicationContext))
 
         return true
     }

@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.ResultReceiver
 import androidx.annotation.Keep
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.kanetik.feedback.network.FeedbackService
 import com.kanetik.feedback.utility.FeedbackUtils
 import java.io.Serializable
 
 @Keep
-data class Feedback(val context: Context?, val comment: String, val from: String) : Serializable {
+@JsonSerialize
+data class Feedback(val context: Context?, val comment: String, val from: String) { //} : Serializable {
     var appData: ContextData = ContextData()
     var deviceData: ContextData? = null
     var devData: ContextData? = null
