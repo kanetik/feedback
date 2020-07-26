@@ -9,6 +9,8 @@ import com.kanetik.feedback.model.Feedback;
 
 import java.io.Serializable;
 
+import kotlinx.serialization.json.Json;
+
 public class FeedbackService extends IntentService {
     public FeedbackService() {
         super("FeedbackService");
@@ -20,21 +22,15 @@ public class FeedbackService extends IntentService {
             return;
         }
 
-        Serializable feedbackObject = intent.getSerializableExtra(Feedback.EXTRA_SELF);
+        Feedback feedbackObject = Json.Default.decodeFromString(Feedback.Companion.getSerializer(), intent.getStringExtra(Feedback.EXTRA_SELF));
 
         if (feedbackObject == null) {
             throw new NullPointerException("Intent's data object is null");
         }
 
-        if (!(feedbackObject instanceof Feedback)) {
-            throw new ClassCastException("Intent's data object is not the expected type (KanetikFeedback)");
-        }
-
-        Feedback feedback = (Feedback) feedbackObject;
-
         // TODO: Make the sender configurable
         Sender sender = new MailJetSender(this);
-        boolean isSent = sender.send(feedback);
+        boolean isSent = sender.send(feedbackObject);
 
         ResultReceiver resultReceiver = null;
         if (intent.hasExtra(Feedback.EXTRA_RESULT_RECEIVER)) {

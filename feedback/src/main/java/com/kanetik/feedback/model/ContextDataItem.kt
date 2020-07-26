@@ -1,20 +1,23 @@
 package com.kanetik.feedback.model
 
 import androidx.annotation.Keep
-import java.io.Serializable
-import java.util.ArrayList
+import kotlinx.serialization.*
 
 @Keep
-data class ContextDataItem(val key: String, val value: Any?) : Serializable {
+@Serializable
+data class ContextDataItem(val key: String, val stringValue: String?, val intValue: Int?) {
+    constructor(key: String, stringValue: String): this(key, stringValue, null)
+    constructor(key: String, intValue: Int?): this(key, null, intValue)
+
     override fun equals(other: Any?): Boolean {
         if (other !is ContextDataItem) {
             return false
         }
 
-        return key == other.key && value == other.value
+        return key == other.key && (stringValue == other.stringValue || intValue == other.intValue)
     }
 
-    companion object {
-        const val serialVersionUID = 326L
+    fun getValue(): String {
+        return stringValue ?: intValue.toString()
     }
 }

@@ -100,7 +100,7 @@ public class FeedbackUtils {
                     persistData(context, feedback, new ResultReceiver(new Handler(Looper.myLooper())) {
                         @Override
                         protected void onReceiveResult(int resultCode, Bundle resultData) {
-                            if (resultCode != Activity.RESULT_OK) {
+                            if (resultData != null && resultCode != Activity.RESULT_OK) {
                                 handlePersistenceFailure(context, feedback);
                             }
                         }
@@ -129,6 +129,10 @@ public class FeedbackUtils {
     }
 
     public static void addSystemData(Context context, Feedback feedback) {
+        if (context == null) {
+            return;
+        }
+
         ContextData appData = new ContextData("App Info");
         appData.add("App Name", getAppLabel(context));
         appData.add("Package Name", context.getPackageName());
@@ -166,6 +170,10 @@ public class FeedbackUtils {
     }
 
     public static String getAppLabel(Context context) {
+        if (context == null) {
+            return "";
+        }
+
         PackageManager packageManager = context.getPackageManager();
         ApplicationInfo applicationInfo = null;
 

@@ -1,12 +1,17 @@
 package com.kanetik.feedback.model
 
-import java.io.Serializable
 import java.lang.StringBuilder
+import kotlinx.serialization.*
 
-data class ContextData(val title: String? = "Context Data") : Serializable {
+@Serializable
+data class ContextData(val title: String? = "Context Data") {
     var contextData: MutableList<ContextDataItem> = mutableListOf()
 
-    fun add(key: String, value: Any) {
+    fun add(key: String, value: String) {
+        contextData.add(ContextDataItem(key, value))
+    }
+
+    fun add(key: String, value: Int) {
         contextData.add(ContextDataItem(key, value))
     }
 
@@ -20,14 +25,10 @@ data class ContextData(val title: String? = "Context Data") : Serializable {
             builder
                     .append((item.key))
                     .append(": ")
-                    .append(item.value)
+                    .append(item.getValue())
                     .append("\n")
         }
 
         return builder.toString()
-    }
-
-    companion object {
-        const val serialVersionUID = 327L
     }
 }

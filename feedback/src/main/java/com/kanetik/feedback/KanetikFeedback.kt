@@ -75,7 +75,7 @@ class KanetikFeedback private constructor(context: Context) {
                 object : ResultReceiver(Handler(Looper.getMainLooper())) {
                     override fun onReceiveResult(
                             resultCode: Int,
-                            resultData: Bundle
+                            resultData: Bundle?
                     ) {
                         if (resultCode == Activity.RESULT_OK) {
                             FeedbackUtils.alertUser(appContext)

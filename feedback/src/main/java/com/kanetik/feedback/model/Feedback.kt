@@ -4,14 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.ResultReceiver
 import androidx.annotation.Keep
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.kanetik.feedback.network.FeedbackService
 import com.kanetik.feedback.utility.FeedbackUtils
-import java.io.Serializable
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
 
 @Keep
-@JsonSerialize
-data class Feedback(val context: Context?, val comment: String, val from: String) { //} : Serializable {
+@Serializable
+data class Feedback(@Transient val context: Context? = null, val comment: String, val from: String) {
     var appData: ContextData = ContextData()
     var deviceData: ContextData? = null
     var devData: ContextData? = null
@@ -34,10 +34,10 @@ data class Feedback(val context: Context?, val comment: String, val from: String
         }
     }
 
-    fun getSendServiceIntent(context: Context?, resultReceiver: ResultReceiver?, data: Feedback?): Intent {
+    fun getSendServiceIntent(context: Context?, resultReceiver: ResultReceiver?, data: Feedback): Intent {
         val serviceIntent = Intent(context, FeedbackService::class.java)
         serviceIntent.putExtra(EXTRA_RESULT_RECEIVER, resultReceiver)
-        serviceIntent.putExtra(EXTRA_SELF, data)
+        serviceIntent.putExtra(EXTRA_SELF, Json.encodeToString(data))
         return serviceIntent
     }
 
@@ -45,10 +45,12 @@ data class Feedback(val context: Context?, val comment: String, val from: String
         return "Comment: $comment | From: $from"
     }
 
+    @Keep
     companion object {
-        const val serialVersionUID = 325L
         const val EXTRA_RESULT_RECEIVER = "result_receiver"
         const val EXTRA_SELF = "data"
         const val RETRY_LIMIT = 1
+
+        val serializer = serializer()
     }
 }

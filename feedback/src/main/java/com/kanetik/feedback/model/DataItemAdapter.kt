@@ -22,7 +22,7 @@ class DataItemAdapter(context: Context, contextDataItems: ArrayList<ContextDataI
         key?.text = contextDataItem!!.key.replace("_", " ")
 
         val value = convertView?.findViewById<TextView>(R.id.value)
-        value?.text = contextDataItem.value.toString()
+        value?.text = contextDataItem.getValue()
 
         return cvtView!!
     }
