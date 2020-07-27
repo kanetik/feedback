@@ -8,14 +8,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
-import android.service.carrier.CarrierIdentifier
 import androidx.annotation.Keep
 import com.kanetik.feedback.model.ContextDataItem
 import com.kanetik.feedback.model.Feedback
 import com.kanetik.feedback.model.SingletonHolder
 import com.kanetik.feedback.presentation.FeedbackActivity
 import com.kanetik.feedback.utility.FeedbackUtils
-import com.kanetik.feedback.utility.LogUtils
 import java.util.*
 
 @Keep
@@ -64,7 +62,7 @@ class KanetikFeedback private constructor(context: Context) {
     fun sendFeedback(feedbackText: String, from: String) {
         val feedback = Feedback(appContext, feedbackText, from)
 
-        FeedbackUtils.addInstanceContextDataToFeedback(
+        FeedbackUtils.addContextDataToFeedback(
                 appContext,
                 feedback
         )

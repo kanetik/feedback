@@ -13,8 +13,8 @@ import kotlinx.serialization.json.Json
 @Serializable
 data class Feedback(@Transient val context: Context? = null, val comment: String, val from: String) {
     var appData: ContextData = ContextData()
-    var deviceData: ContextData? = null
-    var devData: ContextData? = null
+    var deviceData: ContextData = ContextData()
+    var devData: ContextData = ContextData()
 
     private var retryCount = 0
 

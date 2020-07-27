@@ -147,10 +147,10 @@ public class FeedbackUtils {
         deviceData.add("Android Version", Build.VERSION.RELEASE);
         deviceData.add("Locale", Locale.getDefault().toString());
         deviceData.add("Network Type", getNetworkType(context));
-        feedback.setDevData(deviceData);
+        feedback.setDeviceData(deviceData);
     }
 
-    public static void addInstanceContextDataToFeedback(Context context, Feedback feedback) {
+    public static void addContextDataToFeedback(Context context, Feedback feedback) {
         ContextData contextData = new ContextData("Developer Info");
         contextData.setContextData(KanetikFeedback.Companion.getContextData());
         contextData.add("Support ID", KanetikFeedback.Companion.getUserIdentifier());
