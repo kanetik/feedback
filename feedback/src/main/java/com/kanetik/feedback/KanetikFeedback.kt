@@ -96,6 +96,7 @@ class KanetikFeedback private constructor(context: Context) {
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
+    @Keep
     companion object : SingletonHolder<KanetikFeedback, Context>(::KanetikFeedback) {
         private lateinit var appContext: Context
 
