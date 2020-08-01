@@ -47,11 +47,11 @@ public class FeedbackActivity extends AppCompatActivity {
 
         Objects.requireNonNull(getSupportActionBar()).setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), FeedbackUtils.getAppLabel(this)));
 
-        Drawable closeIcon = Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp)).mutate();
-        DrawableCompat.setTint(closeIcon, ContextCompat.getColor(this, R.color.kanetik_feedback_primary_text));
+        //Drawable closeIcon = Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp)).mutate();
+        //DrawableCompat.setTint(closeIcon, ContextCompat.getColor(this, R.color.kanetik_feedback_primary_text));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(closeIcon);
+        //getSupportActionBar().setHomeAsUpIndicator(closeIcon);
 
         setupUiElements();
     }
@@ -151,10 +151,10 @@ public class FeedbackActivity extends AppCompatActivity {
         }
 
         MenuItem sendFeedbackIcon = mMenu.findItem(R.id.action_send_feedback);
-        Drawable icon = sendFeedbackIcon.getIcon().mutate();
-        DrawableCompat.setTint(icon, ContextCompat.getColor(this, R.color.kanetik_feedback_light_gray));
-        sendFeedbackIcon.setIcon(icon);
-        sendFeedbackIcon.setEnabled(false);
+        //Drawable icon = sendFeedbackIcon.getIcon().mutate();
+        //DrawableCompat.setTint(icon, ContextCompat.getColor(this, R.color.kanetik_feedback_light_gray));
+        //sendFeedbackIcon.setIcon(icon);
+        //sendFeedbackIcon.setEnabled(false);
     }
 
     private void enableSendButton() {
