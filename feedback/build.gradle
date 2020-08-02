@@ -30,8 +30,8 @@ android {
         }
         release {
             debuggable false
-            zipAlignEnabled true
-            minifyEnabled true
+            zipAlignEnabled false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -56,7 +56,7 @@ dependencies {
 
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
-    implementation 'com.mailjet:mailjet-client:4.5.0'
+    implementation 'com.mailjet:mailjet-client:4.2.1'
 //    implementation 'com.squareup.moshi:moshi:1.9.3'
     implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
