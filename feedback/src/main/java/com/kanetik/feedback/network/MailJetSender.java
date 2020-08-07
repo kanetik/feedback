@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 
 class MailJetSender implements Sender {
-    private WeakReference<Context> context;
+    private final WeakReference<Context> context;
 
     public MailJetSender(Context context) {
         this.context = new WeakReference<>(context);
@@ -27,10 +27,10 @@ class MailJetSender implements Sender {
         Context context = this.context.get();
         if (context == null) return false;
 
-        MailjetClient client = new MailjetClient(
-                "2b65a83e271971453abd6d80e38d5691",
-                "9c099f92dfbd4e33da387eef3c809494",
-                new ClientOptions("v3.1"));
+        ClientOptions options = new ClientOptions("v3.1");
+        options.setTimeout(8000);
+
+        MailjetClient client = new MailjetClient("2b65a83e271971453abd6d80e38d5691", "9c099f92dfbd4e33da387eef3c809494", options);
 
         client.setDebug(MailjetClient.VERBOSE_DEBUG);
 
@@ -40,12 +40,12 @@ class MailJetSender implements Sender {
                     .property(Emailv31.MESSAGES, new JSONArray()
                             .put(new JSONObject()
                                     .put(Emailv31.Message.FROM, new JSONObject()
-                                            .put("Email", "jkane001@gmail.com")
-                                            .put("Name", "Me"))
+                                            .put("Email", "info@kanetik.com")
+                                            .put("Name", "Customer"))
                                     .put(Emailv31.Message.TO, new JSONArray()
                                             .put(new JSONObject()
-                                                    .put("Email", "info@kanetik.com")
-                                                    .put("Name", "You")))
+                                                    .put("Email", "jkane001@gmail.com")
+                                                    .put("Name", "Me")))
                                     .put(Emailv31.Message.SUBJECT, "My first Mailjet Email!")
                                     .put(Emailv31.Message.TEXTPART, "Greetings from Mailjet!")
                                     .put(Emailv31.Message.HTMLPART, "<h3>Dear passenger 1, welcome to <a href=\"https://www.mailjet.com/\">Mailjet</a>!</h3><br />May the delivery force be with you!")));
