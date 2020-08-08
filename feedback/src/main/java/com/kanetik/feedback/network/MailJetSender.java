@@ -41,9 +41,9 @@ class MailJetSender implements Sender {
         ClientOptions options = new ClientOptions("v3.1");
         options.setTimeout(10000);
 
+        // TODO: Get key & secret from init
         MailjetClient client = new MailjetClient("2b65a83e271971453abd6d80e38d5691", "9c099f92dfbd4e33da387eef3c809494", options);
 
-        // TODO: Get key & secret from init
         final String developerEmail = "jkane001@gmail.com"; // TODO: Get from init
         final String developerName = FeedbackUtils.getAppLabel(context) + " Developer"; // TODO: Get from init
 
