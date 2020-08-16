@@ -86,3 +86,8 @@
 -keepclasseswithmembers class com.kanetik.feedback.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+-keepattributes InnerClasses
+ -keep class com.kanetik.feedback.R
+ -keep class com.kanetik.feedback.R$* {
+    <fields>;
+}
