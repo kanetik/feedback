@@ -4,8 +4,10 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import androidx.annotation.Keep
 import com.kanetik.feedback.utility.FeedbackUtils
 
+@Keep
 class FeedbackContextProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         val applicationContext = context ?: return false

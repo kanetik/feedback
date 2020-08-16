@@ -5,12 +5,15 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.ResultReceiver;
 
+import androidx.annotation.Keep;
+
 import com.kanetik.feedback.model.Feedback;
 
 import java.io.Serializable;
 
 import kotlinx.serialization.json.Json;
 
+@Keep
 public class FeedbackService extends IntentService {
     public FeedbackService() {
         super("FeedbackService");

@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.annotation.Keep
 import com.kanetik.feedback.R
 import java.util.*
 
+@Keep
 class DataItemAdapter(context: Context, contextDataItems: ArrayList<ContextDataItem>) : ArrayAdapter<ContextDataItem>(context, 0, contextDataItems) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var cvtView = convertView

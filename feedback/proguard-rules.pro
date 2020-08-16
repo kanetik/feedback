@@ -63,7 +63,6 @@
     java.lang.Object readResolve();
 }
 
--keepclassmembers class * implements com.kanetik.feedback.model.Feedback
 
 # Your library may contain more items that need to be preserved;
 # typically classes that are dynamically created using Class.forName:
@@ -78,10 +77,12 @@
 
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.SerializationKt
--keep,includedescriptorclasses class com.kanetik.feedback.**$$serializer { *; } # <-- change package name to your app's
--keepclassmembers class com.kanetik.feedback.** { # <-- change package name to your app's
+
+-keepclassmembers class * implements com.kanetik.feedback.model.Feedback
+-keep,includedescriptorclasses class com.kanetik.feedback.**$$serializer { *; }
+-keepclassmembers class com.kanetik.feedback.** {
     *** Companion;
 }
--keepclasseswithmembers class com.kanetik.feedback.** { # <-- change package name to your app's
+-keepclasseswithmembers class com.kanetik.feedback.** {
     kotlinx.serialization.KSerializer serializer(...);
 }

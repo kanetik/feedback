@@ -1,8 +1,10 @@
 package com.kanetik.feedback.model
 
+import androidx.annotation.Keep
 import java.lang.StringBuilder
 import kotlinx.serialization.*
 
+@Keep
 @Serializable
 data class ContextData(val title: String? = "Context Data") {
     var contextData: MutableList<ContextDataItem> = mutableListOf()

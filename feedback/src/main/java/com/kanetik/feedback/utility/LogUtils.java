@@ -1,6 +1,5 @@
 package com.kanetik.feedback.utility;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.annotation.Keep;

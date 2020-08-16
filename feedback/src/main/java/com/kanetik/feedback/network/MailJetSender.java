@@ -4,6 +4,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import androidx.annotation.Keep;
+
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
 import com.kanetik.feedback.model.Feedback;
@@ -27,6 +29,7 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 import java.util.UUID;
 
+@Keep
 class MailJetSender implements Sender {
     private final WeakReference<Context> context;
 

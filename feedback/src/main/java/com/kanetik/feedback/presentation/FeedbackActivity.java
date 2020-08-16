@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.Keep;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -31,6 +32,7 @@ import com.kanetik.feedback.utility.LogUtils;
 import java.util.Locale;
 import java.util.Objects;
 
+@Keep
 public class FeedbackActivity extends AppCompatActivity {
     private EditText feedback;
     private TextInputLayout feedbackLayout;
