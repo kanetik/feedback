@@ -3,13 +3,11 @@ package com.kanetik.feedback.model
 import android.content.Context
 import android.content.Intent
 import android.os.ResultReceiver
-import androidx.annotation.Keep
 import com.kanetik.feedback.network.FeedbackService
 import com.kanetik.feedback.utility.FeedbackUtils
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
-@Keep
 @Serializable
 data class Feedback(@Transient val context: Context? = null, val comment: String, val from: String) {
     var appData: ContextData = ContextData()
@@ -45,7 +43,6 @@ data class Feedback(@Transient val context: Context? = null, val comment: String
         return "Comment: $comment | From: $from"
     }
 
-    @Keep
     companion object {
         const val EXTRA_RESULT_RECEIVER = "result_receiver"
         const val EXTRA_SELF = "data"

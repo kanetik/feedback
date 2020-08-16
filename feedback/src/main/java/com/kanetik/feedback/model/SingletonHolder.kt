@@ -1,8 +1,5 @@
 package com.kanetik.feedback.model
 
-import androidx.annotation.Keep
-
-@Keep
 open class SingletonHolder<out T, in A>(private val constructor: (A) -> T) {
     @Volatile
     private var instance: T? = null

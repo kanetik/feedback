@@ -1,9 +1,7 @@
 package com.kanetik.feedback.model
 
-import androidx.annotation.Keep
 import kotlinx.serialization.*
 
-@Keep
 @Serializable
 data class ContextDataItem(val key: String, val stringValue: String?, val intValue: Int?) {
     constructor(key: String, stringValue: String): this(key, stringValue, null)

@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
@@ -19,7 +18,6 @@ import com.kanetik.feedback.utility.FeedbackUtils;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Keep
 public class FeedbackDataItemDialogFragment extends DialogFragment {
     public static FeedbackDataItemDialogFragment create() {
         FeedbackDataItemDialogFragment fragment = new FeedbackDataItemDialogFragment();

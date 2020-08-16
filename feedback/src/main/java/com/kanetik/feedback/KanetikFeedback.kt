@@ -26,6 +26,11 @@ class KanetikFeedback private constructor(context: Context) {
         userIdentifier = identifier
     }
 
+    val supportId: String
+        get() {
+            return FeedbackUtils.getSupportId(appContext)
+        }
+
     /**
      * Add a single name-value pair to be sent to the developer with a feedback request.
      *

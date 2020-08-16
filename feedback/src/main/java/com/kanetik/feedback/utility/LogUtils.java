@@ -2,11 +2,8 @@ package com.kanetik.feedback.utility;
 
 import android.util.Log;
 
-import androidx.annotation.Keep;
-
 import java.util.Locale;
 
-@Keep
 public class LogUtils {
     // TODO: Debug mode only w/ debug flag (may already exist)
     private static final String LOG_TAG = "kanetik_feedback";
