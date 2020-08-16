@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_send_feedback"
-        android:icon="@drawable/kanetik_feedback_send_24dp"
+        android:icon="@drawable/send_24dp"
         android:title="@string/kanetik_feedback_send_feedback"
         app:showAsAction="always" />
 </menu>

@@ -15,7 +15,7 @@ class DataItemAdapter(context: Context, contextDataItems: ArrayList<ContextDataI
         val contextDataItem = getItem(position)
 
         if (cvtView == null) {
-            cvtView = LayoutInflater.from(context).inflate(R.layout.kanetik_feedback_data_item, parent, false)
+            cvtView = LayoutInflater.from(context).inflate(R.layout.data_item, parent, false)
         }
 
         val key = convertView?.findViewById<TextView>(R.id.key)

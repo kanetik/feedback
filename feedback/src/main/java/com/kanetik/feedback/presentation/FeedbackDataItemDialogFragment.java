@@ -29,7 +29,7 @@ public class FeedbackDataItemDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle
             savedInstanceState) {
-        final View view = inflater.inflate(R.layout.kanetik_feedback_fragment_data_item, container, false);
+        final View view = inflater.inflate(R.layout.fragment_data_item, container, false);
 
         Objects.requireNonNull(getDialog()).setTitle(getString(R.string.kanetik_feedback_data_items));
 

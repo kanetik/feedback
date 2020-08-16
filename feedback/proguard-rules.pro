@@ -18,7 +18,7 @@
 # tables to get line numbers in the stack traces.
 # You can comment this out if you're not interested in stack traces.
 
-#-printmapping out.map
+-printmapping out.map
 -keepparameternames
 -renamesourcefileattribute SourceFile
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,EnclosingMethod
@@ -75,11 +75,10 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
--printmapping mapping.txt
 
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.SerializationKt
--keep,includedescriptorclasses class com.yourcompany.yourpackage.**$$serializer { *; } # <-- change package name to your app's
+-keep,includedescriptorclasses class com.kanetik.feedback.**$$serializer { *; } # <-- change package name to your app's
 -keepclassmembers class com.kanetik.feedback.** { # <-- change package name to your app's
     *** Companion;
 }
