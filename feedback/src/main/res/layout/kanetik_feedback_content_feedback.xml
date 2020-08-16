@@ -9,7 +9,7 @@
     android:theme="@style/kanetik_feedback_theme"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.kanetik.feedback.presentation.FeedbackActivity"
-    tools:showIn="@layout/activity_feedback">
+    tools:showIn="@layout/kanetik_feedback_activity_feedback">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/kanetik_feedback_feedback_layout"

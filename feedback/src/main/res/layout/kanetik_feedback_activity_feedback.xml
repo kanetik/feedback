@@ -19,5 +19,5 @@
             app:titleTextColor="@color/kanetik_feedback_primary_text" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_feedback" />
+    <include layout="@layout/kanetik_feedback_content_feedback" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
