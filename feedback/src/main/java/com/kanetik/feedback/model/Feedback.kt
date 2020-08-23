@@ -32,12 +32,12 @@ data class Feedback(@Transient val context: Context? = null, val comment: String
         }
     }
 
-    fun getSendServiceIntent(context: Context?, resultReceiver: ResultReceiver?, data: Feedback): Intent {
-        val serviceIntent = Intent(context, FeedbackService::class.java)
-        serviceIntent.putExtra(EXTRA_RESULT_RECEIVER, resultReceiver)
-        serviceIntent.putExtra(EXTRA_SELF, Json.encodeToString(data))
-        return serviceIntent
-    }
+//    fun getSendServiceIntent(context: Context?, resultReceiver: ResultReceiver?, data: Feedback): Intent {
+//        val serviceIntent = Intent(context, FeedbackService::class.java)
+//        serviceIntent.putExtra(EXTRA_RESULT_RECEIVER, resultReceiver)
+//        serviceIntent.putExtra(EXTRA_SELF, Json.encodeToString(data))
+//        return serviceIntent
+//    }
 
     override fun toString(): String {
         return "Comment: $comment | From: $from"

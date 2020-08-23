@@ -1,14 +1,10 @@
 package com.kanetik.feedback
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.ResultReceiver
 import androidx.annotation.Keep
+import androidx.work.WorkInfo
 import com.kanetik.feedback.model.ContextDataItem
 import com.kanetik.feedback.model.Feedback
 import com.kanetik.feedback.model.SingletonHolder
@@ -74,22 +70,17 @@ class KanetikFeedback private constructor(context: Context) {
 
         FeedbackUtils.persistData(
                 appContext,
-                feedback,
-                object : ResultReceiver(Handler(Looper.getMainLooper())) {
-                    override fun onReceiveResult(
-                            resultCode: Int,
-                            resultData: Bundle?
-                    ) {
-                        if (resultCode == Activity.RESULT_OK) {
-                            FeedbackUtils.alertUser(appContext)
-                        } else {
-                            FeedbackUtils.handlePersistenceFailure(
-                                    appContext,
-                                    feedback
-                            )
-                        }
-                    }
-                })
+                feedback
+        ) { workInfo ->
+            if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+                FeedbackUtils.alertUser(appContext)
+            } else if (workInfo.state == WorkInfo.State.FAILED) {
+                FeedbackUtils.handlePersistenceFailure(
+                        appContext,
+                        feedback
+                )
+            }
+        }
     }
 
     /**

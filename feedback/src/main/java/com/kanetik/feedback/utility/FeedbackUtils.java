@@ -1,6 +1,5 @@
 package com.kanetik.feedback.utility;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -10,10 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,12 +16,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.pm.PackageInfoCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
 import com.kanetik.feedback.model.ContextData;
 import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.Feedback;
+import com.kanetik.feedback.network.FeedbackSendWorker;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,12 +97,14 @@ public class FeedbackUtils {
                     feedback.incrementRetryCount();
 
                     deleteQueuedFeedback(tempFilePath);
-                    persistData(context, feedback, new ResultReceiver(new Handler(Looper.myLooper())) {
-                        @Override
-                        protected void onReceiveResult(int resultCode, Bundle resultData) {
-                            if (resultData != null && resultCode != Activity.RESULT_OK) {
-                                handlePersistenceFailure(context, feedback);
-                            }
+                    persistData(context, feedback, workInfo -> {
+                        if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            FeedbackUtils.alertUser(context);
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            FeedbackUtils.handlePersistenceFailure(
+                                    context,
+                                    feedback
+                            );
                         }
                     });
                 }
@@ -108,8 +112,14 @@ public class FeedbackUtils {
         }
     }
 
-    public static void persistData(Context context, Feedback data, ResultReceiver resultReceiver) {
-        context.startService(data.getSendServiceIntent(context, resultReceiver, data));
+    public static void persistData(Context context, Feedback data, Observer<WorkInfo> resultReceiver) {
+        //context.startService(data.getSendServiceIntent(context, resultReceiver, data));
+
+        WorkManager workManager = WorkManager.getInstance(context);
+        WorkRequest request = new OneTimeWorkRequest.Builder(FeedbackSendWorker.class).build();
+        workManager.enqueue(request);
+        LiveData<WorkInfo> status = workManager.getWorkInfoByIdLiveData(request.getId());
+        status.observeForever(resultReceiver); //TODO: Don't observe forever
     }
 
     public static void handlePersistenceFailure(Context context, Feedback feedback) {
@@ -251,10 +261,14 @@ public class FeedbackUtils {
                 activeNetwork = cm.getActiveNetwork();
             }
             if (activeNetwork != null) {
-                final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+                final NetworkCapabilities activeNetworkCapabilities;
+                
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
 
-                if (activeNetworkCapabilities != null) {
-                    return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "WiFi" : "Not WiFi";
+                    if (activeNetworkCapabilities != null) {
+                        return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "WiFi" : "Not WiFi";
+                    }
                 }
             }
         }
@@ -270,9 +284,13 @@ public class FeedbackUtils {
                 activeNetwork = cm.getActiveNetwork();
             }
             if (activeNetwork != null) {
-                final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
-                if (activeNetworkCapabilities != null) {
-                    return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
+                final NetworkCapabilities activeNetworkCapabilities;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+
+                    if (activeNetworkCapabilities != null) {
+                        return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
+                    }
                 }
             }
         }
