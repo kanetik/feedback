@@ -1,7 +1,6 @@
 package com.kanetik.feedback.model
 
-import java.lang.StringBuilder
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class ContextData(val title: String? = "Context Data") {

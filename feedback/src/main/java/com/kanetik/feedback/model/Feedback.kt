@@ -2,7 +2,9 @@ package com.kanetik.feedback.model
 
 import android.content.Context
 import com.kanetik.feedback.utility.FeedbackUtils
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable

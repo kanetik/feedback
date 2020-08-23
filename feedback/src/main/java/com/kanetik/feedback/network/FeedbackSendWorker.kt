@@ -18,7 +18,7 @@ class FeedbackSendWorker(appContext: Context, workerParams: WorkerParameters) : 
 
     override fun doWork(): Result {
         // TODO: Make the sender configurable
-        return if ( MailJetSender(context).send(feedbackObject)) {
+        return if (MailJetSender(context).send(feedbackObject)) {
             if (!tempFileName.isNullOrEmpty()) {
                 FeedbackUtils.deleteQueuedFeedback(tempFileName)
             }
