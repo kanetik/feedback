@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import androidx.annotation.Keep
+import androidx.lifecycle.LifecycleOwner
 import androidx.work.WorkInfo
 import com.kanetik.feedback.model.ContextDataItem
 import com.kanetik.feedback.model.Feedback
 import com.kanetik.feedback.model.SingletonHolder
 import com.kanetik.feedback.presentation.FeedbackActivity
 import com.kanetik.feedback.utility.FeedbackUtils
+import com.kanetik.feedback.utility.LogUtils
 import java.util.*
 
 @Keep
@@ -60,7 +62,7 @@ class KanetikFeedback private constructor(context: Context) {
      *
      * @param feedbackText The text submitted by the end-user.
      */
-    fun sendFeedback(feedbackText: String, from: String) {
+    fun sendFeedback(context: Context, feedbackText: String, from: String) {
         val feedback = Feedback(appContext, feedbackText, from)
 
         FeedbackUtils.addContextDataToFeedback(
@@ -68,17 +70,14 @@ class KanetikFeedback private constructor(context: Context) {
                 feedback
         )
 
-        FeedbackUtils.persistData(
-                appContext,
+        FeedbackUtils.queueSending(
+                context,
                 feedback
         ) { workInfo ->
-            if (workInfo.state == WorkInfo.State.SUCCEEDED) {
-                FeedbackUtils.alertUser(appContext)
-            } else if (workInfo.state == WorkInfo.State.FAILED) {
-                FeedbackUtils.handlePersistenceFailure(
-                        appContext,
-                        feedback
-                )
+            when (workInfo.state) {
+                WorkInfo.State.SUCCEEDED -> FeedbackUtils.alertUser(appContext)
+                WorkInfo.State.FAILED -> FeedbackUtils.handleSendingFailure(appContext, feedback)
+                else -> return@queueSending
             }
         }
     }
@@ -119,6 +118,7 @@ class KanetikFeedback private constructor(context: Context) {
          */
         val isDebug: Boolean
             get() = 0 != appContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+
 
         /**
          * Initializes the KanetikFeedback singleton. The developer's interactions with Kanetik KanetikFeedback will be

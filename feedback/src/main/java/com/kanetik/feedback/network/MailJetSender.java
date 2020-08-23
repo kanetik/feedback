@@ -116,10 +116,12 @@ class MailJetSender implements Sender {
 
             client.setDebug(KanetikFeedback.Companion.isDebug() ? MailjetClient.VERBOSE_DEBUG : MailjetClient.NO_DEBUG);
             client.post(new MailjetRequest(Emailv31.resource).property(Emailv31.MESSAGES, messageArray));
+
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-        }
 
-        return true;
+            return false;
+        }
     }
 }

@@ -4,13 +4,19 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import androidx.work.Configuration
+import androidx.work.WorkManager
 import com.kanetik.feedback.utility.FeedbackUtils
 
 class FeedbackContextProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         val applicationContext = context ?: return false
 
+        // initialize WorkManager
+        WorkManager.initialize(applicationContext, Configuration.Builder().build())
+
         KanetikFeedback.getInstance(applicationContext).setUserIdentifier(FeedbackUtils.getSupportId(applicationContext))
+        FeedbackUtils.sendQueuedRequests(applicationContext)
 
         return true
     }

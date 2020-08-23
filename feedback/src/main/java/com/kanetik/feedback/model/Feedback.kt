@@ -1,9 +1,6 @@
 package com.kanetik.feedback.model
 
 import android.content.Context
-import android.content.Intent
-import android.os.ResultReceiver
-import com.kanetik.feedback.network.FeedbackService
 import com.kanetik.feedback.utility.FeedbackUtils
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
@@ -32,20 +29,17 @@ data class Feedback(@Transient val context: Context? = null, val comment: String
         }
     }
 
-//    fun getSendServiceIntent(context: Context?, resultReceiver: ResultReceiver?, data: Feedback): Intent {
-//        val serviceIntent = Intent(context, FeedbackService::class.java)
-//        serviceIntent.putExtra(EXTRA_RESULT_RECEIVER, resultReceiver)
-//        serviceIntent.putExtra(EXTRA_SELF, Json.encodeToString(data))
-//        return serviceIntent
-//    }
-
     override fun toString(): String {
         return "Comment: $comment | From: $from"
     }
 
+    fun toJson(): String {
+        return Json.encodeToString(this)
+    }
+
     companion object {
-        const val EXTRA_RESULT_RECEIVER = "result_receiver"
-        const val EXTRA_SELF = "data"
+        const val EXTRA_FEEDBACK_DATA = "FeedbackData"
+        const val EXTRA_FEEDBACK_TEMP_FILE_NAME = "FeedbackTempFileName"
         const val RETRY_LIMIT = 1
 
         val serializer = serializer()

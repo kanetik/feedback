@@ -191,7 +191,7 @@ public class FeedbackActivity extends AppCompatActivity {
                 LogUtils.i("Send KanetikFeedback");
             }
 
-            KanetikFeedback.Companion.getInstance(this).sendFeedback(feedback.getText().toString(), email.getText().toString());
+            KanetikFeedback.Companion.getInstance(this).sendFeedback(this, feedback.getText().toString(), email.getText().toString());
 
             finish();
 
