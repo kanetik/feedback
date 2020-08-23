@@ -193,7 +193,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
             KanetikFeedback.Companion.getInstance(this).sendFeedback(this, feedback.getText().toString(), email.getText().toString());
 
-            finish();
+            //finish();
 
             return true;
         } else if (item.getItemId() == android.R.id.home) {

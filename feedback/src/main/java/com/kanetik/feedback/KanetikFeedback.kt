@@ -1,17 +1,16 @@
 package com.kanetik.feedback
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import androidx.annotation.Keep
-import androidx.lifecycle.LifecycleOwner
 import androidx.work.WorkInfo
 import com.kanetik.feedback.model.ContextDataItem
 import com.kanetik.feedback.model.Feedback
 import com.kanetik.feedback.model.SingletonHolder
 import com.kanetik.feedback.presentation.FeedbackActivity
 import com.kanetik.feedback.utility.FeedbackUtils
-import com.kanetik.feedback.utility.LogUtils
 import java.util.*
 
 @Keep
@@ -62,7 +61,7 @@ class KanetikFeedback private constructor(context: Context) {
      *
      * @param feedbackText The text submitted by the end-user.
      */
-    fun sendFeedback(context: Context, feedbackText: String, from: String) {
+    fun sendFeedback(activity: Activity, feedbackText: String, from: String) {
         val feedback = Feedback(appContext, feedbackText, from)
 
         FeedbackUtils.addContextDataToFeedback(
@@ -71,12 +70,18 @@ class KanetikFeedback private constructor(context: Context) {
         )
 
         FeedbackUtils.queueSending(
-                context,
+                activity,
                 feedback
         ) { workInfo ->
             when (workInfo.state) {
-                WorkInfo.State.SUCCEEDED -> FeedbackUtils.alertUser(appContext)
-                WorkInfo.State.FAILED -> FeedbackUtils.handleSendingFailure(appContext, feedback)
+                WorkInfo.State.SUCCEEDED -> {
+                    FeedbackUtils.alertUser(activity)
+                    activity.finish()
+                }
+                WorkInfo.State.FAILED -> {
+                    FeedbackUtils.handleSendingFailure(activity, feedback)
+                    activity.finish()
+                }
                 else -> return@queueSending
             }
         }

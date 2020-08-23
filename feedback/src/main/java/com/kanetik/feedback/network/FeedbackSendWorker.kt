@@ -25,7 +25,7 @@ class FeedbackSendWorker(appContext: Context, workerParams: WorkerParameters) : 
 
             Result.success()
         } else {
-            Result.retry()
+            Result.failure()
         }
     }
 
