@@ -6,7 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import androidx.work.Configuration
 import androidx.work.WorkManager
-import com.kanetik.feedback.utility.FeedbackUtils
+import com.kanetik.feedback.utility.MessageUtils
 
 class FeedbackContextProvider : ContentProvider() {
     override fun onCreate(): Boolean {
@@ -15,8 +15,8 @@ class FeedbackContextProvider : ContentProvider() {
         // initialize WorkManager
         WorkManager.initialize(applicationContext, Configuration.Builder().build())
 
-        KanetikFeedback.getInstance(applicationContext).setUserIdentifier(FeedbackUtils.getSupportId(applicationContext))
-        FeedbackUtils.sendQueuedRequests(applicationContext)
+        KanetikFeedback.getInstance(applicationContext).setUserIdentifier(MessageUtils.getSupportId(applicationContext))
+        MessageUtils.sendQueuedRequests(applicationContext)
 
         return true
     }

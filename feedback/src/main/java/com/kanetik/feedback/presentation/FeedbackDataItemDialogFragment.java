@@ -13,7 +13,7 @@ import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
 import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.DataItemAdapter;
-import com.kanetik.feedback.utility.FeedbackUtils;
+import com.kanetik.feedback.utility.MessageUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public class FeedbackDataItemDialogFragment extends DialogFragment {
         Objects.requireNonNull(getDialog()).setTitle(getString(R.string.kanetik_feedback_data_items));
 
         ArrayList<ContextDataItem> arrayList = new ArrayList<>();
-        arrayList.addAll(FeedbackUtils.getExtraData(view.getContext()));
+        arrayList.addAll(MessageUtils.getExtraData(view.getContext()));
         arrayList.addAll(Objects.requireNonNull(KanetikFeedback.Companion.getContextData()));
 
         ListView listView = view.findViewById(R.id.data_item_list);

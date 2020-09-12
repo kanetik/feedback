@@ -9,8 +9,9 @@ import androidx.work.WorkInfo
 import com.kanetik.feedback.model.ContextDataItem
 import com.kanetik.feedback.model.Feedback
 import com.kanetik.feedback.model.SingletonHolder
+import com.kanetik.feedback.network.MessageWorker.Companion.message
 import com.kanetik.feedback.presentation.FeedbackActivity
-import com.kanetik.feedback.utility.FeedbackUtils
+import com.kanetik.feedback.utility.MessageUtils
 import java.util.*
 
 @Keep
@@ -25,7 +26,7 @@ class KanetikFeedback private constructor(context: Context) {
 
     val supportId: String
         get() {
-            return FeedbackUtils.getSupportId(appContext)
+            return MessageUtils.getSupportId(appContext)
         }
 
     /**
@@ -64,25 +65,26 @@ class KanetikFeedback private constructor(context: Context) {
     fun sendFeedback(activity: Activity, feedbackText: String, from: String) {
         val feedback = Feedback(appContext, feedbackText, from)
 
-        FeedbackUtils.addContextDataToFeedback(
-                appContext,
+        MessageUtils.addDeveloperContextDataToFeedback(
                 feedback
         )
 
-        FeedbackUtils.queueSending(
+        MessageUtils.queueSending(
                 activity,
                 feedback
         ) { workInfo ->
             when (workInfo.state) {
                 WorkInfo.State.SUCCEEDED -> {
-                    FeedbackUtils.alertUser(activity)
+                    MessageUtils.alertUser(activity)
                     activity.finish()
                 }
                 WorkInfo.State.FAILED -> {
-                    FeedbackUtils.handleSendingFailure(activity, feedback)
+                    MessageUtils.handleSendingFailure(activity, message)
                     activity.finish()
                 }
-                else -> return@queueSending
+                else -> {
+                    return@queueSending
+                }
             }
         }
     }

@@ -32,7 +32,8 @@ import com.kanetik.feedback.R;
 import com.kanetik.feedback.model.ContextData;
 import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.Feedback;
-import com.kanetik.feedback.network.FeedbackSendWorker;
+import com.kanetik.feedback.model.Message;
+import com.kanetik.feedback.network.MessageWorker;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -50,7 +51,7 @@ import kotlinx.serialization.json.Json;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class FeedbackUtils {
+public class MessageUtils {
     private static final String SUPPORT_ID_KEY = "support_id";
 
     private static final String DATA_APP_VERSION = "App_Version";
@@ -75,11 +76,26 @@ public class FeedbackUtils {
         return data;
     }
 
+    public static void composeMessageBody(Feedback feedback, Message message) {
+        String plainTextEmail = feedback.getComment();
+
+        plainTextEmail = TextUtils.concat(
+                plainTextEmail,
+                "\n\n\n",
+                message.getAppData().toString(),
+                "\n\n",
+                message.getDeviceData().toString(),
+                "\n\n",
+                feedback.getDevData().toString()).toString();
+
+        message.setMessageBody(plainTextEmail);
+    }
+
     public static void sendQueuedRequests(final Context context) {
         // Step 1: find existing files for the given DATA_TYPE
         File directory = context.getCacheDir();
 
-        File[] files = directory.listFiles(pathname -> pathname.getName().startsWith("kanetik_feedback") && pathname.getName().endsWith("kf"));
+        File[] files = directory.listFiles(pathname -> pathname.getName().startsWith("kanetik_message") && pathname.getName().endsWith("kf"));
         if (files != null) {
             // Ensure we submit queued requests in the order they were made
             Arrays.sort(files, (f1, f2) -> Long.compare(f1.lastModified(), f2.lastModified()));
@@ -92,21 +108,30 @@ public class FeedbackUtils {
                     LogUtils.i("FileName", tempFilePath);
                 }
 
-                final Feedback feedback = getQueuedFeedbackFromDisk(tempFilePath);
-                if (feedback != null) {
-                    feedback.incrementRetryCount();
-                    queueSending(context, feedback, tempFilePath);
+                final Message message = getQueuedMessageFromDisk(tempFilePath);
+                if (message != null) {
+                    message.incrementRetryCount();
+                    queueSending(context, message, tempFilePath);
                 }
             }
         }
     }
 
-    public static void queueSending(Context context, Feedback feedbackData, Observer<WorkInfo> resultReceiver) {
+    public static void queueSending(Context context, Feedback feedback, Observer<WorkInfo> resultReceiver) {
         WorkManager workManager = WorkManager.getInstance(context);
 
-        Data data = new Data.Builder().putString(Feedback.EXTRA_FEEDBACK_DATA, feedbackData.toJson()).build();
+        String developer = MessageUtils.getAppLabel(context) + " Developer";
+        String customer = MessageUtils.getAppLabel(context) + " User";
+        String customerSupport = MessageUtils.getAppLabel(context) + " Support";
+        String subject = String.format(Locale.getDefault(), context.getString(R.string.kanetik_feedback_email_subject), MessageUtils.getAppLabel(context));
+
+        Message message = new Message(context, "jkane001@gmail.com", developer, "info@kanetik.com", customerSupport, feedback.getFrom(), customer, subject);
+        MessageUtils.composeMessageBody(feedback, message);
+
+        Data data = new Data.Builder().putString(Message.EXTRA_MESSAGE_DATA, message.toJson()).build();
+
         Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
-        WorkRequest request = new OneTimeWorkRequest.Builder(FeedbackSendWorker.class).setConstraints(constraints).setInputData(data).build();
+        WorkRequest request = new OneTimeWorkRequest.Builder(MessageWorker.class).setConstraints(constraints).setInputData(data).build();
         workManager.enqueue(request);
 
         LiveData<WorkInfo> status = workManager.getWorkInfoByIdLiveData(request.getId());
@@ -116,18 +141,18 @@ public class FeedbackUtils {
         }
     }
 
-    public static void queueSending(Context context, Feedback feedbackData, String tempFileName) {
+    public static void queueSending(Context context, Message message, String tempFileName) {
         WorkManager workManager = WorkManager.getInstance(context);
 
-        Data data = new Data.Builder().putString(Feedback.EXTRA_FEEDBACK_DATA, feedbackData.toJson()).putString(Feedback.EXTRA_FEEDBACK_TEMP_FILE_NAME, tempFileName).build();
+        Data data = new Data.Builder().putString(Message.EXTRA_MESSAGE_DATA, message.toJson()).putString(Message.EXTRA_MESSAGE_TEMP_FILE_NAME, tempFileName).build();
         Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
-        WorkRequest request = new OneTimeWorkRequest.Builder(FeedbackSendWorker.class).setConstraints(constraints).setInputData(data).build();
+        WorkRequest request = new OneTimeWorkRequest.Builder(MessageWorker.class).setConstraints(constraints).setInputData(data).build();
         workManager.enqueue(request);
     }
 
-    public static void handleSendingFailure(Context context, Feedback feedback) {
-        if (feedback.retryAllowed()) {
-            queueFeedbackToDisk(context, feedback);
+    public static void handleSendingFailure(Context context, Message message) {
+        if (message.retryAllowed()) {
+            queueMessageToDisk(context, message);
         }
     }
 
@@ -139,7 +164,7 @@ public class FeedbackUtils {
         return field != null && formatPattern.matcher(field.getText()).matches();
     }
 
-    public static void addSystemData(Context context, Feedback feedback) {
+    public static void addSystemData(Context context, Message message) {
         if (context == null) {
             return;
         }
@@ -149,7 +174,7 @@ public class FeedbackUtils {
         appData.add("Package Name", context.getPackageName());
         appData.add("Version Name", getVersionName(context));
         appData.add("Version Code", getVersionCode(context));
-        feedback.setAppData(appData);
+        message.setAppData(appData);
 
         ContextData deviceData = new ContextData("Device Info");
         deviceData.add("Manufacturer", Build.MANUFACTURER);
@@ -158,10 +183,10 @@ public class FeedbackUtils {
         deviceData.add("Android Version", Build.VERSION.RELEASE);
         deviceData.add("Locale", Locale.getDefault().toString());
         deviceData.add("Network Type", getNetworkType(context));
-        feedback.setDeviceData(deviceData);
+        message.setDeviceData(deviceData);
     }
 
-    public static void addContextDataToFeedback(Context context, Feedback feedback) {
+    public static void addDeveloperContextDataToFeedback(Feedback feedback) {
         ContextData contextData = new ContextData("Developer Info");
         contextData.setContextData(KanetikFeedback.Companion.getContextData());
         contextData.add("Support ID", KanetikFeedback.Companion.getUserIdentifier());
@@ -259,7 +284,7 @@ public class FeedbackUtils {
     private static String getNetworkType(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
-            Network activeNetwork = null;
+            Network activeNetwork;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 activeNetwork = cm.getActiveNetwork();
 
@@ -275,8 +300,8 @@ public class FeedbackUtils {
         return "Unknown";
     }
 
-    private static Feedback getQueuedFeedbackFromDisk(String fileName) {
-        Feedback queuedObject = null;
+    private static Message getQueuedMessageFromDisk(String fileName) {
+        Message queuedObject = null;
 
         StringBuilder text = new StringBuilder();
 
@@ -291,7 +316,7 @@ public class FeedbackUtils {
 
             br.close();
 
-            queuedObject = Json.Default.decodeFromString(Feedback.Companion.getSerializer(), text.toString());
+            queuedObject = Json.Default.decodeFromString(Message.Companion.getSerializer(), text.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -299,16 +324,16 @@ public class FeedbackUtils {
         return queuedObject;
     }
 
-    private static void queueFeedbackToDisk(Context context, Feedback feedback) {
+    private static void queueMessageToDisk(Context context, Message message) {
         try {
             // create a temp file
-            String fileName = "kanetik_feedback";
+            String fileName = "kanetik_message";
 
             File temp = File.createTempFile(fileName, ".kf", context.getCacheDir());
             FileOutputStream fos = new FileOutputStream(temp.getAbsolutePath());
 
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
-            outputStreamWriter.write(feedback.toJson());
+            outputStreamWriter.write(message.toJson());
             outputStreamWriter.close();
         } catch (IOException e) {
             // If this doesn't write, I think it's alright for now,
@@ -320,7 +345,7 @@ public class FeedbackUtils {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void deleteQueuedFeedback(String fileName) {
+    public static void deleteQueuedMessage(String fileName) {
         if (!isNullOrWhiteSpace(fileName)) {
             File file = new File(fileName);
             file.delete();

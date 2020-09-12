@@ -25,7 +25,7 @@ import androidx.fragment.app.FragmentManager;
 import com.google.android.material.textfield.TextInputLayout;
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
-import com.kanetik.feedback.utility.FeedbackUtils;
+import com.kanetik.feedback.utility.MessageUtils;
 import com.kanetik.feedback.utility.LogUtils;
 
 import java.util.Locale;
@@ -45,7 +45,7 @@ public class FeedbackActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Objects.requireNonNull(getSupportActionBar()).setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), FeedbackUtils.getAppLabel(this)));
+        Objects.requireNonNull(getSupportActionBar()).setTitle(String.format(Locale.US, getString(R.string.kanetik_feedback_feedback_title_format), MessageUtils.getAppLabel(this)));
 
         Drawable closeIcon = Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.kanetik_feedback_close_24dp)).mutate();
         DrawableCompat.setTint(closeIcon, ContextCompat.getColor(this, R.color.kanetik_feedback_primary_text));
@@ -125,9 +125,9 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     private boolean validateForm() {
-        boolean feedbackEntered = FeedbackUtils.validateTextEntryNotEmpty(feedbackLayout.getEditText());
-        boolean emailEntered = FeedbackUtils.validateTextEntryNotEmpty(emailLayout.getEditText());
-        boolean emailValid = FeedbackUtils.validateTextEntryIsValid(emailLayout.getEditText(), Patterns.EMAIL_ADDRESS);
+        boolean feedbackEntered = MessageUtils.validateTextEntryNotEmpty(feedbackLayout.getEditText());
+        boolean emailEntered = MessageUtils.validateTextEntryNotEmpty(emailLayout.getEditText());
+        boolean emailValid = MessageUtils.validateTextEntryIsValid(emailLayout.getEditText(), Patterns.EMAIL_ADDRESS);
 
         return feedbackEntered && emailEntered && emailValid;
     }

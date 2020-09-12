@@ -97,7 +97,7 @@ com.kanetik.feedback.presentation.FeedbackDataItemDialogFragment -> a.a.a.c.a:
     1:1:void <init>():20:20 -> <init>
     1:1:int getTheme():47:47 -> getTheme
     1:11:android.view.View onCreateView(android.view.LayoutInflater,android.view.ViewGroup,android.os.Bundle):31:41 -> onCreateView
-com.kanetik.feedback.utility.FeedbackUtils -> com.kanetik.feedback.utility.FeedbackUtils:
+com.kanetik.feedback.utility.MessageUtils -> com.kanetik.feedback.utility.MessageUtils:
     1:1:void <init>():48:48 -> <init>
     1:1:boolean lambda$sendQueuedRequests$0(java.io.File):81:81 -> a
     2:2:int lambda$sendQueuedRequests$1(java.io.File,java.io.File):84:84 -> a
@@ -149,7 +149,7 @@ com.kanetik.feedback.utility.FeedbackUtils -> com.kanetik.feedback.utility.Feedb
     1:26:void sendQueuedRequests(android.content.Context):74:99 -> sendQueuedRequests
     1:1:boolean validateTextEntryIsValid(android.widget.EditText,java.util.regex.Pattern):127:127 -> validateTextEntryIsValid
     1:1:boolean validateTextEntryNotEmpty(android.widget.EditText):123:123 -> validateTextEntryNotEmpty
-com.kanetik.feedback.utility.FeedbackUtils$1 -> com.kanetik.feedback.utility.FeedbackUtils$a:
+com.kanetik.feedback.utility.MessageUtils$1 -> com.kanetik.feedback.utility.MessageUtils$a:
     android.content.Context val$context -> a
     com.kanetik.feedback.model.Feedback val$feedback -> b
     1:1:void <init>(android.os.Handler,android.content.Context,com.kanetik.feedback.model.Feedback):99:99 -> <init>
