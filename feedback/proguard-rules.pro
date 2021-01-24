@@ -18,7 +18,7 @@
 # tables to get line numbers in the stack traces.
 # You can comment this out if you're not interested in stack traces.
 
-#-printmapping out.map
+-printmapping out.map
 -keepparameternames
 -renamesourcefileattribute SourceFile
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,EnclosingMethod
@@ -63,7 +63,6 @@
     java.lang.Object readResolve();
 }
 
--keepclassmembers class * implements Feedback
 
 # Your library may contain more items that need to be preserved;
 # typically classes that are dynamically created using Class.forName:
@@ -75,4 +74,20 @@
 -keepattributes *Annotation*
 -keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
--printmapping mapping.txt
+
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+
+-keepclassmembers class * implements com.kanetik.feedback.model.Feedback
+-keep,includedescriptorclasses class com.kanetik.feedback.**$$serializer { *; }
+-keepclassmembers class com.kanetik.feedback.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.kanetik.feedback.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-keepattributes InnerClasses
+ -keep class com.kanetik.feedback.R
+ -keep class com.kanetik.feedback.R$* {
+    <fields>;
+}

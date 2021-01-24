@@ -16,6 +16,7 @@ import com.kanetik.feedback.model.DataItemAdapter;
 import com.kanetik.feedback.utility.FeedbackUtils;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class FeedbackDataItemDialogFragment extends DialogFragment {
     public static FeedbackDataItemDialogFragment create() {
@@ -30,11 +31,11 @@ public class FeedbackDataItemDialogFragment extends DialogFragment {
             savedInstanceState) {
         final View view = inflater.inflate(R.layout.kanetik_feedback_fragment_data_item, container, false);
 
-        getDialog().setTitle(getString(R.string.kanetik_feedback_data_items));
+        Objects.requireNonNull(getDialog()).setTitle(getString(R.string.kanetik_feedback_data_items));
 
         ArrayList<ContextDataItem> arrayList = new ArrayList<>();
         arrayList.addAll(FeedbackUtils.getExtraData(view.getContext()));
-        arrayList.addAll(KanetikFeedback.getInstance(view.getContext()).getContextData());
+        arrayList.addAll(Objects.requireNonNull(KanetikFeedback.Companion.getContextData()));
 
         ListView listView = view.findViewById(R.id.data_item_list);
         DataItemAdapter adapter = new DataItemAdapter(view.getContext(), arrayList);

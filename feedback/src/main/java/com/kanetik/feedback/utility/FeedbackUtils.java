@@ -1,6 +1,5 @@
 package com.kanetik.feedback.utility;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -10,41 +9,47 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.pm.PackageInfoCompat;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.kanetik.feedback.KanetikFeedback;
 import com.kanetik.feedback.R;
 import com.kanetik.feedback.model.ContextData;
 import com.kanetik.feedback.model.ContextDataItem;
 import com.kanetik.feedback.model.Feedback;
+import com.kanetik.feedback.network.FeedbackSendWorker;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import kotlinx.serialization.json.Json;
+
 import static android.content.Context.MODE_PRIVATE;
 
-@Keep
 public class FeedbackUtils {
     private static final String SUPPORT_ID_KEY = "support_id";
 
@@ -71,10 +76,6 @@ public class FeedbackUtils {
     }
 
     public static void sendQueuedRequests(final Context context) {
-        if (!isConnected(context)) {
-            return;
-        }
-
         // Step 1: find existing files for the given DATA_TYPE
         File directory = context.getCacheDir();
 
@@ -94,26 +95,37 @@ public class FeedbackUtils {
                 final Feedback feedback = getQueuedFeedbackFromDisk(tempFilePath);
                 if (feedback != null) {
                     feedback.incrementRetryCount();
-
-                    deleteQueuedFeedback(tempFilePath);
-                    persistData(context, feedback, new ResultReceiver(new Handler()) {
-                        @Override
-                        protected void onReceiveResult(int resultCode, Bundle resultData) {
-                            if (resultCode != Activity.RESULT_OK) {
-                                handlePersistenceFailure(context, feedback);
-                            }
-                        }
-                    });
+                    queueSending(context, feedback, tempFilePath);
                 }
             }
         }
     }
 
-    public static void persistData(Context context, Feedback data, ResultReceiver resultReceiver) {
-        context.startService(data.getSendServiceIntent(context, resultReceiver, data));
+    public static void queueSending(Context context, Feedback feedbackData, Observer<WorkInfo> resultReceiver) {
+        WorkManager workManager = WorkManager.getInstance(context);
+
+        Data data = new Data.Builder().putString(Feedback.EXTRA_FEEDBACK_DATA, feedbackData.toJson()).build();
+        Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
+        WorkRequest request = new OneTimeWorkRequest.Builder(FeedbackSendWorker.class).setConstraints(constraints).setInputData(data).build();
+        workManager.enqueue(request);
+
+        LiveData<WorkInfo> status = workManager.getWorkInfoByIdLiveData(request.getId());
+        if (context instanceof LifecycleOwner) {
+            LifecycleOwner lifecycleOwner = (LifecycleOwner) context;
+            status.observe(lifecycleOwner, resultReceiver);
+        }
     }
 
-    public static void handlePersistenceFailure(Context context, Feedback feedback) {
+    public static void queueSending(Context context, Feedback feedbackData, String tempFileName) {
+        WorkManager workManager = WorkManager.getInstance(context);
+
+        Data data = new Data.Builder().putString(Feedback.EXTRA_FEEDBACK_DATA, feedbackData.toJson()).putString(Feedback.EXTRA_FEEDBACK_TEMP_FILE_NAME, tempFileName).build();
+        Constraints constraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
+        WorkRequest request = new OneTimeWorkRequest.Builder(FeedbackSendWorker.class).setConstraints(constraints).setInputData(data).build();
+        workManager.enqueue(request);
+    }
+
+    public static void handleSendingFailure(Context context, Feedback feedback) {
         if (feedback.retryAllowed()) {
             queueFeedbackToDisk(context, feedback);
         }
@@ -128,12 +140,16 @@ public class FeedbackUtils {
     }
 
     public static void addSystemData(Context context, Feedback feedback) {
+        if (context == null) {
+            return;
+        }
+
         ContextData appData = new ContextData("App Info");
         appData.add("App Name", getAppLabel(context));
         appData.add("Package Name", context.getPackageName());
         appData.add("Version Name", getVersionName(context));
         appData.add("Version Code", getVersionCode(context));
-        feedback.appData = appData;
+        feedback.setAppData(appData);
 
         ContextData deviceData = new ContextData("Device Info");
         deviceData.add("Manufacturer", Build.MANUFACTURER);
@@ -142,12 +158,14 @@ public class FeedbackUtils {
         deviceData.add("Android Version", Build.VERSION.RELEASE);
         deviceData.add("Locale", Locale.getDefault().toString());
         deviceData.add("Network Type", getNetworkType(context));
-        feedback.deviceData = deviceData;
+        feedback.setDeviceData(deviceData);
     }
 
-    public static void addInstanceContextDataToFeedback(Context context, Feedback feedback) {
-        feedback.devData = new ContextData("Developer Info", KanetikFeedback.getInstance(context).getContextData());
-        feedback.devData.add("Support ID", KanetikFeedback.Companion.getUserIdentifier());
+    public static void addContextDataToFeedback(Context context, Feedback feedback) {
+        ContextData contextData = new ContextData("Developer Info");
+        contextData.setContextData(KanetikFeedback.Companion.getContextData());
+        contextData.add("Support ID", KanetikFeedback.Companion.getUserIdentifier());
+        feedback.setDevData(contextData);
     }
 
     public static String getSupportId(@NonNull Context context) {
@@ -163,6 +181,10 @@ public class FeedbackUtils {
     }
 
     public static String getAppLabel(Context context) {
+        if (context == null) {
+            return "";
+        }
+
         PackageManager packageManager = context.getPackageManager();
         ApplicationInfo applicationInfo = null;
 
@@ -237,12 +259,15 @@ public class FeedbackUtils {
     private static String getNetworkType(Context context) {
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm != null) {
-            final Network activeNetwork = cm.getActiveNetwork();
-            if (activeNetwork != null) {
-                final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+            Network activeNetwork = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                activeNetwork = cm.getActiveNetwork();
 
-                if (activeNetworkCapabilities != null) {
-                    return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "WiFi" : "Not WiFi";
+                if (activeNetwork != null) {
+                    final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+                    if (activeNetworkCapabilities != null) {
+                        return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? "WiFi" : "Not WiFi";
+                    }
                 }
             }
         }
@@ -250,35 +275,24 @@ public class FeedbackUtils {
         return "Unknown";
     }
 
-    private static boolean isConnected(Context context) {
-        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            final Network activeNetwork = cm.getActiveNetwork();
-            if (activeNetwork != null) {
-                final NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
-                if (activeNetworkCapabilities != null) {
-                    return activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
-                }
-            }
-        }
-
-        return false;
-    }
-
     private static Feedback getQueuedFeedbackFromDisk(String fileName) {
-        ObjectInputStream input;
         Feedback queuedObject = null;
 
-        try {
-            input = new ObjectInputStream(new FileInputStream(new File(fileName)));
-            Object object = input.readObject();
+        StringBuilder text = new StringBuilder();
 
-            if (object instanceof Serializable) {
-                queuedObject = (Feedback) object;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(new File(fileName)));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
             }
 
-            input.close();
-        } catch (Exception e) {
+            br.close();
+
+            queuedObject = Json.Default.decodeFromString(Feedback.Companion.getSerializer(), text.toString());
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -287,21 +301,15 @@ public class FeedbackUtils {
 
     private static void queueFeedbackToDisk(Context context, Feedback feedback) {
         try {
-            //create a temp file
+            // create a temp file
             String fileName = "kanetik_feedback";
 
             File temp = File.createTempFile(fileName, ".kf", context.getCacheDir());
-            FileOutputStream fos = getFileOutputStream(temp);
+            FileOutputStream fos = new FileOutputStream(temp.getAbsolutePath());
 
-            if (fos != null) {
-                ObjectOutputStream os = getObjectOutputStream(fos);
-
-                if (os != null) {
-                    os.writeObject(feedback);
-                    os.close();
-                    fos.close();
-                }
-            }
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
+            outputStreamWriter.write(feedback.toJson());
+            outputStreamWriter.close();
         } catch (IOException e) {
             // If this doesn't write, I think it's alright for now,
             // this is just a file to be checked on app start,
@@ -311,24 +319,8 @@ public class FeedbackUtils {
         }
     }
 
-    private static FileOutputStream getFileOutputStream(File temp) {
-        try {
-            return new FileOutputStream(temp.getAbsolutePath());
-        } catch (FileNotFoundException e) {
-            return null;
-        }
-    }
-
-    private static ObjectOutputStream getObjectOutputStream(FileOutputStream fos) {
-        try {
-            return new ObjectOutputStream(fos);
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void deleteQueuedFeedback(String fileName) {
+    public static void deleteQueuedFeedback(String fileName) {
         if (!isNullOrWhiteSpace(fileName)) {
             File file = new File(fileName);
             file.delete();

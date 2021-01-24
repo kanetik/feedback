@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Feedback Example</string>
+    <string name="send_feedback">Send Feedback</string>
+</resources>

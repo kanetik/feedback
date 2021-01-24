@@ -4,31 +4,29 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.os.Bundle
-import android.os.Handler
-import android.os.ResultReceiver
 import androidx.annotation.Keep
+import androidx.work.WorkInfo
 import com.kanetik.feedback.model.ContextDataItem
 import com.kanetik.feedback.model.Feedback
+import com.kanetik.feedback.model.SingletonHolder
 import com.kanetik.feedback.presentation.FeedbackActivity
 import com.kanetik.feedback.utility.FeedbackUtils
-import com.kanetik.feedback.utility.LogUtils
 import java.util.*
 
 @Keep
-class KanetikFeedback(context: Context) {
-    var contextData: ArrayList<ContextDataItem>? = null
-        get() {
-            if (field == null) {
-                contextData = ArrayList()
-            }
-
-            return field
-        }
-
+class KanetikFeedback private constructor(context: Context) {
     init {
-        appContext = context
+        appContext = context.applicationContext
     }
+
+    fun setUserIdentifier(identifier: String) {
+        userIdentifier = identifier
+    }
+
+    val supportId: String
+        get() {
+            return FeedbackUtils.getSupportId(appContext)
+        }
 
     /**
      * Add a single name-value pair to be sent to the developer with a feedback request.
@@ -36,25 +34,11 @@ class KanetikFeedback(context: Context) {
      * @param key   The name of the context data item
      * @param value The value of the context data item
      */
-    fun addContextDataItem(key: String?, value: String?): KanetikFeedback? {
+    fun addContextItem(key: String, value: String): KanetikFeedback? {
         val newItem = ContextDataItem(key, value)
         contextData!!.remove(newItem)
         contextData!!.add(newItem)
-        return instance
-    }
-
-    /**
-     * Add a collection of name-value pairs to be sent to the developer with a feedback request.
-     *
-     * @param items The map of name-value pairs to be sent
-     */
-    fun addContextDataItems(items: Map<String?, Any?>): KanetikFeedback? {
-        for ((key, value) in items) {
-            val newItem = ContextDataItem(key, value)
-            contextData!!.remove(newItem)
-            contextData!!.add(newItem)
-        }
-        return instance
+        return getInstance(appContext)
     }
 
     /**
@@ -63,13 +47,13 @@ class KanetikFeedback(context: Context) {
      *
      * @param key The name of the context data item to be removed
      */
-    fun removeContextDataItem(key: String): KanetikFeedback? {
+    fun removeContextItem(key: String): KanetikFeedback? {
         for (item in contextData!!) {
             if (item.key == key) {
                 contextData!!.remove(item)
             }
         }
-        return instance
+        return getInstance(appContext)
     }
 
     /**
@@ -77,32 +61,30 @@ class KanetikFeedback(context: Context) {
      *
      * @param feedbackText The text submitted by the end-user.
      */
-    fun sendFeedback(feedbackText: String?, from: String?) {
+    fun sendFeedback(activity: Activity, feedbackText: String, from: String) {
         val feedback = Feedback(appContext, feedbackText, from)
 
-        FeedbackUtils.addInstanceContextDataToFeedback(
+        FeedbackUtils.addContextDataToFeedback(
                 appContext,
                 feedback
         )
 
-        FeedbackUtils.persistData(
-                appContext,
-                feedback,
-                object : ResultReceiver(Handler()) {
-                    override fun onReceiveResult(
-                            resultCode: Int,
-                            resultData: Bundle
-                    ) {
-                        if (resultCode == Activity.RESULT_OK) {
-                            FeedbackUtils.alertUser(appContext)
-                        } else {
-                            FeedbackUtils.handlePersistenceFailure(
-                                    appContext,
-                                    feedback
-                            )
-                        }
-                    }
-                })
+        FeedbackUtils.queueSending(
+                activity,
+                feedback
+        ) { workInfo ->
+            when (workInfo.state) {
+                WorkInfo.State.SUCCEEDED -> {
+                    FeedbackUtils.alertUser(activity)
+                    activity.finish()
+                }
+                WorkInfo.State.FAILED -> {
+                    FeedbackUtils.handleSendingFailure(activity, feedback)
+                    activity.finish()
+                }
+                else -> return@queueSending
+            }
+        }
     }
 
     /**
@@ -114,42 +96,25 @@ class KanetikFeedback(context: Context) {
         context.startActivity(Intent(context, FeedbackActivity::class.java))
     }
 
-    companion object {
-        private var appContext: Context? = null
-
-        /**
-         * Helper method that indicates if KanetikFeedback has been initialized and is ready to use
-         *
-         * @return boolean indicating that initialization has or has not completed
-         */
-        var isInitialized = false
-            private set
+    @Keep
+    companion object : SingletonHolder<KanetikFeedback, Context>(::KanetikFeedback) {
+        private lateinit var appContext: Context
 
         /**
          * Gets the User Identifier.
          *
          * @return userIdentifier
          */
-        var userIdentifier: String? = null
-        private var contextData: ArrayList<ContextDataItem>? = null
-        private var instance: KanetikFeedback? = null
+        var userIdentifier: String = ""
 
-        /**
-         * Gets the Kanetik feedback singleton, which is the primary interaction point the developer will have
-         * with the feedback SDK.
-         *
-         * @return KanetikFeedback singleton instance.
-         */
-        @JvmStatic
-        fun getInstance(context: Context): KanetikFeedback? {
-            synchronized(KanetikFeedback::class.java) {
-                if (instance == null || appContext == null) {
-                    instance = KanetikFeedback(context.applicationContext)
+        var contextData: ArrayList<ContextDataItem>? = null
+            get() {
+                if (field == null) {
+                    contextData = arrayListOf()
                 }
 
-                return instance
+                return field
             }
-        }
 
         /**
          * Gets the Debugging state.
@@ -157,7 +122,8 @@ class KanetikFeedback(context: Context) {
          * @return debugging
          */
         val isDebug: Boolean
-            get() = 0 != appContext!!.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+            get() = 0 != appContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+
 
         /**
          * Initializes the KanetikFeedback singleton. The developer's interactions with Kanetik KanetikFeedback will be
@@ -168,23 +134,78 @@ class KanetikFeedback(context: Context) {
          *
          * @param context Activity or Application Context
          */
-        fun initialize(context: Context, userIdentifier: String?) {
-            if (isInitialized) {
-                return
-            }
-
-            KanetikFeedback(context)
-
-            if (isDebug) {
-                LogUtils.i("KanetikFeedback Initialize")
-            }
-
-            this.userIdentifier = userIdentifier
-
-            // Send any previously queued requests
-            FeedbackUtils.sendQueuedRequests(context)
-
-            this.isInitialized = true
-        }
+//        fun initialize(context: Context, userIdentifier: String) {
+//            KanetikFeedback(context)
+//
+//            if (isDebug) {
+//                LogUtils.i("KanetikFeedback Initialize")
+//            }
+//
+//            this.userIdentifier = userIdentifier
+//
+//            // Send any previously queued requests
+//            FeedbackUtils.sendQueuedRequests(context)
+//        }
     }
+
+//    companion object {
+//        /**
+//         * Gets the User Identifier.
+//         *
+//         * @return userIdentifier
+//         */
+//        var userIdentifier: String = ""
+//        var contextData: ArrayList<ContextDataItem> = arrayListOf()
+//
+//        private lateinit var appContext: Context
+//        private lateinit var instance: KanetikFeedback
+//
+//        /**
+//         * Gets the Kanetik feedback singleton, which is the primary interaction point the developer will have
+//         * with the feedback SDK.
+//         *
+//         * @return KanetikFeedback singleton instance.
+//         */
+//        @JvmStatic
+//        fun getInstance(): KanetikFeedback {
+//            // TODO: Proper singletons
+////            synchronized(KanetikFeedback::class.java) {
+////                if (instance == null) {
+////                    instance = KanetikFeedback(appContext)
+////                }
+//
+//                return instance
+////            }
+//        }
+//
+//        /**
+//         * Gets the Debugging state.
+//         *
+//         * @return debugging
+//         */
+//        val isDebug: Boolean
+//            get() = 0 != appContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE
+//
+//        /**
+//         * Initializes the KanetikFeedback singleton. The developer's interactions with Kanetik KanetikFeedback will be
+//         * entirely via the singleton.
+//         *
+//         *
+//         * Initialization must be done before the KanetikFeedback singleton can be used.
+//         *
+//         * @param context Activity or Application Context
+//         */
+//        fun initialize(context: Context, userIdentifier: String) {
+//            KanetikFeedback(context)
+//
+//            if (isDebug) {
+//                LogUtils.i("KanetikFeedback Initialize")
+//            }
+//
+//            this.userIdentifier = userIdentifier
+//
+//            // Send any previously queued requests
+//            FeedbackUtils.sendQueuedRequests(context)
+//        }
+//    }
 }
