@@ -1,16 +1,15 @@
 buildscript {
-    ext.kotlinVersion = '1.4.21'
+    ext.kotlinVersion = '1.4.31'
 
     repositories {
         google()
         mavenLocal()
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0-beta03'
-        classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.android.tools.build:gradle:7.0.0-alpha12'
+        classpath 'com.google.gms:google-services:4.3.5'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
     }
@@ -21,7 +20,6 @@ allprojects {
         google()
         mavenLocal()
         mavenCentral()
-        jcenter()
     }
 
     tasks.withType(JavaCompile) {

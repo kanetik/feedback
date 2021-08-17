@@ -13,7 +13,7 @@ class FeedbackContextProvider : ContentProvider() {
         val applicationContext = context ?: return false
 
         // initialize WorkManager
-        WorkManager.initialize(applicationContext, Configuration.Builder().build())
+        //WorkManager.initialize(applicationContext, Configuration.Builder().build())
 
         KanetikFeedback.getInstance(applicationContext).setUserIdentifier(MessageUtils.getSupportId(applicationContext))
         MessageUtils.sendQueuedRequests(applicationContext)
