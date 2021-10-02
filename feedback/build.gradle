@@ -2,7 +2,6 @@ import java.text.SimpleDateFormat
 
 plugins {
     id "com.jfrog.bintray" version "1.8.4"
-    id "com.github.dcendents.android-maven" version "2.1"
 }
 
 apply plugin: 'com.android.library'
@@ -134,5 +133,5 @@ dependencies {
     implementation 'com.mailjet:mailjet-client:4.2.1'
     implementation 'com.squareup.moshi:moshi:1.9.2'
     implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0-M1"
 }
